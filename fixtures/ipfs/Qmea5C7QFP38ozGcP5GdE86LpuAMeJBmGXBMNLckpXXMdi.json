@@ -1,0 +1,1 @@
+{"ns":"dchan","v":0,"op":"post:create","data":{"thread":1,"board":"dchan","body":"Test reply with image","file":{"byte_size":13426,"ipfs":{"hash":"Qmb2cetnGVp4zLURH9aPpKTsJv4GZcqfeE7bjSVznYfE6M"},"name":"file.png"},"from":{"name":"Anonymous"},"time":{"unix":1627998949700}}}

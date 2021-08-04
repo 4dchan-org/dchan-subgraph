@@ -1,0 +1,41 @@
+
+fragment Post on Post {
+  id
+  n
+  from {
+    id
+    name
+  }
+  body
+  image {
+    id
+    name
+    byteSize
+    ipfsHash
+    score
+  }
+  createdAtUnix
+}
+
+{
+  boards {
+    id
+    title
+    postCount
+    name
+  }
+  threads {
+    id
+    isSticky
+    isLocked
+    op {
+      ...Post
+    }
+    subject
+    replies {
+      ...Post
+    }
+    replyCount
+    imageCount
+  }
+}

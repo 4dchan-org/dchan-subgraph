@@ -1,0 +1,25 @@
+specVersion: 0.0.2
+description: dchan
+repository: https://github.com/opdchan/dchan-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: Relay
+    network: mainnet
+    source:
+      address: "0x476059cD57800DB8eB88f67c2Aa38A6fCf8251e0"
+      abi: Relay
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Message
+      abis:
+        - name: Relay
+          file: ./abis/Relay.json
+      eventHandlers:
+        - event: Message(address,string)
+          handler: handleMessage
+      file: ./src/mapping.ts

@@ -1,0 +1,45 @@
+type Board @entity {
+  id: ID!
+  title: String!
+  postCount: BigInt!
+  name: String!
+  score: BigInt!
+}
+
+type Thread @entity {
+  id: ID!
+  board: Board!
+  isSticky: Boolean!
+  isLocked: Boolean!
+  op: Post!
+  subject: String!
+  replies: [Post!]! @derivedFrom(field: "thread")
+  replyCount: BigInt!
+  imageCount: BigInt!
+  score: BigInt!
+}
+
+type Post @entity {
+  id: ID!
+  thread: Thread
+  n: BigInt!
+  from: User!
+  body: String!
+  image: Image
+  createdAtUnix: BigInt!
+  score: BigInt!
+}
+
+type User @entity {
+  id: ID!
+  name: String!
+  score: BigInt!
+}
+
+type Image @entity {
+  id: ID!
+  name: String!
+  byteSize: BigInt!
+  ipfsHash: String!
+  score: BigInt!
+}

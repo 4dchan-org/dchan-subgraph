@@ -1,0 +1,69 @@
+version: '3'
+services:
+  subgraph:
+    build: .
+    volumes:
+      - .:/subgraph
+    depends_on:
+      - graph-node
+  graph-node:
+    image: graphprotocol/graph-node:v0.22.0
+    ports:
+      - '127.0.0.1:8000:8000'
+      - '127.0.0.1:8001:8001'
+      - '127.0.0.1:8020:8020'
+      - '127.0.0.1:8030:8030'
+      - '127.0.0.1:8040:8040'
+    depends_on:
+      - ipfs
+      - postgres
+      - ganache
+    environment: 
+      postgres_host: postgres
+      postgres_user: graph-node
+      postgres_pass: let-me-in
+      postgres_db: graph-node
+      ipfs: 'ipfs:5001'
+      # Change next line if you want to connect to a different JSON-RPC endpoint
+      ethereum: 'mainnet:http://ganache:8545'
+      GRAPH_LOG: info
+      GRAPH_ALLOW_NON_DETERMINISTIC_IPFS: 1
+  ipfs:
+    image: ipfs/go-ipfs:v0.4.23
+    environment:
+      IPFS_PROFILE: server
+    ports:
+      - '127.0.0.1:5001:5001'
+    volumes:
+      - ./data/ipfs:/data/ipfs
+  postgres:
+    image: postgres
+    ports:
+      - '127.0.0.1:5432:5432'
+    command: ["postgres", "-cshared_preload_libraries=pg_stat_statements"]
+    environment:
+      POSTGRES_USER: graph-node
+      POSTGRES_PASSWORD: let-me-in
+      POSTGRES_DB: graph-node
+    # NO NEED FOR THIS, on shutdown all data is invalid anyway
+    # volumes:
+    #   - ./data/postgres:/var/lib/postgresql/data
+  ganache:
+    image: trufflesuite/ganache-cli:latest
+    ports:
+      - "127.0.0.1:8545:8545"
+    # NO NEED FOR THIS, on shutdown all data is invalid anyway
+    # volumes:
+    #   - ./data/ganache:/data/ganache
+    entrypoint:
+      - node
+      - /app/ganache-core.docker.cli.js
+      - --deterministic
+      - --db=/data/ganache
+      - --mnemonic
+      - 'minimum symptom minute gloom tragic situate silver mechanic salad amused elite beef'
+      - --networkId
+      - '5777'
+      - --hostname
+      - '0.0.0.0'
+      - --debug
