@@ -67,4 +67,4 @@ data/
 build/
 
 # Subgraph
-subgraph.yml
+subgraph.yaml
