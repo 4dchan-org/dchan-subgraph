@@ -13,15 +13,19 @@ export function boardCreate(message: Message, data: TypedMap<string, JSONValue>)
     let title = ensureString(data.get("title"))
 
     if (name != null && title != null) {
-        let board = new Board(name)
+        let board = new Board(txId)
         board.name = name
         board.title = title
         board.postCount = BigInt.fromI32(0)
         board.score = BigInt.fromI32(0)
         board.save()
 
-        log.info("Board created {}", [name]);
-    }
+        log.info("Board created: {}", [txId]);
 
-    return true
+        return true
+    } else {
+        log.warning("Invalid board", [])
+
+        return false
+    }
 }

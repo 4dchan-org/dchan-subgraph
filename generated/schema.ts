@@ -256,13 +256,13 @@ export class Post extends Entity {
     this.set("from", Value.fromString(value));
   }
 
-  get body(): string {
-    let value = this.get("body");
+  get comment(): string {
+    let value = this.get("comment");
     return value.toString();
   }
 
-  set body(value: string) {
-    this.set("body", Value.fromString(value));
+  set comment(value: string) {
+    this.set("comment", Value.fromString(value));
   }
 
   get image(): string | null {

@@ -24,7 +24,7 @@ type Post @entity {
   thread: Thread
   n: BigInt!
   from: User!
-  body: String!
+  comment: String!
   image: Image
   createdAtUnix: BigInt!
   score: BigInt!

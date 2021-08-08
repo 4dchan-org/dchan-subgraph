@@ -1,25 +1,21 @@
 import { JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
 import { Thread } from "../../generated/schema";
-import { ensureNumber, ensureString } from "../ensure";
-import { getThreadId } from "../entities/thread";
+import { ensureString } from "../ensure";
 
 export function threadLock(message: Message, data: TypedMap<string, JSONValue>): boolean {
     let txId = message.transaction.from.toHexString()
 
     log.info("Locking thread: {}", [txId]);
 
-    let threadId = ensureNumber(data.get("thread"))
-    let boardId = ensureString(data.get("board"))
-
-    let t = getThreadId(boardId, threadId.toString())
+    let threadId = ensureString(data.get("thread"))
     
-    let thread = Thread.load(t)
+    let thread = Thread.load(threadId)
     if (thread != null) {
         thread.isLocked = true
         thread.save()
 
-        log.info("Thread {} locked", [t])
+        log.info("Thread locked: {}", [threadId])
         
         return true
     } else {

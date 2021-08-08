@@ -1,10 +1,10 @@
-import { BigInt, Bytes, ipfs, json, JSONValue, JSONValueKind, log, TypedMap } from '@graphprotocol/graph-ts';
+import { BigInt, ByteArray, Bytes, ipfs, json, JSONValue, JSONValueKind, log, TypedMap, Value } from '@graphprotocol/graph-ts';
 import { Message } from '../generated/Relay/Relay'
 import { Board, Post, User, Thread, Image } from '../generated/schema'
 import { ensureNumber, ensureObject, ensureString } from './ensure'
 import { boardCreate } from './operations/board_create';
 import { postCreate } from './operations/post_create';
-import { postDelete } from './operations/post_delete';
+import { postRemove } from './operations/post_remove';
 import { threadLock } from './operations/thread_lock';
 
 type Data = TypedMap<string, JSONValue>
@@ -14,33 +14,23 @@ export function handleMessage(message: Message): void {
 
   log.debug("Handle message: {}", [txId])
 
-  let ipfsHash = message.params.ipfs_hash
+  let jsonMessage = message.params.jsonMessage
 
-  log.info("Retrieving IPFS message: {}", [ipfsHash]);
+  let tryJsonPayloadData = json.try_fromBytes(ByteArray.fromUTF8(jsonMessage) as Bytes);
+  if (tryJsonPayloadData.isOk) {
+    log.info("Json message parsed successfully: {}", [txId]);
 
-  let ipfsMessage = ipfs.cat(ipfsHash)
+    let jsonDict = tryJsonPayloadData.value.toObject();
 
-  if (ipfsMessage != null) {
-    log.info("Retrieved IPFS message", [ipfsHash]);
-
-    let tryIpfsPayloadData = json.try_fromBytes(ipfsMessage as Bytes);
-    if (tryIpfsPayloadData.isOk) {
-      log.info("IPFS message parsed successfully: {}", [txId]);
-
-      let jsonDict = tryIpfsPayloadData.value.toObject();
-
-      let success = processMessagePayload(message, jsonDict)
-      
-      if(success == true) {
-        log.info("Message processed successfully: {}", [txId])
-      } else {
-        log.warning("Message failed: {}", [txId])
-      }
+    let success = processMessagePayload(message, jsonDict)
+    
+    if(success == true) {
+      log.info("Message processed successfully: {}", [txId])
     } else {
-      log.error("Could not parse message, skipping", [])
+      log.warning("Message failed: {}", [txId])
     }
   } else {
-    log.error("Could not retrieve message from IPFS, skipping: {}", [txId]);
+    log.error("Could not parse message, skipping", [])
   }
 
   log.info("Handled message: {}", [txId])
@@ -63,7 +53,7 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
       } else if(operation == "post:create") {
         return postCreate(message, data as Data)
       } else if(operation == "post:delete") {
-        return postDelete(message, data as Data)
+        return postRemove(message, data as Data)
       } else if(operation == "thread:lock") {
         return threadLock(message, data as Data)
       } else {

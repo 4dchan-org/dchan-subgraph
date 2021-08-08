@@ -2,14 +2,13 @@ import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
 import { Board, Image, Post, Thread, User } from "../../generated/schema";
 import { ensureNumber, ensureObject, ensureString } from "../ensure";
-import { getThreadId } from "../entities/thread";
 
 export function postCreate(message: Message, data: TypedMap<string, JSONValue>): boolean {
     let txId = message.transaction.hash.toHexString()
     let txFrom = message.transaction.from.toHexString()
 
     let boardId = ensureString(data.get("board"))
-    let body = ensureString(data.get("body"))
+    let comment = ensureString(data.get("comment"))
 
     log.debug("Loading board {}", [boardId]);
     let board = Board.load(boardId)
@@ -51,11 +50,10 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
         }
 
         log.info("Creating post: {}", [txId]);
-        let postId = getThreadId(boardId, newPostCount.toString())
-        let post = new Post(postId)
+        let post = new Post(txId)
         post.score = BigInt.fromI32(0)
         post.n = newPostCount
-        post.body = body || ""
+        post.comment = comment || ""
         post.createdAtUnix = message.block.timestamp
         post.from = txFrom
         if (image != null) {
@@ -63,10 +61,8 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
         }
 
         let thread: Thread | null = null
-        let t = ensureNumber(data.get("thread"))
-        if (t != null) {
-            let threadId = getThreadId(boardId, t.toString())
-
+        let threadId = ensureString(data.get("thread"))
+        if (threadId != null) {
             log.info("Replying to {}", [threadId]);
 
             thread = Thread.load(threadId)
@@ -80,17 +76,15 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
                 return false
             }
         } else {
-            let threadId = getThreadId(board.name, post.n.toString())
+            log.info("Creating thread {}", [txId]);
 
-            log.info("Creating thread {}", [threadId]);
-
-            thread = new Thread(threadId)
+            thread = new Thread(txId)
             thread.score = BigInt.fromI32(0)
             thread.board = boardId
             thread.subject = ensureString(data.get("subject"))
             thread.isSticky = false
             thread.isLocked = false
-            thread.op = postId
+            thread.op = txId
             thread.replyCount = BigInt.fromI32(0)
             thread.imageCount = BigInt.fromI32(0)
         }
@@ -105,7 +99,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
         post.save()
         board.save()
 
-        log.info("Saved: {}", [txId]);
+        log.info("Post created: {}", [txId]);
 
         return true
     } else {

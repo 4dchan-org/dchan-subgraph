@@ -27,7 +27,7 @@ export class Message__Params {
     return this._event.parameters[0].value.toAddress();
   }
 
-  get ipfs_hash(): string {
+  get jsonMessage(): string {
     return this._event.parameters[1].value.toString();
   }
 }
@@ -55,7 +55,7 @@ export class MessageCall__Inputs {
     this._call = call;
   }
 
-  get ipfs_hash(): string {
+  get jsonMessage(): string {
     return this._call.inputValues[0].value.toString();
   }
 }

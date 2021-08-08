@@ -4,39 +4,50 @@ import { BigInt, JSONValue, JSONValueKind, TypedMap } from "@graphprotocol/graph
 export function ensureObject(jsonValue: JSONValue | null): TypedMap<string, JSONValue> | null {
     if (jsonValue != null && jsonValue.kind == JSONValueKind.OBJECT) {
         return jsonValue.toObject()
-    } else {
-        return null
     }
+    
+    return null
 }
 
 export function ensureString(jsonValue: JSONValue | null): string | null {
     if (jsonValue != null && jsonValue.kind == JSONValueKind.STRING) {
         return jsonValue.toString()
-    } else {
-        return null
     }
+    
+    return null
 }
 
 export function ensureNumber(jsonValue: JSONValue | null): BigInt | null {
     if (jsonValue != null && jsonValue.kind == JSONValueKind.NUMBER) {
         return jsonValue.toBigInt()
-    } else {
-        return null
     }
+    
+    return null
 }
 
 export function ensureArray(jsonValue: JSONValue | null): JSONValue[] | null {
     if (jsonValue != null && jsonValue.kind == JSONValueKind.ARRAY) {
         return jsonValue.toArray()
-    } else {
-        return null
     }
+    
+    return null
 }
 
 export function ensureBoolean(jsonValue: JSONValue | null): boolean | null {
     if (jsonValue != null && jsonValue.kind == JSONValueKind.BOOL) {
         return jsonValue.toBool()
-    } else {
-        return null
     }
+    
+    return null
+}
+
+export function ensureIpfs(jsonValue: JSONValue | null): string | null {
+    if (jsonValue != null && jsonValue.kind == JSONValueKind.STRING) {
+        const maybeHash = jsonValue.toString()
+        if(0 == maybeHash.indexOf("Qm") && maybeHash.length === 48) {
+            return maybeHash
+        }
+    }
+    
+    return null
 }

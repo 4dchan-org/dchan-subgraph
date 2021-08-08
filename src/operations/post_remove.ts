@@ -4,7 +4,7 @@ import { Post, Thread } from "../../generated/schema";
 import { ensureString } from "../ensure";
 import { isJanny } from "../entities/jannie";
 
-export function postDelete(message: Message, data: TypedMap<string, JSONValue>): boolean {
+export function postRemove(message: Message, data: TypedMap<string, JSONValue>): boolean {
     let txFrom = message.transaction.from.toHexString()
 
     let postId = ensureString(data.get("id"))
