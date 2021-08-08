@@ -5,7 +5,7 @@ module.exports = async function (deployer) {
 
     console.log('Account address:', relay.address)
 
-    const { boardTx } = await relay.message(JSON.stringify({
+    const { tx: boardTx } = await relay.message(JSON.stringify({
         "ns": "dchan",
         "v": 0,
         "op": "board:create",
@@ -15,7 +15,7 @@ module.exports = async function (deployer) {
         }
     }))
 
-    const { threadTx } = await relay.message(JSON.stringify({
+    const { tx: threadTx } = await relay.message(JSON.stringify({
         "ns": "dchan",
         "v": 0,
         "op": "post:create",
