@@ -49,5 +49,7 @@ type Image @entity {
   name: String!
   byteSize: BigInt!
   ipfsHash: String!
+  isNsfw: Boolean!
+  isSpoiler: Boolean!
   score: BigInt!
 }

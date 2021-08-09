@@ -1,7 +1,7 @@
 import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
 import { Board, Image, Post, Thread } from "../../generated/schema";
-import { ensureNumber, ensureObject, ensureString } from "../ensure";
+import { ensureBoolean, ensureNumber, ensureObject, ensureString } from "../ensure";
 import { eventId } from "../utils";
 import { userLoadOrCreate } from "./internal/user_load_or_create"
 
@@ -28,7 +28,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
         board = Board.load(thread.board)
     } else {
         if(boardId == null) {
-            log.warning("Invalid post create request: {}", [boardId])
+            log.warning("Invalid post create request", [])
 
             return false
         }
@@ -43,7 +43,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
 
         return false
     }
-{}
+    
     let comment = ensureString(data.get("comment"))
 
     let newPostCount = board.postCount.plus(BigInt.fromI32(1))
@@ -62,11 +62,16 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
         let ipfsHash: string | null = ipfs != null ? ensureString(ipfs.get('hash')) : null
 
         if (name != null && byteSize != null && ipfsHash != null) {
+            let isNsfw = "true" == ensureBoolean(file.get('is_nsfw'))
+            let isSpoiler = "true" == ensureBoolean(file.get('is_spoiler'))
+            
             image = new Image(evtId)
             image.score = BigInt.fromI32(0)
             image.name = name
             image.byteSize = byteSize as BigInt
             image.ipfsHash = ipfsHash as string
+            image.isNsfw = isNsfw || false
+            image.isSpoiler = isSpoiler || false
         } else {
             log.warning("Invalid image", [])
 
@@ -81,7 +86,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
     post.n = newPostCount
     post.comment = comment || ""
     post.createdAtUnix = message.block.timestamp
-    post.name = name || "Anonymous"
+    post.name = (!!name && name != "") ? name : "Anonymous"
     post.from = txFrom
     if (image != null) {
         post.image = evtId

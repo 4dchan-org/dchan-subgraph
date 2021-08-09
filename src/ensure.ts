@@ -33,9 +33,11 @@ export function ensureArray(jsonValue: JSONValue | null): JSONValue[] | null {
     return null
 }
 
-export function ensureBoolean(jsonValue: JSONValue | null): boolean | null {
+// ERROR AS204: Basic type 'boolean' cannot be nullable.
+// export function ensureBoolean(jsonValue: JSONValue | null): boolean | null {
+export function ensureBoolean(jsonValue: JSONValue | null): string | null {
     if (jsonValue != null && jsonValue.kind == JSONValueKind.BOOL) {
-        return jsonValue.toBool()
+        return jsonValue.toBool() ? "true" : "false"
     }
     
     return null

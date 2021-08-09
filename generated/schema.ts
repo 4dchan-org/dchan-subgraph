@@ -482,6 +482,24 @@ export class Image extends Entity {
     this.set("ipfsHash", Value.fromString(value));
   }
 
+  get isNsfw(): boolean {
+    let value = this.get("isNsfw");
+    return value.toBoolean();
+  }
+
+  set isNsfw(value: boolean) {
+    this.set("isNsfw", Value.fromBoolean(value));
+  }
+
+  get isSpoiler(): boolean {
+    let value = this.get("isSpoiler");
+    return value.toBoolean();
+  }
+
+  set isSpoiler(value: boolean) {
+    this.set("isSpoiler", Value.fromBoolean(value));
+  }
+
   get score(): BigInt {
     let value = this.get("score");
     return value.toBigInt();

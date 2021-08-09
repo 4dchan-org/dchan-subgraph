@@ -20,8 +20,8 @@ export function dchanUnlock(message: Message): boolean {
         return false
     }
 
-    const chanId = message.transaction.to.toHexString()
-    const chanStatus = ChanStatus.load(chanId)
+    let chanId = message.transaction.to.toHexString()
+    let chanStatus = ChanStatus.load(chanId)
     chanStatus.isLocked = false
     chanStatus.save()
 
