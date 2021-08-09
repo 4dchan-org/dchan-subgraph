@@ -1,11 +1,14 @@
 import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Board, Image, Post, Thread, User } from "../../generated/schema";
+import { Board, Image, Post, Thread } from "../../generated/schema";
 import { ensureNumber, ensureObject, ensureString } from "../ensure";
+import { eventId } from "../utils";
+import { userLoadOrCreate } from "./internal/user_load_or_create"
 
 export function postCreate(message: Message, data: TypedMap<string, JSONValue>): boolean {
     let txId = message.transaction.hash.toHexString()
     let txFrom = message.transaction.from.toHexString()
+    let evtId = eventId(message)
 
     let board: Board | null = null
     let boardId = ensureString(data.get("board"))
@@ -42,15 +45,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
     log.debug("Board {} new post count: {}", [board.id, newPostCount.toString()])
     board.postCount = newPostCount
 
-    log.info("Loading user: {}", [txFrom]);
-    let user = User.load(txFrom);
-    if (user == null) {
-        log.info("Creating user: {}", [txId]);
-
-        user = new User(txFrom)
-        user.name = "Anonymous"
-        user.score = BigInt.fromI32(0)
-    }
+    let user = userLoadOrCreate(message)
 
     log.info("Creating image: {}", [txId]);
     let image: Image | null = null
@@ -62,7 +57,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
         let ipfsHash: string | null = ipfs != null ? ensureString(ipfs.get('hash')) : null
 
         if (name != null && byteSize != null && ipfsHash != null) {
-            image = new Image(txId)
+            image = new Image(evtId)
             image.score = BigInt.fromI32(0)
             image.name = name
             image.byteSize = byteSize as BigInt
@@ -75,11 +70,13 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
     }
 
     log.info("Creating post: {}", [txId]);
-    let post = new Post(txId)
+    let name = ensureString(data.get("name"))
+    let post = new Post(evtId)
     post.score = BigInt.fromI32(0)
     post.n = newPostCount
     post.comment = comment || ""
     post.createdAtUnix = message.block.timestamp
+    post.name = name || "Anonymous"
     post.from = txFrom
     if (image != null) {
         post.image = txId
@@ -92,13 +89,13 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
     } else {
         log.info("Creating thread {}", [txId]);
 
-        thread = new Thread(txId)
+        thread = new Thread(evtId)
         thread.score = BigInt.fromI32(0)
         thread.board = board.id
         thread.subject = ensureString(data.get("subject"))
         thread.isSticky = false
         thread.isLocked = false
-        thread.op = txId
+        thread.op = evtId
         thread.replyCount = BigInt.fromI32(0)
         thread.imageCount = BigInt.fromI32(0)
     }

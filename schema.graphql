@@ -4,6 +4,7 @@ type Board @entity {
   postCount: BigInt!
   name: String!
   score: BigInt!
+  createdBy: User!
 }
 
 type Thread @entity {
@@ -23,6 +24,7 @@ type Post @entity {
   id: ID!
   thread: Thread
   n: BigInt!
+  name: String
   from: User!
   comment: String!
   image: Image
@@ -32,7 +34,7 @@ type Post @entity {
 
 type User @entity {
   id: ID!
-  name: String!
+  isJanny: Boolean!
   score: BigInt!
 }
 

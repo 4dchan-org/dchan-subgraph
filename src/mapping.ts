@@ -3,9 +3,11 @@ import { Message } from '../generated/Relay/Relay'
 import { Board, Post, User, Thread, Image } from '../generated/schema'
 import { ensureNumber, ensureObject, ensureString } from './ensure'
 import { boardCreate } from './operations/board_create';
+import { boardRemove } from './operations/board_remove';
 import { postCreate } from './operations/post_create';
 import { postRemove } from './operations/post_remove';
 import { threadLock } from './operations/thread_lock';
+import { threadRemove } from './operations/thread_remove';
 
 type Data = TypedMap<string, JSONValue>
 
@@ -50,12 +52,16 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
     if (data != null) {
       if(operation == "board:create") {
         return boardCreate(message, data as Data)
+      } else if(operation == "board:remove") {
+        return boardRemove(message, data as Data)
       } else if(operation == "post:create") {
         return postCreate(message, data as Data)
-      } else if(operation == "post:delete") {
+      } else if(operation == "post:remove") {
         return postRemove(message, data as Data)
       } else if(operation == "thread:lock") {
         return threadLock(message, data as Data)
+      } else if(operation == "thread:remove") {
+        return threadRemove(message, data as Data)
       } else {
         log.warning("Invalid operation {}, skipping: {}", [operation, txId]);
       }

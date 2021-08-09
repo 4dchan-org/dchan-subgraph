@@ -2,7 +2,7 @@ import { JSONValue, log, store, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
 import { Post, Thread } from "../../generated/schema";
 import { ensureString } from "../ensure";
-import { isJanny } from "../entities/jannie";
+import { isJanny } from "../jannies";
 
 export function postRemove(message: Message, data: TypedMap<string, JSONValue>): boolean {
     let txFrom = message.transaction.from.toHexString()
@@ -46,12 +46,10 @@ export function postRemove(message: Message, data: TypedMap<string, JSONValue>):
             return true
         } else {
             log.warning("Post not owned by {}, skipping", [txFrom])
-
-            return false
         }
     } else {
         log.warning("Post not found, skipping", [])
-
-        return false
     }
+
+    return false
 }

@@ -77,6 +77,15 @@ export class Board extends Entity {
   set score(value: BigInt) {
     this.set("score", Value.fromBigInt(value));
   }
+
+  get createdBy(): string {
+    let value = this.get("createdBy");
+    return value.toString();
+  }
+
+  set createdBy(value: string) {
+    this.set("createdBy", Value.fromString(value));
+  }
 }
 
 export class Thread extends Entity {
@@ -247,6 +256,23 @@ export class Post extends Entity {
     this.set("n", Value.fromBigInt(value));
   }
 
+  get name(): string | null {
+    let value = this.get("name");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set name(value: string | null) {
+    if (value === null) {
+      this.unset("name");
+    } else {
+      this.set("name", Value.fromString(value as string));
+    }
+  }
+
   get from(): string {
     let value = this.get("from");
     return value.toString();
@@ -331,13 +357,13 @@ export class User extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get name(): string {
-    let value = this.get("name");
-    return value.toString();
+  get isJanny(): boolean {
+    let value = this.get("isJanny");
+    return value.toBoolean();
   }
 
-  set name(value: string) {
-    this.set("name", Value.fromString(value));
+  set isJanny(value: boolean) {
+    this.set("isJanny", Value.fromBoolean(value));
   }
 
   get score(): BigInt {

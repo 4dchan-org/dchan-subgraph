@@ -20,7 +20,7 @@ export function threadLock(message: Message, data: TypedMap<string, JSONValue>):
         return true
     } else {
         log.warning("Thread not found: {}", [txId]);
-
-        return false
     }
+
+    return false
 }
