@@ -176,13 +176,13 @@ export class Thread extends Entity {
     this.set("board", Value.fromString(value));
   }
 
-  get isSticky(): boolean {
-    let value = this.get("isSticky");
+  get isPinned(): boolean {
+    let value = this.get("isPinned");
     return value.toBoolean();
   }
 
-  set isSticky(value: boolean) {
-    this.set("isSticky", Value.fromBoolean(value));
+  set isPinned(value: boolean) {
+    this.set("isPinned", Value.fromBoolean(value));
   }
 
   get isLocked(): boolean {

@@ -108,7 +108,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
         thread.score = BigInt.fromI32(0)
         thread.board = board.id
         thread.subject = ensureString(data.get("subject"))
-        thread.isSticky = false
+        thread.isPinned = false
         thread.isLocked = false
         thread.op = evtId
         thread.replyCount = BigInt.fromI32(0)

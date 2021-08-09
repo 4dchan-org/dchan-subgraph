@@ -16,7 +16,7 @@ type Board @entity {
 type Thread @entity {
   id: ID!
   board: Board!
-  isSticky: Boolean!
+  isPinned: Boolean!
   isLocked: Boolean!
   op: Post!
   subject: String!
