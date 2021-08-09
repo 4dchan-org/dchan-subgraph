@@ -15,6 +15,7 @@ import { eventId } from './utils';
 import { dchanLock } from './operations/dchan_lock';
 import { dchanUnlock } from './operations/dchan_unlock';
 import { isDchanLocked } from './jannies';
+import { threadPin } from './operations/thread_pin';
 
 type Data = TypedMap<string, JSONValue>
 
@@ -91,6 +92,8 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
         return postCreate(message, data as Data)
       } else if(operation == "post:remove") {
         return postRemove(message, data as Data)
+      } else if(operation == "thread:pin") {
+        return threadPin(message, data as Data)
       } else if(operation == "thread:lock") {
         return threadLock(message, data as Data)
       } else if(operation == "thread:unlock") {

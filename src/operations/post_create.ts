@@ -47,8 +47,8 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
     let comment = ensureString(data.get("comment"))
 
     let newPostCount = board.postCount.plus(BigInt.fromI32(1))
-    log.debug("Board {} new post count: {}", [board.id, newPostCount.toString()])
     board.postCount = newPostCount
+    board.lastBumpedAt = message.block.timestamp
 
     let user = userLoadOrCreate(message)
     // if(user.lastPostedAt != null && message.block.timestamp < user.lastPostedAt.plus(BigInt.fromI32(50))) {
@@ -90,7 +90,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
     post.score = BigInt.fromI32(0)
     post.n = newPostCount
     post.comment = comment || ""
-    post.createdAtUnix = message.block.timestamp
+    post.createdAt = message.block.timestamp
     post.name = (!!name && name != "") ? name : "Anonymous"
     post.from = txFrom
     if (image != null) {
@@ -113,7 +113,9 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
         thread.op = evtId
         thread.replyCount = BigInt.fromI32(0)
         thread.imageCount = BigInt.fromI32(0)
+        thread.createdAt = message.block.timestamp
     }
+    thread.lastBumpedAt = message.block.timestamp
 
     if (thread.isLocked) {
         log.warning("Thread {} locked, skipping {}", [threadId, evtId])

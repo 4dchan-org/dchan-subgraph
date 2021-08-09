@@ -11,6 +11,8 @@ type Board @entity {
   score: BigInt!
   isLocked: Boolean!
   createdBy: User!
+  createdAt: BigInt!
+  lastBumpedAt: BigInt!
 }
 
 type Thread @entity {
@@ -23,6 +25,8 @@ type Thread @entity {
   replies: [Post!]! @derivedFrom(field: "thread")
   replyCount: BigInt!
   imageCount: BigInt!
+  createdAt: BigInt!
+  lastBumpedAt: BigInt!
   score: BigInt!
 }
 
@@ -34,7 +38,7 @@ type Post @entity {
   from: User!
   comment: String!
   image: Image
-  createdAtUnix: BigInt!
+  createdAt: BigInt!
   score: BigInt!
 }
 

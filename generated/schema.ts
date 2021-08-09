@@ -135,6 +135,24 @@ export class Board extends Entity {
   set createdBy(value: string) {
     this.set("createdBy", Value.fromString(value));
   }
+
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
+    return value.toBigInt();
+  }
+
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
+  }
+
+  get lastBumpedAt(): BigInt {
+    let value = this.get("lastBumpedAt");
+    return value.toBigInt();
+  }
+
+  set lastBumpedAt(value: BigInt) {
+    this.set("lastBumpedAt", Value.fromBigInt(value));
+  }
 }
 
 export class Thread extends Entity {
@@ -237,6 +255,24 @@ export class Thread extends Entity {
 
   set imageCount(value: BigInt) {
     this.set("imageCount", Value.fromBigInt(value));
+  }
+
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
+    return value.toBigInt();
+  }
+
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
+  }
+
+  get lastBumpedAt(): BigInt {
+    let value = this.get("lastBumpedAt");
+    return value.toBigInt();
+  }
+
+  set lastBumpedAt(value: BigInt) {
+    this.set("lastBumpedAt", Value.fromBigInt(value));
   }
 
   get score(): BigInt {
@@ -357,13 +393,13 @@ export class Post extends Entity {
     }
   }
 
-  get createdAtUnix(): BigInt {
-    let value = this.get("createdAtUnix");
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
     return value.toBigInt();
   }
 
-  set createdAtUnix(value: BigInt) {
-    this.set("createdAtUnix", Value.fromBigInt(value));
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
   }
 
   get score(): BigInt {

@@ -28,6 +28,8 @@ export function boardCreate(message: Message, data: TypedMap<string, JSONValue>)
     board.postCount = BigInt.fromI32(0)
     board.score = BigInt.fromI32(0)
     board.createdBy = user.id
+    board.createdAt = message.block.timestamp
+    board.lastBumpedAt = message.block.timestamp
     board.isLocked = false
     
     user.save()
