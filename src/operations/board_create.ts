@@ -17,23 +17,23 @@ export function boardCreate(message: Message, data: TypedMap<string, JSONValue>)
     let name = ensureString(data.get("name"))
     let title = ensureString(data.get("title"))
 
-    if (name != null && title != null) {
-        let board = new Board(evtId)
-        board.name = name
-        board.title = title
-        board.postCount = BigInt.fromI32(0)
-        board.score = BigInt.fromI32(0)
-        board.createdBy = user.id
-        
-        user.save()
-        board.save()
-
-        log.info("Board created: {}", [txId]);
-
-        return true
-    } else {
+    if (name == null || title == null || name == "" || title == "") {
         log.warning("Invalid board", [])
 
         return false
     }
+
+    let board = new Board(evtId)
+    board.name = name
+    board.title = title
+    board.postCount = BigInt.fromI32(0)
+    board.score = BigInt.fromI32(0)
+    board.createdBy = user.id
+    
+    user.save()
+    board.save()
+
+    log.info("Board created: {}", [txId]);
+
+    return true
 }

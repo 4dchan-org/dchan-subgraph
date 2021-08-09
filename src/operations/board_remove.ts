@@ -3,31 +3,35 @@ import { Message } from "../../generated/Relay/Relay";
 import { Board } from "../../generated/schema";
 import { ensureString } from "../ensure";
 import { isJanny } from "../jannies";
-import { eventId } from "../utils";
 
-export function boardRemove(message: Message, data: TypedMap<string, JSONValue>): boolean {
-    let txFrom = message.transaction.from.toHexString()
+export function boardRemove(
+  message: Message,
+  data: TypedMap<string, JSONValue>
+): boolean {
+  let txFrom = message.transaction.from.toHexString();
 
-    let boardId = ensureString(data.get("id"))
+  let boardId = ensureString(data.get("id"));
 
-    log.debug("Requested board removal: {}", [boardId]);
-    
-    let board = Board.load(boardId)
-    if (board != null) {
-        if((board.createdBy == txFrom) || isJanny(txFrom)) {
-            log.debug("Removing board: {}", [boardId])
+  log.debug("Requested board removal: {}", [boardId]);
 
-            store.remove('Board', boardId)
+  let board = Board.load(boardId);
+  if (board == null) {
+    log.warning("Board not found, skipping", []);
 
-            log.info("Board removed: {}", [boardId])
+    return false;
+  }
 
-            return true
-        } else {
-            log.warning("Board not owned by {}, skipping", [txFrom])
-        }
-    } else {
-        log.warning("Board not found, skipping", [])
-    }
+  if (board.createdBy != txFrom && !isJanny(txFrom)) {
+    log.warning("Board not owned by {}, skipping", [txFrom]);
 
-    return false
+    return false;
+  }
+
+  log.debug("Removing board: {}", [boardId]);
+
+  store.remove("Board", boardId);
+
+  log.info("Board removed: {}", [boardId]);
+
+  return true;
 }

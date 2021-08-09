@@ -12,15 +12,15 @@ export function threadLock(message: Message, data: TypedMap<string, JSONValue>):
     
     let thread = Thread.load(threadId)
     if (thread != null) {
-        thread.isLocked = true
-        thread.save()
-
-        log.info("Thread locked: {}", [threadId])
-        
-        return true
-    } else {
         log.warning("Thread not found: {}", [txId]);
-    }
 
-    return false
+        return false
+    }
+    
+    thread.isLocked = true
+    thread.save()
+
+    log.info("Thread locked: {}", [threadId])
+    
+    return true
 }
