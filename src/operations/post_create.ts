@@ -6,7 +6,6 @@ import { eventId } from "../utils";
 import { userLoadOrCreate } from "./internal/user_load_or_create"
 
 export function postCreate(message: Message, data: TypedMap<string, JSONValue>): boolean {
-    let txId = message.transaction.hash.toHexString()
     let txFrom = message.transaction.from.toHexString()
     let evtId = eventId(message)
 
@@ -21,20 +20,26 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
 
         thread = Thread.load(threadId)
         if (thread == null) {
-            log.warning("Invalid thread, skipping", [])
+            log.warning("Invalid thread {}, skipping", [threadId])
     
             return false
-        } else {
-            board = Board.load(thread.board)
         }
+        
+        board = Board.load(thread.board)
     } else {
+        if(boardId == null) {
+            log.warning("Invalid post create request: {}", [boardId])
+
+            return false
+        }
+        
         log.info("Creating new thread on {}", [boardId]);
 
         board = Board.load(boardId)
     }
 
     if (board == null) {
-        log.warning("Invalid board, skipping", [])
+        log.warning("Invalid board {}, skipping", [boardId])
 
         return false
     }
@@ -47,7 +52,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
 
     let user = userLoadOrCreate(message)
 
-    log.info("Creating image: {}", [txId]);
+    log.info("Creating image: {}", [evtId]);
     let image: Image | null = null
     let file = ensureObject(data.get("file"))
     if (file != null) {
@@ -69,7 +74,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
         }
     }
 
-    log.info("Creating post: {}", [txId]);
+    log.info("Creating post: {}", [evtId]);
     let name = ensureString(data.get("name"))
     let post = new Post(evtId)
     post.score = BigInt.fromI32(0)
@@ -79,7 +84,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
     post.name = name || "Anonymous"
     post.from = txFrom
     if (image != null) {
-        post.image = txId
+        post.image = evtId
     }
 
     if (thread != null) {
@@ -87,7 +92,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
         thread.replyCount = thread.replyCount.plus(BigInt.fromI32(1))
         thread.imageCount = thread.imageCount.plus(BigInt.fromI32(image != null ? 1 : 0))
     } else {
-        log.info("Creating thread {}", [txId]);
+        log.info("Creating thread {}", [evtId]);
 
         thread = new Thread(evtId)
         thread.score = BigInt.fromI32(0)
@@ -100,7 +105,19 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
         thread.imageCount = BigInt.fromI32(0)
     }
 
-    log.info("Saving: {}", [txId]);
+    if (thread.isLocked) {
+        log.warning("Thread {} locked, skipping", [threadId])
+
+        return false
+    }
+
+    if (board.isLocked) {
+        log.warning("Board {} locked, skipping", [board.id])
+
+        return false
+    }
+
+    log.info("Saving: {}", [evtId]);
     
     if (image != null) {
         image.save()
@@ -110,7 +127,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
     post.save()
     board.save()
 
-    log.info("Post created: {}", [txId]);
+    log.info("Post created: {}", [evtId]);
 
     return true
 }

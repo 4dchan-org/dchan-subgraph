@@ -4,6 +4,7 @@ type Board @entity {
   postCount: BigInt!
   name: String!
   score: BigInt!
+  isLocked: Boolean!
   createdBy: User!
 }
 

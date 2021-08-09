@@ -6,10 +6,9 @@ import { eventId } from "../utils";
 import { userLoadOrCreate } from "./internal/user_load_or_create";
 
 export function boardCreate(message: Message, data: TypedMap<string, JSONValue>): boolean {
-    let txId = message.transaction.hash.toHexString()
     let evtId = eventId(message)
 
-    log.info("Creating board: {}", [txId]);
+    log.info("Creating board: {}", [evtId]);
 
     let user = userLoadOrCreate(message)
 
@@ -29,11 +28,12 @@ export function boardCreate(message: Message, data: TypedMap<string, JSONValue>)
     board.postCount = BigInt.fromI32(0)
     board.score = BigInt.fromI32(0)
     board.createdBy = user.id
+    board.isLocked = false
     
     user.save()
     board.save()
 
-    log.info("Board created: {}", [txId]);
+    log.info("Board created: {}", [evtId]);
 
     return true
 }

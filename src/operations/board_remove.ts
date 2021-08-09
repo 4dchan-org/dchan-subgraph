@@ -3,6 +3,7 @@ import { Message } from "../../generated/Relay/Relay";
 import { Board } from "../../generated/schema";
 import { ensureString } from "../ensure";
 import { isJanny } from "../jannies";
+import { eventId } from "../utils";
 
 export function boardRemove(
   message: Message,
@@ -11,12 +12,18 @@ export function boardRemove(
   let txFrom = message.transaction.from.toHexString();
 
   let boardId = ensureString(data.get("id"));
+  let evtId = eventId(message)
+  if(boardId == null) {
+      log.warning("Invalid board remove request: {}", [evtId]);
+
+      return false
+  }
 
   log.debug("Requested board removal: {}", [boardId]);
 
   let board = Board.load(boardId);
   if (board == null) {
-    log.warning("Board not found, skipping", []);
+    log.warning("Board not found, skipping", [boardId]);
 
     return false;
   }

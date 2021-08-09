@@ -78,6 +78,15 @@ export class Board extends Entity {
     this.set("score", Value.fromBigInt(value));
   }
 
+  get isLocked(): boolean {
+    let value = this.get("isLocked");
+    return value.toBoolean();
+  }
+
+  set isLocked(value: boolean) {
+    this.set("isLocked", Value.fromBoolean(value));
+  }
+
   get createdBy(): string {
     let value = this.get("createdBy");
     return value.toString();

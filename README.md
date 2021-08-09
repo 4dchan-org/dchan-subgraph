@@ -6,7 +6,9 @@ Official [dchan](dchan.network) subgraph.
 
 * `./bin/docker_start_node.sh`
 * Once started open a new terminal and `./bin/docker_bash.sh`
-  * `./bin/deploy.sh` only once
+  * `cp subgraph.ganache.yaml subgraph.yaml`
+  * `./bin/deploy.sh`
+    * Change `address` in `subgraph.yaml` everytime you deploy a new contract
   * `./bin/subgraph_deploy.sh` to update the subgraph
 
 In case of problems refer to [this guide](https://thegraph.com/docs/developer/quick-start) or to the google of internet

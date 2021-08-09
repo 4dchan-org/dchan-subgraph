@@ -3,17 +3,24 @@ import { Message } from "../../generated/Relay/Relay";
 import { Post, Thread } from "../../generated/schema";
 import { ensureString } from "../ensure";
 import { isJanny } from "../jannies";
+import { eventId } from "../utils";
 
 export function postRemove(message: Message, data: TypedMap<string, JSONValue>): boolean {
     let txFrom = message.transaction.from.toHexString()
 
     let postId = ensureString(data.get("id"))
+    let evtId = eventId(message)
+    if(postId == null) {
+        log.warning("Invalid post remove request: {}", [evtId]);
+
+        return false
+    }
 
     log.debug("Requested post removal: {}", [postId]);
     
     let post = Post.load(postId)
     if (post == null) {
-        log.warning("Post not found, skipping", [])
+        log.warning("Post {} not found, skipping", [postId])
 
         return false
     }

@@ -5,9 +5,9 @@ import { ensureString } from "../ensure";
 import { isJanny } from "../jannies";
 import { eventId } from "../utils";
 
-export function threadLock(message: Message, data: TypedMap<string, JSONValue>): boolean {
+export function threadUnlock(message: Message, data: TypedMap<string, JSONValue>): boolean {
     let txFrom = message.transaction.from.toHexString()
-    
+
     let threadId = ensureString(data.get("id"))
     let evtId = eventId(message)
     if(threadId == null) {
@@ -16,38 +16,38 @@ export function threadLock(message: Message, data: TypedMap<string, JSONValue>):
         return false
     }
 
-    log.info("Locking thread: {}", [threadId]);
+    log.info("Unlocking thread: {}", [threadId]);
     
     let thread = Thread.load(threadId)
     if (thread == null) {
-        log.warning("Thread {} not found", [threadId]);
+        log.warning("Thread not found: {}", [threadId]);
 
         return false
     }
 
-    let op = Post.load(threadId)
+    let op = Post.load(thread.op)
     if(op == null) {
-        log.error("Thread {} op not found, wtf?", [threadId])
+        log.error("Thread op for {} not found, wtf?", [threadId])
 
         return false
     }
 
     if((op.from != txFrom) && !isJanny(txFrom)) {
-        log.warning("Thread {} not owned by {}, skipping", [threadId, txFrom])
-
-        return false
-    }
-
-    if(thread.isLocked) {
-        log.warning("Thread {} already locked, skipping", [threadId])
+        log.warning("Thread not owned by {}, skipping", [txFrom])
 
         return false
     }
     
-    thread.isLocked = true
+    if(!thread.isLocked) {
+        log.warning("Thread {} not locked, skipping", [threadId])
+
+        return false
+    }
+
+    thread.isLocked = false
     thread.save()
 
-    log.info("Thread locked: {}", [threadId])
+    log.info("Thread unlocked: {}", [threadId])
     
     return true
 }

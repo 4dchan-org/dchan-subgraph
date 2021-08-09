@@ -3,11 +3,18 @@ import { Message } from "../../generated/Relay/Relay";
 import { Post, Thread } from "../../generated/schema";
 import { ensureString } from "../ensure";
 import { isJanny } from "../jannies";
+import { eventId } from "../utils";
 
 export function threadRemove(message: Message, data: TypedMap<string, JSONValue>): boolean {
     let txFrom = message.transaction.from.toHexString()
 
     let threadId = ensureString(data.get("id"))
+    let evtId = eventId(message)
+    if(threadId == null) {
+        log.warning("Invalid thread remove request: {}", [evtId]);
+
+        return false
+    }
 
     log.debug("Requested thread removal: {}", [threadId]);
     
@@ -28,7 +35,7 @@ export function threadRemove(message: Message, data: TypedMap<string, JSONValue>
             return false
         }
     } else {
-        log.error("Thread op not found, wtf?", [])
+        log.error("Thread op for {} not found, wtf?", [threadId])
 
         return false
     }
