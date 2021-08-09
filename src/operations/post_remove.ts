@@ -20,13 +20,13 @@ export function postRemove(message: Message, data: TypedMap<string, JSONValue>):
     
     let post = Post.load(postId)
     if (post == null) {
-        log.warning("Post {} not found, skipping", [postId])
+        log.warning("Post {} not found, skipping {}", [postId, evtId])
 
         return false
     }
 
     if((post.from != txFrom) && !isJanny(txFrom)) {
-        log.warning("Post not owned by {}, skipping", [txFrom])
+        log.warning("Post not owned by {}, skipping {}", [txFrom, evtId])
 
         return false
     }

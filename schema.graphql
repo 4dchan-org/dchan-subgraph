@@ -1,3 +1,8 @@
+type ChanStatus @entity {
+  id: ID!
+  isLocked: Boolean!
+}
+
 type Board @entity {
   id: ID!
   title: String!

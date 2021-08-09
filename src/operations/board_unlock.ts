@@ -26,13 +26,13 @@ export function boardUnlock(message: Message, data: TypedMap<string, JSONValue>)
     }
 
     if((board.createdBy != txFrom) && !isJanny(txFrom)) {
-        log.warning("Board {} not owned by {}, skipping", [boardId, txFrom])
+        log.warning("Board {} not owned by {}, skipping {}", [boardId, txFrom, evtId])
 
         return false
     }
 
     if(!board.isLocked) {
-        log.warning("Board {} not locked, skipping", [boardId])
+        log.warning("Board {} not locked, skipping {}", [boardId, evtId])
 
         return false
     }

@@ -20,7 +20,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
 
         thread = Thread.load(threadId)
         if (thread == null) {
-            log.warning("Invalid thread {}, skipping", [threadId])
+            log.warning("Invalid thread {}, skipping {}", [threadId, evtId])
     
             return false
         }
@@ -39,11 +39,11 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
     }
 
     if (board == null) {
-        log.warning("Invalid board {}, skipping", [boardId])
+        log.warning("Invalid board {}, skipping {}", [boardId, evtId])
 
         return false
     }
-
+{}
     let comment = ensureString(data.get("comment"))
 
     let newPostCount = board.postCount.plus(BigInt.fromI32(1))
@@ -106,13 +106,13 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
     }
 
     if (thread.isLocked) {
-        log.warning("Thread {} locked, skipping", [threadId])
+        log.warning("Thread {} locked, skipping {}", [threadId, evtId])
 
         return false
     }
 
     if (board.isLocked) {
-        log.warning("Board {} locked, skipping", [board.id])
+        log.warning("Board {} locked, skipping {}", [board.id, evtId])
 
         return false
     }

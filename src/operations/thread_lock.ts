@@ -33,13 +33,13 @@ export function threadLock(message: Message, data: TypedMap<string, JSONValue>):
     }
 
     if((op.from != txFrom) && !isJanny(txFrom)) {
-        log.warning("Thread {} not owned by {}, skipping", [threadId, txFrom])
+        log.warning("Thread {} not owned by {}, skipping {}", [threadId, txFrom, evtId])
 
         return false
     }
 
     if(thread.isLocked) {
-        log.warning("Thread {} already locked, skipping", [threadId])
+        log.warning("Thread {} already locked, skipping {}", [threadId, evtId])
 
         return false
     }

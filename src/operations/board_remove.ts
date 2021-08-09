@@ -23,13 +23,13 @@ export function boardRemove(
 
   let board = Board.load(boardId);
   if (board == null) {
-    log.warning("Board not found, skipping", [boardId]);
+    log.warning("Board {} not found, skipping {}", [boardId, evtId]);
 
     return false;
   }
 
   if (board.createdBy != txFrom && !isJanny(txFrom)) {
-    log.warning("Board not owned by {}, skipping", [txFrom]);
+    log.warning("Board {} not owned by {}, skipping, {}", [boardId, txFrom, evtId]);
 
     return false;
   }

@@ -1,6 +1,6 @@
 import { BigInt, ByteArray, Bytes, ipfs, json, JSONValue, JSONValueKind, log, TypedMap, Value } from '@graphprotocol/graph-ts';
 import { Message } from '../generated/Relay/Relay'
-import { Board, Post, User, Thread, Image } from '../generated/schema'
+import { Board, Post, User, Thread, Image, ChanStatus } from '../generated/schema'
 import { ensureNumber, ensureObject, ensureString } from './ensure'
 import { boardCreate } from './operations/board_create';
 import { boardLock } from './operations/board_lock';
@@ -12,11 +12,22 @@ import { threadLock } from './operations/thread_lock';
 import { threadUnlock } from './operations/thread_unlock';
 import { threadRemove } from './operations/thread_remove';
 import { eventId } from './utils';
+import { dchanLock } from './operations/dchan_lock';
+import { dchanUnlock } from './operations/dchan_unlock';
+import { isDchanLocked } from './jannies';
 
 type Data = TypedMap<string, JSONValue>
 
 export function handleMessage(message: Message): void {
   let evtId = eventId(message)
+  let chanId = message.transaction.to.toHexString()
+
+  let chanStatus = ChanStatus.load(chanId)
+  if(chanStatus == null) {
+    chanStatus = new ChanStatus(chanId)
+    chanStatus.isLocked = false
+    chanStatus.save()
+  }
 
   log.debug("Handle message: {}", [evtId])
 
@@ -36,7 +47,7 @@ export function handleMessage(message: Message): void {
       log.warning("Message failed: {}", [evtId])
     }
   } else {
-    log.error("Could not parse message {}, skipping", [evtId])
+    log.error("Could not parse message, skipping {}", [evtId])
   }
 
   log.info("Handled message: {}", [evtId])
@@ -55,6 +66,19 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
 
     let data = ensureObject(payload.get('data'));
     if (data != null) {
+      
+      if(operation == "dchan:unlock") {
+        return dchanUnlock(message)
+      } else if(operation == "dchan:lock") {
+        return dchanLock(message)
+      }
+    
+      if(isDchanLocked(message)) {
+          log.warning("Dchan locked, skipping {}", [evtId])
+  
+          return false
+      }
+
       if(operation == "board:create") {
         return boardCreate(message, data as Data)
       } else if(operation == "board:remove") {
@@ -77,7 +101,7 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
         log.warning("Invalid operation {}, skipping: {}", [operation, evtId]);
       }
     } else {
-      log.warning("Invalid data {}, skipping", [evtId])
+      log.warning("Invalid data, skipping {}", [evtId])
     }
   } else {
     log.warning("Invalid format, skipping: {}", [evtId]);

@@ -20,7 +20,7 @@ export function threadRemove(message: Message, data: TypedMap<string, JSONValue>
     
     let thread = Thread.load(threadId)
     if (thread == null) {
-        log.warning("Thread not found, skipping", [])
+        log.warning("Thread {} not found, skipping {}", [threadId, evtId])
         
         return false
     }
@@ -30,7 +30,7 @@ export function threadRemove(message: Message, data: TypedMap<string, JSONValue>
         store.remove('Post', op.id)
 
         if((op.from != txFrom) && !isJanny(txFrom)) {
-            log.warning("Thread not owned by {}, skipping", [txFrom])
+            log.warning("Thread {} not owned by {}, skipping {}", [threadId, txFrom, evtId])
 
             return false
         }
