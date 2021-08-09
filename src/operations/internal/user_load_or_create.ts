@@ -15,6 +15,7 @@ export function userLoadOrCreate(message: Message): User {
         user.score = BigInt.fromI32(0)
     }
     user.isJanny = isJanny(txFrom)
+    user.save()
     
     return user as User
 }

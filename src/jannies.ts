@@ -2,7 +2,7 @@ import { ethereum, log } from "@graphprotocol/graph-ts"
 import { ChanStatus } from "../generated/schema"
 
 // This needs to go on chain asap
-let op: string = "0x22a973417575E3EA73dD26220aeFe78c16742b33"
+let op: string = "0x22a973417575e3ea73dd26220aefe78c16742b33"
 let jannies: string[] = [
     op
 ]
