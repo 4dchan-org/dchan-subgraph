@@ -40,6 +40,7 @@ type Post @entity {
 
 type User @entity {
   id: ID!
+  lastPostedAt: BigInt
   isJanny: Boolean!
   score: BigInt!
 }

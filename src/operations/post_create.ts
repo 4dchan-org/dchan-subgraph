@@ -51,6 +51,11 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
     board.postCount = newPostCount
 
     let user = userLoadOrCreate(message)
+    // if(user.lastPostedAt != null && message.block.timestamp < user.lastPostedAt.plus(BigInt.fromI32(50))) {
+    //     log.info("Throttling user {}: {}", [user.id, evtId]);
+
+    //     return  false
+    // }
 
     log.info("Creating image: {}", [evtId]);
     let image: Image | null = null
@@ -121,6 +126,8 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
 
         return false
     }
+
+    user.lastPostedAt = message.block.timestamp
 
     log.info("Saving: {}", [evtId]);
     

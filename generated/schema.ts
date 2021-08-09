@@ -406,6 +406,23 @@ export class User extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get lastPostedAt(): BigInt | null {
+    let value = this.get("lastPostedAt");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set lastPostedAt(value: BigInt | null) {
+    if (value === null) {
+      this.unset("lastPostedAt");
+    } else {
+      this.set("lastPostedAt", Value.fromBigInt(value as BigInt));
+    }
+  }
+
   get isJanny(): boolean {
     let value = this.get("isJanny");
     return value.toBoolean();
