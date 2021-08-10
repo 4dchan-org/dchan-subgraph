@@ -402,6 +402,15 @@ export class Post extends Entity {
     this.set("createdAt", Value.fromBigInt(value));
   }
 
+  get bans(): Array<string> {
+    let value = this.get("bans");
+    return value.toStringArray();
+  }
+
+  set bans(value: Array<string>) {
+    this.set("bans", Value.fromStringArray(value));
+  }
+
   get score(): BigInt {
     let value = this.get("score");
     return value.toBigInt();
@@ -409,6 +418,82 @@ export class Post extends Entity {
 
   set score(value: BigInt) {
     this.set("score", Value.fromBigInt(value));
+  }
+}
+
+export class PostBan extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save PostBan entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save PostBan entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("PostBan", id.toString(), this);
+  }
+
+  static load(id: string): PostBan | null {
+    return store.get("PostBan", id) as PostBan | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get user(): string {
+    let value = this.get("user");
+    return value.toString();
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
+  }
+
+  get post(): string {
+    let value = this.get("post");
+    return value.toString();
+  }
+
+  set post(value: string) {
+    this.set("post", Value.fromString(value));
+  }
+
+  get seconds(): BigInt {
+    let value = this.get("seconds");
+    return value.toBigInt();
+  }
+
+  set seconds(value: BigInt) {
+    this.set("seconds", Value.fromBigInt(value));
+  }
+
+  get reason(): string {
+    let value = this.get("reason");
+    return value.toString();
+  }
+
+  set reason(value: string) {
+    this.set("reason", Value.fromString(value));
+  }
+
+  get from(): Bytes {
+    let value = this.get("from");
+    return value.toBytes();
+  }
+
+  set from(value: Bytes) {
+    this.set("from", Value.fromBytes(value));
   }
 }
 
@@ -456,6 +541,23 @@ export class User extends Entity {
       this.unset("lastPostedAt");
     } else {
       this.set("lastPostedAt", Value.fromBigInt(value as BigInt));
+    }
+  }
+
+  get banExpiresAt(): BigInt | null {
+    let value = this.get("banExpiresAt");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set banExpiresAt(value: BigInt | null) {
+    if (value === null) {
+      this.unset("banExpiresAt");
+    } else {
+      this.set("banExpiresAt", Value.fromBigInt(value as BigInt));
     }
   }
 

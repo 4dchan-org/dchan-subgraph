@@ -39,12 +39,23 @@ type Post @entity {
   comment: String!
   image: Image
   createdAt: BigInt!
+  bans: [PostBan!]! @derivedFrom(field: "post")
   score: BigInt!
+}
+
+type PostBan @entity {
+  id: ID!
+  user: User!
+  post: Post!
+  seconds: BigInt!
+  reason: String!
+  from: Bytes!
 }
 
 type User @entity {
   id: ID!
   lastPostedAt: BigInt
+  banExpiresAt: BigInt
   isJanny: Boolean!
   score: BigInt!
 }

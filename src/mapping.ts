@@ -6,11 +6,13 @@ import { boardCreate } from './operations/board_create';
 import { boardLock } from './operations/board_lock';
 import { boardUnlock } from './operations/board_unlock';
 import { boardRemove } from './operations/board_remove';
+import { postBan } from './operations/post_ban';
 import { postCreate } from './operations/post_create';
 import { postRemove } from './operations/post_remove';
 import { threadLock } from './operations/thread_lock';
 import { threadUnlock } from './operations/thread_unlock';
 import { threadRemove } from './operations/thread_remove';
+import { userUnban } from './operations/user_unban';
 import { eventId } from './utils';
 import { dchanLock } from './operations/dchan_lock';
 import { dchanUnlock } from './operations/dchan_unlock';
@@ -92,6 +94,10 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
         return postCreate(message, data as Data)
       } else if(operation == "post:remove") {
         return postRemove(message, data as Data)
+      } else if(operation == "post:ban") {
+        return postBan(message, data as Data)
+      } else if(operation == "user:unban") {
+        return userUnban(message, data as Data)
       } else if(operation == "thread:pin") {
         return threadPin(message, data as Data)
       } else if(operation == "thread:lock") {
