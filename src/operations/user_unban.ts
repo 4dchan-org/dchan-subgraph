@@ -1,7 +1,7 @@
-import { JSONValue, log, store, TypedMap } from "@graphprotocol/graph-ts";
+import { JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Post, PostBan, User } from "../../generated/schema";
-import { ensureNumber, ensureString } from "../ensure";
+import { User } from "../../generated/schema";
+import { ensureString } from "../ensure";
 import { isJanny } from "../jannies";
 import { eventId } from "../utils";
 

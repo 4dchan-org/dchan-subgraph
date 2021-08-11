@@ -1,14 +1,10 @@
-type ChanStatus @entity {
-  id: ID!
-  isLocked: Boolean!
-}
-
 type Board @entity {
   id: ID!
   title: String!
   postCount: BigInt!
   name: String!
   score: BigInt!
+  isNsfw: Boolean!
   isLocked: Boolean!
   createdBy: User!
   createdAt: BigInt!
@@ -68,4 +64,9 @@ type Image @entity {
   isNsfw: Boolean!
   isSpoiler: Boolean!
   score: BigInt!
+}
+
+type ChanStatus @entity {
+  id: ID!
+  isLocked: Boolean!
 }

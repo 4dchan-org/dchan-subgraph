@@ -1,4 +1,4 @@
-import { JSONValue, log, BigInt, store, TypedMap } from "@graphprotocol/graph-ts";
+import { JSONValue, log, BigInt, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
 import { Post, PostBan, User } from "../../generated/schema";
 import { ensureNumber, ensureString } from "../ensure";
@@ -51,6 +51,7 @@ export function postBan(message: Message, data: TypedMap<string, JSONValue>): bo
     user.save()
 
     let postBan = new PostBan(userId+":"+postId)
+    postBan.user = userId
     postBan.post = postId
     postBan.seconds = seconds as BigInt
     postBan.reason = reason

@@ -1,4 +1,4 @@
-import { JSONValue, log, store, TypedMap } from "@graphprotocol/graph-ts";
+import { JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
 import { Post, Thread } from "../../generated/schema";
 import { ensureString } from "../ensure";

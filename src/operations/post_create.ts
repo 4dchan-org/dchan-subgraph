@@ -45,6 +45,11 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
     }
     
     let comment = ensureString(data.get("comment"))
+    if(comment.length > 2000) {
+        log.warning("Comment over length limit, skipping {}", [evtId])
+
+        return false
+    }
 
     let newPostCount = board.postCount.plus(BigInt.fromI32(1))
     board.postCount = newPostCount
@@ -103,11 +108,18 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
         thread.imageCount = thread.imageCount.plus(BigInt.fromI32(image != null ? 1 : 0))
     } else {
         log.info("Creating thread {}", [evtId]);
+        
+        let subject = ensureString(data.get("subject"))
+        if(subject.length > 500) {
+            log.warning("Subject over length limit, skipping {}", [evtId])
+    
+            return false
+        }
 
         thread = new Thread(evtId)
         thread.score = BigInt.fromI32(0)
         thread.board = board.id
-        thread.subject = ensureString(data.get("subject"))
+        thread.subject = subject
         thread.isPinned = false
         thread.isLocked = false
         thread.op = evtId

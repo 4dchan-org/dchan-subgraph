@@ -1,7 +1,7 @@
 import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
 import { Board } from "../../generated/schema";
-import { ensureString } from "../ensure";
+import { ensureBoolean, ensureString } from "../ensure";
 import { eventId } from "../utils";
 import { userLoadOrCreate } from "./internal/user_load_or_create";
 
@@ -30,6 +30,7 @@ export function boardCreate(message: Message, data: TypedMap<string, JSONValue>)
     board.createdBy = user.id
     board.createdAt = message.block.timestamp
     board.lastBumpedAt = message.block.timestamp
+    board.isNsfw = ("true" === ensureBoolean(data.get("nsfw"))) || false
     board.isLocked = false
     
     user.save()

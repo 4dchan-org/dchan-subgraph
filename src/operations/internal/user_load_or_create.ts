@@ -13,6 +13,7 @@ export function userLoadOrCreate(message: Message): User {
 
         user = new User(txFrom)
         user.score = BigInt.fromI32(0)
+        user.banExpiresAt = message.block.timestamp
     }
     user.isJanny = isJanny(txFrom)
     user.save()

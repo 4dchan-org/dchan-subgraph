@@ -12,46 +12,6 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
-export class ChanStatus extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id !== null, "Cannot save ChanStatus entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save ChanStatus entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("ChanStatus", id.toString(), this);
-  }
-
-  static load(id: string): ChanStatus | null {
-    return store.get("ChanStatus", id) as ChanStatus | null;
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get isLocked(): boolean {
-    let value = this.get("isLocked");
-    return value.toBoolean();
-  }
-
-  set isLocked(value: boolean) {
-    this.set("isLocked", Value.fromBoolean(value));
-  }
-}
-
 export class Board extends Entity {
   constructor(id: string) {
     super();
@@ -116,6 +76,15 @@ export class Board extends Entity {
 
   set score(value: BigInt) {
     this.set("score", Value.fromBigInt(value));
+  }
+
+  get isNsfw(): boolean {
+    let value = this.get("isNsfw");
+    return value.toBoolean();
+  }
+
+  set isNsfw(value: boolean) {
+    this.set("isNsfw", Value.fromBoolean(value));
   }
 
   get isLocked(): boolean {
@@ -662,5 +631,45 @@ export class Image extends Entity {
 
   set score(value: BigInt) {
     this.set("score", Value.fromBigInt(value));
+  }
+}
+
+export class ChanStatus extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save ChanStatus entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save ChanStatus entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("ChanStatus", id.toString(), this);
+  }
+
+  static load(id: string): ChanStatus | null {
+    return store.get("ChanStatus", id) as ChanStatus | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get isLocked(): boolean {
+    let value = this.get("isLocked");
+    return value.toBoolean();
+  }
+
+  set isLocked(value: boolean) {
+    this.set("isLocked", Value.fromBoolean(value));
   }
 }

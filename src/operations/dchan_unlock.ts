@@ -1,4 +1,4 @@
-import { JSONValue, log, store, TypedMap } from "@graphprotocol/graph-ts";
+import { log } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
 import { ChanStatus } from "../../generated/schema";
 import { isAdmin, isDchanLocked } from "../jannies";
