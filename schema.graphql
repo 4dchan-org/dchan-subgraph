@@ -56,6 +56,11 @@ type User @entity {
   score: BigInt!
 }
 
+type Admin @entity {
+  id: ID!
+  address: Bytes!
+}
+
 type Image @entity {
   id: ID!
   name: String!

@@ -1,18 +1,14 @@
 import { ethereum, log } from "@graphprotocol/graph-ts"
-import { ChanStatus } from "../generated/schema"
-
-// This needs to go on chain asap
-let op: string = "0x22a973417575e3ea73dd26220aefe78c16742b33"
-let jannies: string[] = [
-    op
-]
+import { Admin, ChanStatus } from "../generated/schema"
 
 export function isAdmin(hexAddress: string): boolean {
-    return hexAddress === op
+    let admin = Admin.load(hexAddress)
+    return admin != null
 }
 
+// Alias for now
 export function isJanny(hexAddress: string): boolean {
-    return jannies.indexOf(hexAddress) != -1
+    return isAdmin(hexAddress)
 }
 
 export function isDchanLocked(message: ethereum.Event): boolean {

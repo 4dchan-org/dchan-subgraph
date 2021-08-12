@@ -1,23 +1,28 @@
-import { BigInt, ByteArray, Bytes, ipfs, json, JSONValue, JSONValueKind, log, TypedMap, Value } from '@graphprotocol/graph-ts';
+import { ByteArray, Bytes, json, JSONValue, log, TypedMap } from '@graphprotocol/graph-ts';
 import { Message } from '../generated/Relay/Relay'
-import { Board, Post, User, Thread, Image, ChanStatus } from '../generated/schema'
-import { ensureNumber, ensureObject, ensureString } from './ensure'
+import { ChanStatus } from '../generated/schema'
+import { ensureObject, ensureString } from './ensure'
+
+import { adminClaim } from './operations/admin_claim';
+import { adminGrant } from './operations/admin_grant';
+import { adminRevoke } from './operations/admin_revoke';
 import { boardCreate } from './operations/board_create';
 import { boardLock } from './operations/board_lock';
-import { boardUnlock } from './operations/board_unlock';
 import { boardRemove } from './operations/board_remove';
+import { boardUnlock } from './operations/board_unlock';
+import { dchanLock } from './operations/dchan_lock';
+import { dchanUnlock } from './operations/dchan_unlock';
 import { postBan } from './operations/post_ban';
 import { postCreate } from './operations/post_create';
 import { postRemove } from './operations/post_remove';
 import { threadLock } from './operations/thread_lock';
-import { threadUnlock } from './operations/thread_unlock';
-import { threadRemove } from './operations/thread_remove';
-import { userUnban } from './operations/user_unban';
-import { eventId } from './utils';
-import { dchanLock } from './operations/dchan_lock';
-import { dchanUnlock } from './operations/dchan_unlock';
-import { isDchanLocked } from './jannies';
 import { threadPin } from './operations/thread_pin';
+import { threadRemove } from './operations/thread_remove';
+import { threadUnlock } from './operations/thread_unlock';
+import { userUnban } from './operations/user_unban';
+
+import { eventId } from './utils';
+import { isDchanLocked } from './jannies';
 
 type Data = TypedMap<string, JSONValue>
 
@@ -82,7 +87,14 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
           return false
       }
 
-      if(operation == "board:create") {
+      // AI
+      if(operation == "admin:claim") {
+        return adminClaim(message, data as Data)
+      } else if(operation == "admin:grant") {
+        return adminGrant(message, data as Data)
+      } else if(operation == "admin:revoke") {
+        return adminRevoke(message, data as Data)
+      } else if(operation == "board:create") {
         return boardCreate(message, data as Data)
       } else if(operation == "board:remove") {
         return boardRemove(message, data as Data)
@@ -90,10 +102,6 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
         return boardLock(message, data as Data)
       } else if(operation == "board:unlock") {
         return boardUnlock(message, data as Data)
-      } else if(operation == "post:create") {
-        return postCreate(message, data as Data)
-      } else if(operation == "post:remove") {
-        return postRemove(message, data as Data)
       } else if(operation == "post:ban") {
         return postBan(message, data as Data)
       } else if(operation == "user:unban") {
@@ -104,6 +112,10 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
         return threadLock(message, data as Data)
       } else if(operation == "thread:unlock") {
         return threadUnlock(message, data as Data)
+      } else if(operation == "post:create") {
+        return postCreate(message, data as Data)
+      } else if(operation == "post:remove") {
+        return postRemove(message, data as Data)
       } else if(operation == "thread:remove") {
         return threadRemove(message, data as Data)
       } else {

@@ -3,6 +3,7 @@ import { Message } from "../../generated/Relay/Relay";
 import { Board, Image, Post, Thread } from "../../generated/schema";
 import { ensureBoolean, ensureNumber, ensureObject, ensureString } from "../ensure";
 import { eventId } from "../utils";
+import { COMMENT_MAX_LENGTH, NAME_MAX_LENGTH, SUBJECT_MAX_LENGTH } from "../constants";
 import { userLoadOrCreate } from "./internal/user_load_or_create"
 
 export function postCreate(message: Message, data: TypedMap<string, JSONValue>): boolean {
@@ -45,7 +46,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
     }
     
     let comment = ensureString(data.get("comment"))
-    if(comment.length > 2000) {
+    if(comment.length > COMMENT_MAX_LENGTH) {
         log.warning("Comment over length limit, skipping {}", [evtId])
 
         return false
@@ -91,6 +92,12 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
 
     log.info("Creating post: {}", [evtId]);
     let name = ensureString(data.get("name"))
+    if(name.length > NAME_MAX_LENGTH) {
+        log.warning("Name over length limit, skipping {}", [evtId])
+
+        return false
+    }
+
     let post = new Post(evtId)
     post.score = BigInt.fromI32(0)
     post.n = newPostCount
@@ -110,7 +117,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
         log.info("Creating thread {}", [evtId]);
         
         let subject = ensureString(data.get("subject"))
-        if(subject.length > 500) {
+        if(subject.length > SUBJECT_MAX_LENGTH) {
             log.warning("Subject over length limit, skipping {}", [evtId])
     
             return false

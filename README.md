@@ -1,6 +1,6 @@
 # dchan-subgraph
 
-Official [dchan](dchan.network) subgraph.
+Official [dchan](https://dchan.network) subgraph.
 
 ## Development
 
