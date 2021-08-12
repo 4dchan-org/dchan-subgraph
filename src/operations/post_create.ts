@@ -3,7 +3,7 @@ import { Message } from "../../generated/Relay/Relay";
 import { Board, Image, Post, Thread } from "../../generated/schema";
 import { ensureBoolean, ensureNumber, ensureObject, ensureString } from "../ensure";
 import { eventId } from "../utils";
-import { COMMENT_MAX_LENGTH, NAME_MAX_LENGTH, SUBJECT_MAX_LENGTH } from "../constants";
+import { COMMENT_MAX_LENGTH, FILENAME_MAX_LENGTH, NAME_MAX_LENGTH, SUBJECT_MAX_LENGTH } from "../constants";
 import { userLoadOrCreate } from "./internal/user_load_or_create"
 
 export function postCreate(message: Message, data: TypedMap<string, JSONValue>): boolean {
@@ -73,6 +73,12 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
         let ipfsHash: string | null = ipfs != null ? ensureString(ipfs.get('hash')) : null
 
         if (name != null && byteSize != null && ipfsHash != null) {
+            if(name.length > FILENAME_MAX_LENGTH) {
+                log.warning("Filename over length limit, skipping {}", [evtId])
+        
+                return false
+            }
+
             let isNsfw = "true" == ensureBoolean(file.get('is_nsfw'))
             let isSpoiler = "true" == ensureBoolean(file.get('is_spoiler'))
             
