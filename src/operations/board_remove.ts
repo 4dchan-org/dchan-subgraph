@@ -1,16 +1,15 @@
 import { JSONValue, log, store, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Board } from "../../generated/schema";
+import { Board, User } from "../../generated/schema";
 import { ensureString } from "../ensure";
-import { isJanny } from "../jannies";
-import { eventId } from "../utils";
+import { isBoardJanny } from "../internal/board_janny";
+import { eventId } from "../id";
 
 export function boardRemove(
-  message: Message,
+  message: Message, 
+  user: User,
   data: TypedMap<string, JSONValue>
 ): boolean {
-  let txFrom = message.transaction.from.toHexString();
-
   let boardId = ensureString(data.get("id"));
   let evtId = eventId(message)
   if(boardId == null) {
@@ -28,8 +27,8 @@ export function boardRemove(
     return false;
   }
 
-  if (board.createdBy != txFrom && !isJanny(txFrom)) {
-    log.warning("Board {} not owned by {}, skipping, {}", [boardId, txFrom, evtId]);
+  if (board.createdBy != user.id && !isBoardJanny(user.id, boardId)) {
+    log.warning("User {} is not janny of {}, skipping {}", [user.id, boardId, evtId])
 
     return false;
   }

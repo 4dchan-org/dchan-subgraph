@@ -390,6 +390,238 @@ export class Post extends Entity {
   }
 }
 
+export class PostReport extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save PostReport entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save PostReport entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("PostReport", id.toString(), this);
+  }
+
+  static load(id: string): PostReport | null {
+    return store.get("PostReport", id) as PostReport | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get post(): string {
+    let value = this.get("post");
+    return value.toString();
+  }
+
+  set post(value: string) {
+    this.set("post", Value.fromString(value));
+  }
+
+  get reason(): string {
+    let value = this.get("reason");
+    return value.toString();
+  }
+
+  set reason(value: string) {
+    this.set("reason", Value.fromString(value));
+  }
+
+  get from(): string {
+    let value = this.get("from");
+    return value.toString();
+  }
+
+  set from(value: string) {
+    this.set("from", Value.fromString(value));
+  }
+}
+
+export class Ban extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Ban entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Ban entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Ban", id.toString(), this);
+  }
+
+  static load(id: string): Ban | null {
+    return store.get("Ban", id) as Ban | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get user(): string {
+    let value = this.get("user");
+    return value.toString();
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
+  }
+
+  get expiresAt(): BigInt {
+    let value = this.get("expiresAt");
+    return value.toBigInt();
+  }
+
+  set expiresAt(value: BigInt) {
+    this.set("expiresAt", Value.fromBigInt(value));
+  }
+
+  get reason(): string {
+    let value = this.get("reason");
+    return value.toString();
+  }
+
+  set reason(value: string) {
+    this.set("reason", Value.fromString(value));
+  }
+
+  get from(): string {
+    let value = this.get("from");
+    return value.toString();
+  }
+
+  set from(value: string) {
+    this.set("from", Value.fromString(value));
+  }
+}
+
+export class UserBan extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save UserBan entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save UserBan entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("UserBan", id.toString(), this);
+  }
+
+  static load(id: string): UserBan | null {
+    return store.get("UserBan", id) as UserBan | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get user(): string {
+    let value = this.get("user");
+    return value.toString();
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
+  }
+
+  get ban(): string {
+    let value = this.get("ban");
+    return value.toString();
+  }
+
+  set ban(value: string) {
+    this.set("ban", Value.fromString(value));
+  }
+}
+
+export class BoardBan extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save BoardBan entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save BoardBan entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("BoardBan", id.toString(), this);
+  }
+
+  static load(id: string): BoardBan | null {
+    return store.get("BoardBan", id) as BoardBan | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get user(): string {
+    let value = this.get("user");
+    return value.toString();
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
+  }
+
+  get board(): string {
+    let value = this.get("board");
+    return value.toString();
+  }
+
+  set board(value: string) {
+    this.set("board", Value.fromString(value));
+  }
+
+  get ban(): string {
+    let value = this.get("ban");
+    return value.toString();
+  }
+
+  set ban(value: string) {
+    this.set("ban", Value.fromString(value));
+  }
+}
+
 export class PostBan extends Entity {
   constructor(id: string) {
     super();
@@ -438,31 +670,13 @@ export class PostBan extends Entity {
     this.set("post", Value.fromString(value));
   }
 
-  get seconds(): BigInt {
-    let value = this.get("seconds");
-    return value.toBigInt();
-  }
-
-  set seconds(value: BigInt) {
-    this.set("seconds", Value.fromBigInt(value));
-  }
-
-  get reason(): string {
-    let value = this.get("reason");
+  get ban(): string {
+    let value = this.get("ban");
     return value.toString();
   }
 
-  set reason(value: string) {
-    this.set("reason", Value.fromString(value));
-  }
-
-  get from(): Bytes {
-    let value = this.get("from");
-    return value.toBytes();
-  }
-
-  set from(value: Bytes) {
-    this.set("from", Value.fromBytes(value));
+  set ban(value: string) {
+    this.set("ban", Value.fromString(value));
   }
 }
 
@@ -513,30 +727,13 @@ export class User extends Entity {
     }
   }
 
-  get banExpiresAt(): BigInt | null {
-    let value = this.get("banExpiresAt");
-    if (value === null || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
+  get bans(): Array<string> {
+    let value = this.get("bans");
+    return value.toStringArray();
   }
 
-  set banExpiresAt(value: BigInt | null) {
-    if (value === null) {
-      this.unset("banExpiresAt");
-    } else {
-      this.set("banExpiresAt", Value.fromBigInt(value as BigInt));
-    }
-  }
-
-  get isJanny(): boolean {
-    let value = this.get("isJanny");
-    return value.toBoolean();
-  }
-
-  set isJanny(value: boolean) {
-    this.set("isJanny", Value.fromBoolean(value));
+  set bans(value: Array<string>) {
+    this.set("bans", Value.fromStringArray(value));
   }
 
   get score(): BigInt {
@@ -586,6 +783,73 @@ export class Admin extends Entity {
 
   set address(value: Bytes) {
     this.set("address", Value.fromBytes(value));
+  }
+}
+
+export class BoardJanny extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save BoardJanny entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save BoardJanny entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("BoardJanny", id.toString(), this);
+  }
+
+  static load(id: string): BoardJanny | null {
+    return store.get("BoardJanny", id) as BoardJanny | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get user(): string {
+    let value = this.get("user");
+    return value.toString();
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
+  }
+
+  get board(): string {
+    let value = this.get("board");
+    return value.toString();
+  }
+
+  set board(value: string) {
+    this.set("board", Value.fromString(value));
+  }
+
+  get lastActivityAt(): BigInt {
+    let value = this.get("lastActivityAt");
+    return value.toBigInt();
+  }
+
+  set lastActivityAt(value: BigInt) {
+    this.set("lastActivityAt", Value.fromBigInt(value));
+  }
+
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
+    return value.toBigInt();
+  }
+
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
   }
 }
 

@@ -1,13 +1,11 @@
 import { JSONValue, log, store, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Post, Thread } from "../../generated/schema";
+import { Post, Thread, User } from "../../generated/schema";
 import { ensureString } from "../ensure";
-import { isJanny } from "../jannies";
-import { eventId } from "../utils";
+import { isBoardJanny } from "../internal/board_janny";
+import { eventId } from "../id";
 
-export function postRemove(message: Message, data: TypedMap<string, JSONValue>): boolean {
-    let txFrom = message.transaction.from.toHexString()
-
+export function postRemove(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let postId = ensureString(data.get("id"))
     let evtId = eventId(message)
     if(postId == null) {
@@ -25,20 +23,10 @@ export function postRemove(message: Message, data: TypedMap<string, JSONValue>):
         return false
     }
 
-    if((post.from != txFrom) && !isJanny(txFrom)) {
-        log.warning("Post not owned by {}, skipping {}", [txFrom, evtId])
-
-        return false
-    }
-    
-    log.debug("Removing post: {}", [postId])
-
-    store.remove('Post', postId)
-
     let thread = Thread.load(postId)
     if (thread != null) {
         // @TODO This does not work. `Value is not an array.`
-        // log.info("Post is thread, removing replies", [txFrom])
+        // log.info("Post is thread, removing replies", [user.id])
 
         // let replies = thread.replies
         // if (replies != null) {
@@ -59,6 +47,16 @@ export function postRemove(message: Message, data: TypedMap<string, JSONValue>):
     } else {
         log.info("Post removed: {}", [postId])
     }
+
+    if((post.from != user.id) && !isBoardJanny(user.id, thread.board)) {
+        log.warning("Post not owned by {}, skipping {}", [user.id, evtId])
+
+        return false
+    }
+    
+    log.debug("Removing post: {}", [postId])
+
+    store.remove('Post', postId)
 
     return true
 }

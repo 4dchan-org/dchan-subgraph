@@ -1,13 +1,11 @@
 import { JSONValue, log, store, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Post, Thread } from "../../generated/schema";
+import { Post, Thread, User } from "../../generated/schema";
 import { ensureString } from "../ensure";
-import { isJanny } from "../jannies";
-import { eventId } from "../utils";
+import { isBoardJanny } from "../internal/board_janny";
+import { eventId } from "../id";
 
-export function threadRemove(message: Message, data: TypedMap<string, JSONValue>): boolean {
-    let txFrom = message.transaction.from.toHexString()
-
+export function threadRemove(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let threadId = ensureString(data.get("id"))
     let evtId = eventId(message)
     if(threadId == null) {
@@ -29,8 +27,8 @@ export function threadRemove(message: Message, data: TypedMap<string, JSONValue>
     if(op != null) {
         store.remove('Post', op.id)
 
-        if((op.from != txFrom) && !isJanny(txFrom)) {
-            log.warning("Thread {} not owned by {}, skipping {}", [threadId, txFrom, evtId])
+        if((op.from != user.id) && !isBoardJanny(user.id, thread.board)) {
+            log.warning("Thread {} not owned by {}, skipping {}", [threadId, user.id, evtId])
 
             return false
         }

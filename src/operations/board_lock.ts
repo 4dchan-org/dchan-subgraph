@@ -1,13 +1,11 @@
 import { JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Board } from "../../generated/schema";
+import { Board, User } from "../../generated/schema";
 import { ensureString } from "../ensure";
-import { isJanny } from "../jannies";
-import { eventId } from "../utils";
+import { eventId } from "../id";
+import { isBoardJanny } from "../internal/board_janny";
 
-export function boardLock(message: Message, data: TypedMap<string, JSONValue>): boolean {
-    let txFrom = message.transaction.from.toHexString()
-
+export function boardLock(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let boardId = ensureString(data.get("id"))
     let evtId = eventId(message)
     if(boardId == null) {
@@ -25,8 +23,8 @@ export function boardLock(message: Message, data: TypedMap<string, JSONValue>): 
         return false
     }
 
-    if((board.createdBy != txFrom) && !isJanny(txFrom)) {
-        log.warning("Board {} not owned by {}, skipping {}", [boardId, txFrom, evtId])
+    if((board.createdBy != user.id) && !isBoardJanny(user.id, board.id)) {
+        log.warning("User {} is not janny of {}, skipping {}", [user.id, boardId, evtId])
 
         return false
     }

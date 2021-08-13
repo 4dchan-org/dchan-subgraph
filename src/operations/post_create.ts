@@ -1,13 +1,13 @@
 import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Board, Image, Post, Thread } from "../../generated/schema";
+import { Board, Image, Post, Thread, User } from "../../generated/schema";
 import { ensureBoolean, ensureNumber, ensureObject, ensureString } from "../ensure";
-import { eventId } from "../utils";
+import { eventId, shortenId } from "../id";
 import { COMMENT_MAX_LENGTH, FILENAME_MAX_LENGTH, NAME_MAX_LENGTH, SUBJECT_MAX_LENGTH } from "../constants";
-import { userLoadOrCreate } from "./internal/user_load_or_create"
+import { scoreDefault } from "../score";
+import { userIsBoardBanned } from "../internal/board_ban";
 
-export function postCreate(message: Message, data: TypedMap<string, JSONValue>): boolean {
-    let txFrom = message.transaction.from.toHexString()
+export function postCreate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
 
     let board: Board | null = null
@@ -15,6 +15,13 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
 
     let thread: Thread | null = null
     let threadId = ensureString(data.get("thread"))
+
+    // Throttling
+    // if(user.lastPostedAt != null && message.block.timestamp < user.lastPostedAt.plus(BigInt.fromI32(50))) {
+    //     log.info("Throttling user {}: {}", [user.id, evtId]);
+
+    //     return  false
+    // }
 
     if (threadId != null) {
         log.info("Replying to {}", [threadId]);
@@ -44,6 +51,12 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
 
         return false
     }
+
+    if (userIsBoardBanned(message, user.id, boardId)) {
+        log.warning("User is banned from this board, skipping {}", [evtId])
+
+        return false
+    }
     
     let comment = ensureString(data.get("comment"))
     if(comment.length > COMMENT_MAX_LENGTH) {
@@ -55,13 +68,6 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
     let newPostCount = board.postCount.plus(BigInt.fromI32(1))
     board.postCount = newPostCount
     board.lastBumpedAt = message.block.timestamp
-
-    let user = userLoadOrCreate(message)
-    // if(user.lastPostedAt != null && message.block.timestamp < user.lastPostedAt.plus(BigInt.fromI32(50))) {
-    //     log.info("Throttling user {}: {}", [user.id, evtId]);
-
-    //     return  false
-    // }
 
     log.info("Creating image: {}", [evtId]);
     let image: Image | null = null
@@ -82,8 +88,8 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
             let isNsfw = "true" == ensureBoolean(file.get('is_nsfw'))
             let isSpoiler = "true" == ensureBoolean(file.get('is_spoiler'))
             
-            image = new Image(evtId)
-            image.score = BigInt.fromI32(0)
+            image = new Image(shortenId(evtId))
+            image.score = scoreDefault()
             image.name = name
             image.byteSize = byteSize as BigInt
             image.ipfsHash = ipfsHash as string
@@ -105,12 +111,12 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
     }
 
     let post = new Post(evtId)
-    post.score = BigInt.fromI32(0)
+    post.score = scoreDefault()
     post.n = newPostCount
     post.comment = comment || ""
     post.createdAt = message.block.timestamp
     post.name = (!!name && name != "") ? name : "Anonymous"
-    post.from = txFrom
+    post.from = user.id
     if (image != null) {
         post.image = evtId
     }
@@ -130,7 +136,7 @@ export function postCreate(message: Message, data: TypedMap<string, JSONValue>):
         }
 
         thread = new Thread(evtId)
-        thread.score = BigInt.fromI32(0)
+        thread.score = scoreDefault()
         thread.board = board.id
         thread.subject = subject
         thread.isPinned = false

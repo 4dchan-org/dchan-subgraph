@@ -1,16 +1,15 @@
 import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Board } from "../../generated/schema";
+import { Board, BoardJanny, User } from "../../generated/schema";
 import { ensureBoolean, ensureString } from "../ensure";
-import { eventId } from "../utils";
-import { userLoadOrCreate } from "./internal/user_load_or_create";
+import { scoreDefault } from "../score";
+import { eventId } from "../id";
+import { boardJannyId } from "../internal/board_janny";
 
-export function boardCreate(message: Message, data: TypedMap<string, JSONValue>): boolean {
+export function boardCreate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
 
     log.info("Creating board: {}", [evtId]);
-
-    let user = userLoadOrCreate(message)
 
     // { "name": "dchan", "title": "dchan.network" }
     let name = ensureString(data.get("name"))
@@ -26,15 +25,20 @@ export function boardCreate(message: Message, data: TypedMap<string, JSONValue>)
     board.name = name
     board.title = title
     board.postCount = BigInt.fromI32(0)
-    board.score = BigInt.fromI32(0)
+    board.score = scoreDefault()
     board.createdBy = user.id
     board.createdAt = message.block.timestamp
     board.lastBumpedAt = message.block.timestamp
     board.isNsfw = ("true" === ensureBoolean(data.get("nsfw"))) || false
     board.isLocked = false
+
+    let boardJanny = new BoardJanny(boardJannyId(user.id, board.id))
+    boardJanny.board = board.id
+    boardJanny.user = user.id
     
     user.save()
     board.save()
+    boardJanny.save()
 
     log.info("Board created: {}", [evtId]);
 

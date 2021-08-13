@@ -1,31 +1,31 @@
-import { BigInt, JSONValue, log, store, TypedMap } from "@graphprotocol/graph-ts";
+import { JSONValue, log, store, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Admin } from "../../generated/schema";
 import { ensureString } from "../ensure";
-import { isAdmin } from "../jannies";
-import { eventId } from "../utils";
+import { eventId } from "../id";
+import { userIdFromHex } from "../internal/user";
+import { User } from "../../generated/schema";
+import { isAdmin } from "../internal/admin";
 
-export function adminRevoke(message: Message, data: TypedMap<string, JSONValue>): boolean {
-    let txFrom = message.transaction.from.toHex()
+export function adminRevoke(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
 
-    log.info("Admin revoke attempt by {}: {}", [txFrom, evtId]);
+    log.info("Admin revoke attempt by {}: {}", [user.id, evtId]);
 
-    if(!isAdmin(txFrom)) {
+    if(!isAdmin(user.id)) {
         // Curses! Foiled again...
         return false
     }
 
-    let address = ensureString(data.get("hex_address"))
-    if(address.indexOf("0x") != -1) {
+    let hexAddress = ensureString(data.get("hex_address"))
+    if(hexAddress.indexOf("0x") != -1) {
         log.info("Invalid admin revoke request: {}", [evtId])
 
         return false
     }
 
-    store.remove("Admin", address)
+    store.remove("Admin", userIdFromHex(hexAddress))
 
-    log.info("Admin {} revoked by {}: {}", [address, txFrom, evtId]);
+    log.info("Admin {} revoked by {}: {}", [hexAddress, user.id, evtId]);
 
     return true
 }

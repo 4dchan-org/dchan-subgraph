@@ -39,26 +39,59 @@ type Post @entity {
   score: BigInt!
 }
 
+type PostReport @entity {
+  id: ID!
+  post: Post!
+  reason: String!
+  from: User!
+}
+
+type Ban @entity {
+  id: ID!
+  user: User!
+  expiresAt: BigInt!
+  reason: String!
+  from: User!
+}
+
+type UserBan @entity {
+  id: ID!
+  user: User!
+  ban: Ban!
+}
+
+type BoardBan @entity {
+  id: ID!
+  user: User!
+  board: Board!
+  ban: Ban!
+}
+
 type PostBan @entity {
   id: ID!
   user: User!
   post: Post!
-  seconds: BigInt!
-  reason: String!
-  from: Bytes!
+  ban: Ban!
 }
 
 type User @entity {
   id: ID!
   lastPostedAt: BigInt
-  banExpiresAt: BigInt
-  isJanny: Boolean!
+  bans: [Ban!]! @derivedFrom(field: "user")
   score: BigInt!
 }
 
 type Admin @entity {
   id: ID!
   address: Bytes!
+}
+
+type BoardJanny @entity {
+  id: ID!
+  user: User!
+  board: Board!
+  lastActivityAt: BigInt!
+  createdAt: BigInt!
 }
 
 type Image @entity {

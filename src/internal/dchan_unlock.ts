@@ -1,26 +1,26 @@
 import { log } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { ChanStatus } from "../../generated/schema";
-import { isAdmin, isDchanLocked } from "../jannies";
-import { eventId } from "../utils";
+import { ChanStatus, User } from "../../generated/schema";
+import { eventId } from "../id";
+import { chanStatusId, isChanLocked } from "../internal/chan_status";
+import { isAdmin } from "./admin";
 
-export function dchanUnlock(message: Message): boolean {
-    let txFrom = message.transaction.from.toHexString()
+export function dchanUnlock(message: Message, user: User): boolean {
     let evtId = eventId(message)
 
-    if(!isAdmin(txFrom)) {
-        log.warning("{} is not admin", [txFrom])
+    if(!isAdmin(user.id)) {
+        log.warning("{} is not admin", [user.id])
 
         return false
     }
 
-    if(!isDchanLocked(message)) {
+    if(!isChanLocked(message)) {
         log.warning("Dchan not locked, skipping {}", [evtId])
 
         return false
     }
 
-    let chanId = message.transaction.to.toHexString()
+    let chanId = chanStatusId(message)
     let chanStatus = ChanStatus.load(chanId)
     chanStatus.isLocked = false
     chanStatus.save()
