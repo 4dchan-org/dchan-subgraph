@@ -16,7 +16,7 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
     let name = ensureString(data.get("name"))
     let title = ensureString(data.get("title"))
 
-    if (name == null || title == null || name == "" || name.length > BOARD_NAME_MAX_LENGTH || title == "" || title.length > BOARD_TITLE_MAX_LENGTH) {
+    if (name == null || title == null || name.length == 0 || name.length > BOARD_NAME_MAX_LENGTH || title.length == 0 || title.length > BOARD_TITLE_MAX_LENGTH) {
         log.warning("Invalid board", [])
 
         return false
