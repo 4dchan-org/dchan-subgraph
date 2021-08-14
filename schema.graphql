@@ -77,8 +77,10 @@ type PostBan @entity {
 
 type User @entity {
   id: ID!
+  address: String!
   lastPostedAt: BigInt
   bans: [Ban!]! @derivedFrom(field: "user")
+  jannies: [BoardJanny!]! @derivedFrom(field: "user")
   score: BigInt!
 }
 

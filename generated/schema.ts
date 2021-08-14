@@ -719,6 +719,15 @@ export class User extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get address(): string {
+    let value = this.get("address");
+    return value.toString();
+  }
+
+  set address(value: string) {
+    this.set("address", Value.fromString(value));
+  }
+
   get lastPostedAt(): BigInt | null {
     let value = this.get("lastPostedAt");
     if (value === null || value.kind == ValueKind.NULL) {

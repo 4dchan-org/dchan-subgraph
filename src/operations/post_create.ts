@@ -3,7 +3,7 @@ import { Message } from "../../generated/Relay/Relay";
 import { Board, Image, Post, Thread, User } from "../../generated/schema";
 import { ensureBoolean, ensureNumber, ensureObject, ensureString } from "../ensure";
 import { eventId, shortenId } from "../id";
-import { COMMENT_MAX_LENGTH, FILENAME_MAX_LENGTH, NAME_MAX_LENGTH, SUBJECT_MAX_LENGTH } from "../constants";
+import { POST_COMMENT_MAX_LENGTH, POST_FILENAME_MAX_LENGTH, POST_NAME_MAX_LENGTH, POST_SUBJECT_MAX_LENGTH } from "../constants";
 import { scoreDefault } from "../score";
 import { userIsBoardBanned } from "../internal/board_ban";
 
@@ -59,7 +59,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     }
     
     let comment = ensureString(data.get("comment"))
-    if(comment.length > COMMENT_MAX_LENGTH) {
+    if(comment.length > POST_COMMENT_MAX_LENGTH) {
         log.warning("Comment over length limit, skipping {}", [evtId])
 
         return false
@@ -79,7 +79,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         let ipfsHash: string | null = ipfs != null ? ensureString(ipfs.get('hash')) : null
 
         if (name != null && byteSize != null && ipfsHash != null) {
-            if(name.length > FILENAME_MAX_LENGTH) {
+            if(name.length > POST_FILENAME_MAX_LENGTH) {
                 log.warning("Filename over length limit, skipping {}", [evtId])
         
                 return false
@@ -104,7 +104,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
 
     log.info("Creating post: {}", [evtId]);
     let name = ensureString(data.get("name"))
-    if(name.length > NAME_MAX_LENGTH) {
+    if(name.length > POST_NAME_MAX_LENGTH) {
         log.warning("Name over length limit, skipping {}", [evtId])
 
         return false
@@ -118,7 +118,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     post.name = (!!name && name != "") ? name : "Anonymous"
     post.from = user.id
     if (image != null) {
-        post.image = evtId
+        post.image = image.id
     }
 
     if (thread != null) {
@@ -129,7 +129,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         log.info("Creating thread {}", [evtId]);
         
         let subject = ensureString(data.get("subject"))
-        if(subject.length > SUBJECT_MAX_LENGTH) {
+        if(subject.length > POST_SUBJECT_MAX_LENGTH) {
             log.warning("Subject over length limit, skipping {}", [evtId])
     
             return false

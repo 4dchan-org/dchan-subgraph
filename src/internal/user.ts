@@ -23,6 +23,7 @@ export function userLoadOrCreate(message: Message): User {
 
         user = new User(uid)
         user.score = scoreDefault()
+        user.address = message.transaction.from.toHex()
     }
     user.save()
     

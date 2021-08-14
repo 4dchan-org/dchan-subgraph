@@ -5,6 +5,7 @@ import { ensureBoolean, ensureString } from "../ensure";
 import { scoreDefault } from "../score";
 import { eventId } from "../id";
 import { boardJannyId } from "../internal/board_janny";
+import { BOARD_NAME_MAX_LENGTH, BOARD_TITLE_MAX_LENGTH } from '../constants'
 
 export function boardCreate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -15,7 +16,7 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
     let name = ensureString(data.get("name"))
     let title = ensureString(data.get("title"))
 
-    if (name == null || title == null || name == "" || title == "") {
+    if (name == null || title == null || name == "" || name.length > BOARD_NAME_MAX_LENGTH || title == "" || title.length > BOARD_TITLE_MAX_LENGTH) {
         log.warning("Invalid board", [])
 
         return false
