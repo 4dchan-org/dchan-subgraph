@@ -74,37 +74,6 @@ export function parseJsonMessage(message: Message, bytes: Bytes): TypedMap<strin
   return tryJsonPayloadData.value.toObject();
 }
 
-export function retrieveIpfsMessage(message: Message, data: TypedMap<string, JSONValue>): boolean {
-  let evtId = eventId(message)
-
-  let ipfsHash = ensureString(data.get("hash"))
-  if (ipfsHash.indexOf("Qm") != 0) {
-    log.debug("Invalid ipfs message hash: {}", [evtId])
-
-    return false
-  }
-
-  log.debug("Retrieving IPFS message: {}", [ipfsHash]);
-
-  let ipfsMessage = ipfs.cat(ipfsHash)
-  if (ipfsMessage == null) {
-    log.error("Could not retrieve message from IPFS, skipping: {}", [evtId]);
-
-    return false
-  }
-
-  log.debug("Retrieved IPFS message", [ipfsHash]);
-
-  let payload = parseJsonMessage(message, ipfsMessage as Bytes)
-  if (payload == null) {
-    log.debug("Invalid ipfs message: {}", [evtId])
-
-    return false
-  }
-
-  return processMessagePayload(message, payload as TypedMap<string, JSONValue>)
-}
-
 function processMessagePayload(message: Message, payload: TypedMap<string, JSONValue>): boolean {
   let user = userLoadOrCreate(message)
   let evtId = eventId(message)
@@ -142,11 +111,6 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
         log.info("User {} is banned, skipping {}", [user.id, evtId])
 
         return false
-      }
-
-      // IPFS
-      if (operation == "ipfs:message") {
-        return retrieveIpfsMessage(message, data as Data)
       }
 
       // AI

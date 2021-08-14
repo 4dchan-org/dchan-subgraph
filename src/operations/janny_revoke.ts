@@ -11,8 +11,8 @@ export function jannyrevoke(message: Message, user: User, data: TypedMap<string,
 
     log.info("Janny revoke attempt by {}: {}", [user.id, evtId]);
 
-    let boardId = ensureString(data.get("board_id"))
-    let userId = ensureString(data.get("user_id"))
+    let boardId = ensureString(data.get("board"))
+    let userId = ensureString(data.get("user"))
     if(userId === null || boardId === null) {
         log.info("Invalid janny revoke request: {}", [evtId])
 

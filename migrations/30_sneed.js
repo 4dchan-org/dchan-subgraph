@@ -3,7 +3,7 @@ let Relay = artifacts.require("./Relay.sol");
 module.exports = async function(deployer) {
   let relay = await Relay.deployed();
 
-  // Add and then remove
+  // Addiction/removal
 
   let {receipt: boardReceipt} = await relay.message(
     JSON.stringify({

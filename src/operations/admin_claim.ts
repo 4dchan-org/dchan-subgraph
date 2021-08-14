@@ -5,7 +5,7 @@ import { eventId } from "../id";
 
 const ADMIN_ID = "op"
 
-export function adminClaim(message: Message, user: User): boolean {
+export function adminClaim(message: Message, user: User): boolean {    
     let evtId = eventId(message)
 
     log.info("Admin claim attempt by {}: {}", [user.id, evtId]);

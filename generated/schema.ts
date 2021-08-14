@@ -775,15 +775,6 @@ export class Admin extends Entity {
   set id(value: string) {
     this.set("id", Value.fromString(value));
   }
-
-  get address(): Bytes {
-    let value = this.get("address");
-    return value.toBytes();
-  }
-
-  set address(value: Bytes) {
-    this.set("address", Value.fromBytes(value));
-  }
 }
 
 export class BoardJanny extends Entity {
@@ -832,15 +823,6 @@ export class BoardJanny extends Entity {
 
   set board(value: string) {
     this.set("board", Value.fromString(value));
-  }
-
-  get lastActivityAt(): BigInt {
-    let value = this.get("lastActivityAt");
-    return value.toBigInt();
-  }
-
-  set lastActivityAt(value: BigInt) {
-    this.set("lastActivityAt", Value.fromBigInt(value));
   }
 
   get createdAt(): BigInt {

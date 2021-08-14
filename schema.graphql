@@ -83,14 +83,12 @@ type User @entity {
 
 type Admin @entity {
   id: ID!
-  address: Bytes!
 }
 
 type BoardJanny @entity {
   id: ID!
   user: User!
   board: Board!
-  lastActivityAt: BigInt!
   createdAt: BigInt!
 }
 

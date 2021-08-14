@@ -21,18 +21,20 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
         return false
     }
 
+    let createdAt = message.block.timestamp
     let board = new Board(evtId)
     board.name = name
     board.title = title
     board.postCount = BigInt.fromI32(0)
     board.score = scoreDefault()
     board.createdBy = user.id
-    board.createdAt = message.block.timestamp
-    board.lastBumpedAt = message.block.timestamp
+    board.createdAt = createdAt
+    board.lastBumpedAt = createdAt
     board.isNsfw = ("true" === ensureBoolean(data.get("nsfw"))) || false
     board.isLocked = false
 
     let boardJanny = new BoardJanny(boardJannyId(user.id, board.id))
+    boardJanny.createdAt = createdAt
     boardJanny.board = board.id
     boardJanny.user = user.id
     
