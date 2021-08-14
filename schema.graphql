@@ -9,6 +9,7 @@ type Board @entity {
   createdBy: User!
   createdAt: BigInt!
   lastBumpedAt: BigInt!
+  jannies: [BoardJanny!]! @derivedFrom(field: "board")
 }
 
 type Thread @entity {

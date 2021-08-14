@@ -122,6 +122,15 @@ export class Board extends Entity {
   set lastBumpedAt(value: BigInt) {
     this.set("lastBumpedAt", Value.fromBigInt(value));
   }
+
+  get jannies(): Array<string> {
+    let value = this.get("jannies");
+    return value.toStringArray();
+  }
+
+  set jannies(value: Array<string>) {
+    this.set("jannies", Value.fromStringArray(value));
+  }
 }
 
 export class Thread extends Entity {

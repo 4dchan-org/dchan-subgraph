@@ -5,7 +5,7 @@ import { ensureBoolean, ensureString } from "../ensure";
 import { isBoardJanny } from "../internal/board_janny";
 import { eventId } from "../id";
 
-export function boardCreate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
+export function boardUpdate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
 
     log.info("Creating board: {}", [evtId]);

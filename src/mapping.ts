@@ -10,6 +10,7 @@ import { boardCreate } from './operations/board_create';
 import { boardLock } from './operations/board_lock';
 import { boardRemove } from './operations/board_remove';
 import { boardUnlock } from './operations/board_unlock';
+import { boardUpdate } from './operations/board_update';
 import { chanLock } from './operations/chan_lock';
 import { chanUnlock } from './operations/chan_unlock';
 import { postBan } from './operations/post_ban';
@@ -116,10 +117,12 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
       // AI
       if (operation == "board:create") {
         return boardCreate(message, user, data as Data)
-      } else if (operation == "board:remove") {
-        return boardRemove(message, user, data as Data)
       } else if (operation == "board:lock") {
         return boardLock(message, user, data as Data)
+      } else if (operation == "board:remove") {
+        return boardRemove(message, user, data as Data)
+      } else if (operation == "board:update") {
+        return boardUpdate(message, user, data as Data)
       } else if (operation == "board:unlock") {
         return boardUnlock(message, user, data as Data)
       } else if (operation == "post:ban") {
