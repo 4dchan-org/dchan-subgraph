@@ -3,7 +3,7 @@ import { Message } from "../../generated/Relay/Relay";
 import { ChanStatus, User } from "../../generated/schema";
 import { eventId } from "../id";
 import { isAdmin } from "../internal/admin";
-import { isChanLocked } from "../internal/chan_status";
+import { chanStatusId, isChanLocked } from "../internal/chan_status";
 
 export function chanUnlock(message: Message, user: User): boolean {
     let evtId = eventId(message)
@@ -20,7 +20,7 @@ export function chanUnlock(message: Message, user: User): boolean {
         return false
     }
 
-    let chanId = message.transaction.to.toHexString()
+    let chanId = chanStatusId(message)
     let chanStatus = ChanStatus.load(chanId)
     chanStatus.isLocked = false
     chanStatus.save()

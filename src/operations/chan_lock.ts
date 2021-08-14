@@ -14,15 +14,15 @@ export function chanLock(message: Message, user: User): boolean {
         return false
     }
 
-    if(!isChanLocked(message)) {
-        log.warning("Chan not locked, skipping {}", [evtId])
+    if(isChanLocked(message)) {
+        log.warning("Chan already locked, skipping {}", [evtId])
 
         return false
     }
 
     let chanId = chanStatusId(message)
     let chanStatus = ChanStatus.load(chanId)
-    chanStatus.isLocked = false
+    chanStatus.isLocked = true
     chanStatus.save()
 
     log.info("Chan locked: {}", [chanId])
