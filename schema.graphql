@@ -91,7 +91,7 @@ type Admin @entity {
 type BoardJanny @entity {
   id: ID!
   user: User!
-  board: Board!
+  board: Board
   createdAt: BigInt!
 }
 
