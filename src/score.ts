@@ -4,6 +4,6 @@ export function scoreDefault(): BigInt {
     return BigInt.fromI32(1_000_000_000)
 }
 
-export function scorePenalize(score: BigInt): BigInt {
-    return score.div(BigInt.fromI32(100)).times(BigInt.fromI32(90))
+export function scorePenalty(score: BigInt): BigInt {
+    return score.times(BigInt.fromI32(90)).div(BigInt.fromI32(100)) // * 0.9
 }

@@ -1,4 +1,5 @@
 import { BigInt, JSONValue, JSONValueKind, TypedMap } from "@graphprotocol/graph-ts"
+import { isValidHash } from './utils/ipfs'
 
 
 export function ensureObject(jsonValue: JSONValue | null): TypedMap<string, JSONValue> | null {
@@ -46,7 +47,7 @@ export function ensureBoolean(jsonValue: JSONValue | null): string | null {
 export function ensureIpfs(jsonValue: JSONValue | null): string | null {
     if (jsonValue != null && jsonValue.kind == JSONValueKind.STRING) {
         const maybeHash = jsonValue.toString()
-        if(0 == maybeHash.indexOf("Qm") && maybeHash.length === 48) {
+        if(isValidHash(maybeHash)) {
             return maybeHash
         }
     }
