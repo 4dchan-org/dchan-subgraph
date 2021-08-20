@@ -26,6 +26,7 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
     let board = new Board(evtId)
     board.name = name
     board.title = title
+    board.threadCount = BigInt.fromI32(0)
     board.postCount = BigInt.fromI32(0)
     board.score = scoreDefault()
     board.createdBy = user.id

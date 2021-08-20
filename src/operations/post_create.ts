@@ -148,6 +148,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         thread.replyCount = BigInt.fromI32(0)
         thread.imageCount = BigInt.fromI32(0)
         thread.createdAt = message.block.timestamp
+        thread.createdAtBlock = message.block.number
     }
     thread.lastBumpedAt = message.block.timestamp
 
