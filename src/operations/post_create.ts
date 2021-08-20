@@ -115,6 +115,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     post.n = newPostCount
     post.comment = comment || ""
     post.createdAt = message.block.timestamp
+    post.createdAtBlock = message.block.number
     post.name = (!!name && name != "") ? name : "Anonymous"
     post.from = user.id
     if (image != null) {
@@ -134,6 +135,8 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     
             return false
         }
+
+        board.threadCount = board.threadCount.plus(BigInt.fromI32(1))
 
         thread = new Thread(evtId)
         thread.score = scoreDefault()

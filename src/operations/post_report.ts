@@ -35,13 +35,10 @@ export function postReport(message: Message, user: User, data: TypedMap<string, 
         thread.save()
     }
 
-    let reportId = postReportId(user, post)
+    let reportId = postReportId(user, post as Post)
     let postReport = PostReport.load(reportId)
     if (postReport == null) {
         postReport = new PostReport(reportId)
-
-        user.issuedReports = user.issuedReports.plus(BigInt.fromI32(1))
-        user.save()
     }
     postReport.reason = reason
     postReport.post = post.id

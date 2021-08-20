@@ -60,6 +60,15 @@ export class Board extends Entity {
     this.set("postCount", Value.fromBigInt(value));
   }
 
+  get threadCount(): BigInt {
+    let value = this.get("threadCount");
+    return value.toBigInt();
+  }
+
+  set threadCount(value: BigInt) {
+    this.set("threadCount", Value.fromBigInt(value));
+  }
+
   get name(): string {
     let value = this.get("name");
     return value.toString();
@@ -112,6 +121,15 @@ export class Board extends Entity {
 
   set createdAt(value: BigInt) {
     this.set("createdAt", Value.fromBigInt(value));
+  }
+
+  get createdAtBlock(): BigInt {
+    let value = this.get("createdAtBlock");
+    return value.toBigInt();
+  }
+
+  set createdAtBlock(value: BigInt) {
+    this.set("createdAtBlock", Value.fromBigInt(value));
   }
 
   get lastBumpedAt(): BigInt {
@@ -242,6 +260,15 @@ export class Thread extends Entity {
 
   set createdAt(value: BigInt) {
     this.set("createdAt", Value.fromBigInt(value));
+  }
+
+  get createdAtBlock(): BigInt {
+    let value = this.get("createdAtBlock");
+    return value.toBigInt();
+  }
+
+  set createdAtBlock(value: BigInt) {
+    this.set("createdAtBlock", Value.fromBigInt(value));
   }
 
   get lastBumpedAt(): BigInt {
@@ -378,6 +405,15 @@ export class Post extends Entity {
 
   set createdAt(value: BigInt) {
     this.set("createdAt", Value.fromBigInt(value));
+  }
+
+  get createdAtBlock(): BigInt {
+    let value = this.get("createdAtBlock");
+    return value.toBigInt();
+  }
+
+  set createdAtBlock(value: BigInt) {
+    this.set("createdAtBlock", Value.fromBigInt(value));
   }
 
   get bans(): Array<string> {
@@ -754,6 +790,15 @@ export class User extends Entity {
     this.set("bans", Value.fromStringArray(value));
   }
 
+  get jannies(): Array<string> {
+    let value = this.get("jannies");
+    return value.toStringArray();
+  }
+
+  set jannies(value: Array<string>) {
+    this.set("jannies", Value.fromStringArray(value));
+  }
+
   get score(): BigInt {
     let value = this.get("score");
     return value.toBigInt();
@@ -834,13 +879,21 @@ export class BoardJanny extends Entity {
     this.set("user", Value.fromString(value));
   }
 
-  get board(): string {
+  get board(): string | null {
     let value = this.get("board");
-    return value.toString();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set board(value: string) {
-    this.set("board", Value.fromString(value));
+  set board(value: string | null) {
+    if (value === null) {
+      this.unset("board");
+    } else {
+      this.set("board", Value.fromString(value as string));
+    }
   }
 
   get createdAt(): BigInt {

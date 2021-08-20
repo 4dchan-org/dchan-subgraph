@@ -2,12 +2,14 @@ type Board @entity {
   id: ID!
   title: String!
   postCount: BigInt!
+  threadCount: BigInt!
   name: String!
   score: BigInt!
   isNsfw: Boolean!
   isLocked: Boolean!
   createdBy: User!
   createdAt: BigInt!
+  createdAtBlock: BigInt!
   lastBumpedAt: BigInt!
   jannies: [BoardJanny!]! @derivedFrom(field: "board")
 }
@@ -23,6 +25,7 @@ type Thread @entity {
   replyCount: BigInt!
   imageCount: BigInt!
   createdAt: BigInt!
+  createdAtBlock: BigInt!
   lastBumpedAt: BigInt!
   score: BigInt!
 }
@@ -36,6 +39,7 @@ type Post @entity {
   comment: String!
   image: Image
   createdAt: BigInt!
+  createdAtBlock: BigInt!
   bans: [PostBan!]! @derivedFrom(field: "post")
   score: BigInt!
 }
@@ -108,4 +112,8 @@ type Image @entity {
 type ChanStatus @entity {
   id: ID!
   isLocked: Boolean!
+}
+
+type IPFSReference @entity {
+  id: ID!
 }

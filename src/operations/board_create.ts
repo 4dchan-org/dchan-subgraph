@@ -30,6 +30,7 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
     board.score = scoreDefault()
     board.createdBy = user.id
     board.createdAt = createdAt
+    board.createdAtBlock = message.block.number
     board.lastBumpedAt = createdAt
     board.isNsfw = ("true" === ensureBoolean(data.get("nsfw"))) || false
     board.isLocked = false
