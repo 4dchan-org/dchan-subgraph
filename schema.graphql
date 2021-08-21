@@ -1,3 +1,19 @@
+type _Schema_
+  @fulltext(
+    name: "postSearch",
+    language: en,
+    algorithm: rank,
+    include: [
+      {
+        entity: "Post",
+        fields: [
+          { name: "comment" },
+          { name: "name" }
+        ]
+      }
+    ]
+  )
+
 type Board @entity {
   id: ID!
   title: String!
