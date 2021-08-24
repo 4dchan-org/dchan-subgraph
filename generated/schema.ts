@@ -493,6 +493,64 @@ export class PostReport extends Entity {
   }
 }
 
+export class BoardReport extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save BoardReport entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save BoardReport entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("BoardReport", id.toString(), this);
+  }
+
+  static load(id: string): BoardReport | null {
+    return store.get("BoardReport", id) as BoardReport | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get board(): string {
+    let value = this.get("board");
+    return value.toString();
+  }
+
+  set board(value: string) {
+    this.set("board", Value.fromString(value));
+  }
+
+  get reason(): string {
+    let value = this.get("reason");
+    return value.toString();
+  }
+
+  set reason(value: string) {
+    this.set("reason", Value.fromString(value));
+  }
+
+  get from(): string {
+    let value = this.get("from");
+    return value.toString();
+  }
+
+  set from(value: string) {
+    this.set("from", Value.fromString(value));
+  }
+}
+
 export class Ban extends Entity {
   constructor(id: string) {
     super();

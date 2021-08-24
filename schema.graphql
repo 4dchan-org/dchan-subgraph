@@ -67,6 +67,13 @@ type PostReport @entity {
   from: User!
 }
 
+type BoardReport @entity {
+  id: ID!
+  board: Board!
+  reason: String!
+  from: User!
+}
+
 type Ban @entity {
   id: ID!
   user: User!
