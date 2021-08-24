@@ -133,3 +133,9 @@ type ChanStatus @entity {
 type IPFSReference @entity {
   id: ID!
 }
+
+type Block @entity {
+  id: ID!
+  timestamp: BigInt!
+  number: BigInt!
+}

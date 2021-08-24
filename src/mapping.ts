@@ -1,6 +1,6 @@
-import { ByteArray, Bytes, ipfs, json, JSONValue, log, TypedMap } from '@graphprotocol/graph-ts';
+import { ByteArray, Bytes, json, JSONValue, log, TypedMap } from '@graphprotocol/graph-ts';
 import { Message } from '../generated/Relay/Relay'
-import { ChanStatus, User } from '../generated/schema'
+import { Block, ChanStatus } from '../generated/schema'
 import { ensureObject, ensureString } from './ensure'
 
 import { adminClaim } from './operations/admin_claim';
@@ -26,6 +26,7 @@ import { userUnban } from './operations/user_unban';
 
 import { userLoadOrCreate } from './internal/user';
 import { eventId } from './id';
+import { blockId } from './internal/block';
 import { userIsBanned } from './internal/user_ban';
 import { isChanLocked } from './internal/chan_status';
 
@@ -54,6 +55,11 @@ export function handleMessage(message: Message): void {
 
   if (success == true) {
     log.debug("Message processed successfully: {}", [evtId])
+
+    let block = new Block(blockId(message))
+    block.timestamp = message.block.timestamp
+    block.number = message.block.number
+    block.save()
   } else {
     log.warning("Message failed: {}", [evtId])
   }

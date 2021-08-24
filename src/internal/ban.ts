@@ -2,8 +2,6 @@ import { log } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
 import { Ban, UserBan } from "../../generated/schema";
 import { eventId } from "../id";
-import { UserId } from "./user";
-import { userBanId } from "./user_ban";
 
 export type BanId = string
 

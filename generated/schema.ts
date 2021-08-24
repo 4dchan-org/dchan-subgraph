@@ -1030,3 +1030,83 @@ export class ChanStatus extends Entity {
     this.set("isLocked", Value.fromBoolean(value));
   }
 }
+
+export class IPFSReference extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save IPFSReference entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save IPFSReference entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("IPFSReference", id.toString(), this);
+  }
+
+  static load(id: string): IPFSReference | null {
+    return store.get("IPFSReference", id) as IPFSReference | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+}
+
+export class Block extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Block entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Block entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Block", id.toString(), this);
+  }
+
+  static load(id: string): Block | null {
+    return store.get("Block", id) as Block | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get number(): BigInt {
+    let value = this.get("number");
+    return value.toBigInt();
+  }
+
+  set number(value: BigInt) {
+    this.set("number", Value.fromBigInt(value));
+  }
+}
