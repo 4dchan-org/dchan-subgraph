@@ -21,7 +21,7 @@ export function boardReport(message: Message, user: User, data: TypedMap<string,
 
     let board = Board.load(boardId)
     if (board == null) {
-        log.warning("board {} not found, skipping {}", [boardId, evtId])
+        log.warning("Board {} not found, skipping {}", [boardId, evtId])
 
         return false
     }

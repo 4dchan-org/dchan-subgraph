@@ -29,6 +29,7 @@ import { eventId } from './id';
 import { blockId } from './internal/block';
 import { userIsBanned } from './internal/user_ban';
 import { isChanLocked } from './internal/chan_status';
+import { boardReport } from './operations/board_report';
 
 type Data = TypedMap<string, JSONValue>
 
@@ -127,6 +128,8 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
         return boardLock(message, user, data as Data)
       } else if (operation == "board:remove") {
         return boardRemove(message, user, data as Data)
+      } else if (operation == "board:report") {
+        return boardReport(message, user, data as Data)
       } else if (operation == "board:update") {
         return boardUpdate(message, user, data as Data)
       } else if (operation == "board:unlock") {
