@@ -69,17 +69,6 @@ module.exports = async function(deployer) {
     JSON.stringify({
       ns: "dchan",
       v: 0,
-      op: "thread:remove",
-      data: {
-          id: threadId
-      },
-    })
-  );
-
-  await relay.message(
-    JSON.stringify({
-      ns: "dchan",
-      v: 0,
       op: "board:remove",
       data: {
           id: boardId

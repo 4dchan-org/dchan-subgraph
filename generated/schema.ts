@@ -149,6 +149,15 @@ export class Board extends Entity {
   set jannies(value: Array<string>) {
     this.set("jannies", Value.fromStringArray(value));
   }
+
+  get threads(): Array<string> {
+    let value = this.get("threads");
+    return value.toStringArray();
+  }
+
+  set threads(value: Array<string>) {
+    this.set("threads", Value.fromStringArray(value));
+  }
 }
 
 export class Thread extends Entity {
@@ -334,6 +343,23 @@ export class Post extends Entity {
       this.unset("thread");
     } else {
       this.set("thread", Value.fromString(value as string));
+    }
+  }
+
+  get board(): string | null {
+    let value = this.get("board");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set board(value: string | null) {
+    if (value === null) {
+      this.unset("board");
+    } else {
+      this.set("board", Value.fromString(value as string));
     }
   }
 

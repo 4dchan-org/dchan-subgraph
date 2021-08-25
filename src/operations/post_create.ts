@@ -124,6 +124,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
 
     if (thread != null) {
         post.thread = threadId
+
         thread.replyCount = thread.replyCount.plus(BigInt.fromI32(1))
         thread.imageCount = thread.imageCount.plus(BigInt.fromI32(image != null ? 1 : 0))
     } else {
@@ -150,7 +151,6 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         thread.createdAt = message.block.timestamp
         thread.createdAtBlock = message.block.number
     }
-    thread.lastBumpedAt = message.block.timestamp
 
     if (thread.isLocked) {
         log.warning("Thread {} locked, skipping {}", [threadId, evtId])
@@ -164,6 +164,9 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         return false
     }
 
+    post.board = thread.board
+
+    thread.lastBumpedAt = message.block.timestamp
     user.lastPostedAt = message.block.timestamp
 
     log.info("Saving: {}", [evtId]);

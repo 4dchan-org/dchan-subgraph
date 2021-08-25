@@ -19,7 +19,6 @@ import { postRemove } from './operations/post_remove';
 import { postReport } from './operations/post_report';
 import { threadLock } from './operations/thread_lock';
 import { threadPin } from './operations/thread_pin';
-import { threadRemove } from './operations/thread_remove';
 import { threadUnlock } from './operations/thread_unlock';
 import { userBan } from './operations/user_ban';
 import { userUnban } from './operations/user_unban';
@@ -152,8 +151,6 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
         return postRemove(message, user, data as Data)
       } else if (operation == "post:report") {
         return postReport(message, user, data as Data)
-      } else if (operation == "thread:remove") {
-        return threadRemove(message, user, data as Data)
       } else {
         log.warning("Invalid operation {}, skipping: {}", [operation, evtId]);
       }

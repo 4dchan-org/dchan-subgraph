@@ -28,6 +28,7 @@ type Board @entity {
   createdAtBlock: BigInt!
   lastBumpedAt: BigInt!
   jannies: [BoardJanny!]! @derivedFrom(field: "board")
+  threads: [Thread!]! @derivedFrom(field: "board")
 }
 
 type Thread @entity {
@@ -49,6 +50,7 @@ type Thread @entity {
 type Post @entity {
   id: ID!
   thread: Thread
+  board: Board
   n: BigInt!
   name: String
   from: User!
