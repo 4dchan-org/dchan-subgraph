@@ -1,6 +1,6 @@
 specVersion: 0.0.2
 description: dchan
-repository: https://github.com/opdchan/dchan-subgraph
+repository: https://github.com/dchan-network/dchan-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
@@ -8,9 +8,9 @@ dataSources:
     name: Relay
     network: matic
     source:
-      address: "0x5a139ee9f56c4f24240af366807490c171922b0e"
+      address: "0x65a5C6410e10b8A19283e46dCc1D9202176b9dE2"
       abi: Relay
-      startBlock: 17765847
+      startBlock: 18419415
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4

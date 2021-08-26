@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "scripts": {
     "build-contract": "solc contracts/Relay.sol --abi -o abis --overwrite && solc contracts/Relay.sol --bin -o bin --overwrite",
-    "create": "graph create opdchan/dchan-subgraph --node https://api.thegraph.com/deploy/",
-    "create-local": "graph create opdchan/dchan-subgraph --node http://graph-node:8020",
+    "create": "graph create dchan-network/dchan-subgraph --node https://api.thegraph.com/deploy/",
+    "create-local": "graph create dchan-network/dchan-subgraph --node http://graph-node:8020",
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --access-token $GRAPH_ACCESS_TOKEN --product hosted-service --ipfs https://api.thegraph.com/ipfs/ $SUBGRAPH",
-    "deploy-local": "graph deploy opdchan/dchan-subgraph --ipfs http://ipfs:5001 --node http://graph-node:8020"
+    "deploy-local": "graph deploy dchan-network/dchan-subgraph --ipfs http://ipfs:5001 --node http://graph-node:8020"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.20.1",

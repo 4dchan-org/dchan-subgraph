@@ -1,6 +1,6 @@
 specVersion: 0.0.2
 description: dchan
-repository: https://github.com/opdchan/dchan-subgraph
+repository: https://github.com/dchan-network/dchan-subgraph
 schema:
   file: ./schema.graphql
 dataSources:

@@ -3,9 +3,9 @@ import { Message } from "../../generated/Relay/Relay";
 import { Admin, User } from "../../generated/schema";
 import { eventId } from "../id";
 
-const ADMIN_ID = "op"
+const ADMIN_ID = "243d2e7fa98532b9d5897c29a8a86ca41feadd0d3224579adb1e890fd17d82d7"
 
-export function adminClaim(message: Message, user: User): boolean {    
+export function adminClaim(message: Message, user: User): boolean {
     let evtId = eventId(message)
 
     log.info("Admin claim attempt by {}: {}", [user.id, evtId]);
