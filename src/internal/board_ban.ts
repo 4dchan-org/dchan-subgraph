@@ -1,17 +1,15 @@
 import { log } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Ban, BoardBan } from "../../generated/schema";
-import { BoardId } from "./board";
-import { UserId } from "./user";
+import { Ban, Board, BoardBan, User } from "../../generated/schema";
 
 export type BoardBanId = string
 
-export function boardBanId(userId: UserId, boardId: BoardId): BoardBanId {
-    return userId + ":" + boardId
+export function boardBanId(user: User, board: Board): BoardBanId {
+    return user.id + ":" + board.id
 }
 
-export function userIsBoardBanned(message: Message, userId: UserId, boardId: BoardId): boolean {
-    let boardBan = BoardBan.load(boardBanId(userId, boardId))
+export function userIsBoardBanned(message: Message, user: User, board: Board): boolean {
+    let boardBan = BoardBan.load(boardBanId(user, board))
     if (boardBan == null) {
         return false
     }

@@ -1,12 +1,13 @@
 import { JSONValue, log, BigInt, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Ban, BoardBan, Post, PostBan, Thread, User } from "../../generated/schema";
+import { Ban, Board, BoardBan, Post, PostBan, Thread, User } from "../../generated/schema";
 import { ensureNumber, ensureString } from "../ensure";
 import { isBoardJanny } from "../internal/board_janny";
 import { eventId } from "../id";
 import { banId } from "../internal/ban";
 import { boardBanId } from "../internal/board_ban";
 import { postBanId } from "../internal/post_ban";
+import { loadPostFromId } from "../internal/post";
 
 export function postBan(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -22,7 +23,7 @@ export function postBan(message: Message, user: User, data: TypedMap<string, JSO
 
     log.info("Banning post: {}", [postId]);
     
-    let post = Post.load(postId)
+    let post = loadPostFromId(postId)
     if (post == null) {
         log.warning("Post {} not found", [postId]);
 
@@ -45,6 +46,14 @@ export function postBan(message: Message, user: User, data: TypedMap<string, JSO
         return false
     }
 
+    let boardId = thread.board
+    let board = Board.load(boardId)
+    if(board == null) {
+        log.info("Board {} not found", [boardId])
+
+        return false
+    }
+
     if(!isBoardJanny(user.id, thread.board)) {
         log.warning("Unauthorized, skipping {}", [evtId])
 
@@ -59,14 +68,13 @@ export function postBan(message: Message, user: User, data: TypedMap<string, JSO
     ban.from = user.id
     ban.save()
 
-    let boardId = thread.board
-    let boardBan = new BoardBan(boardBanId(postFrom, boardId))
+    let boardBan = new BoardBan(boardBanId(user, board as Board))
     boardBan.user = postFrom
     boardBan.board = boardId
     boardBan.ban = ban.id
     boardBan.save()
 
-    let postBan = new PostBan(postBanId(postId, boardId))
+    let postBan = new PostBan(postBanId(post as Post, board as Board))
     postBan.user = postFrom
     postBan.post = postId
     postBan.ban = ban.id

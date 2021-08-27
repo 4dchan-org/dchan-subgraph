@@ -4,6 +4,7 @@ import { Post, Thread, User } from "../../generated/schema";
 import { ensureString } from "../ensure";
 import { isBoardJanny } from "../internal/board_janny";
 import { eventId } from "../id";
+import { loadThreadFromId } from "../internal/thread";
 
 export function threadUnlock(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let threadId = ensureString(data.get("id"))
@@ -16,7 +17,7 @@ export function threadUnlock(message: Message, user: User, data: TypedMap<string
 
     log.info("Unlocking thread: {}", [threadId]);
     
-    let thread = Thread.load(threadId)
+    let thread = loadThreadFromId(threadId)
     if (thread == null) {
         log.warning("Thread not found: {}", [threadId]);
 

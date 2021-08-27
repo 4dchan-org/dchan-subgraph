@@ -3,12 +3,16 @@ import { Message } from "../../generated/Relay/Relay";
 import { Board, BoardJanny, User } from "../../generated/schema";
 import { ensureBoolean, ensureString } from "../ensure";
 import { scoreDefault } from "../score";
-import { eventId } from "../id";
+import { eventId, shortenId } from "../id";
 import { boardJannyId } from "../internal/board_janny";
+import { createBlockFromMessage } from "../internal/block";
 import { BOARD_NAME_MAX_LENGTH, BOARD_TITLE_MAX_LENGTH } from '../constants'
+import { boardId } from "../internal/board";
+import { createBoardCreationEvent } from "../internal/creation_event";
 
 export function boardCreate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
+    let block = createBlockFromMessage(message)
 
     log.info("Creating board: {}", [evtId]);
 
@@ -22,22 +26,25 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
         return false
     }
 
-    let createdAt = message.block.timestamp
-    let board = new Board(evtId)
+    let board = new Board(boardId(message))
     board.name = name
     board.title = title
     board.threadCount = BigInt.fromI32(0)
     board.postCount = BigInt.fromI32(0)
     board.score = scoreDefault()
     board.createdBy = user.id
-    board.createdAt = createdAt
-    board.createdAtBlock = message.block.number
-    board.lastBumpedAt = createdAt
+    board.createdAtBlock = block.id
+    board.createdAt = block.timestamp
+    board.lastBumpedAtBlock = block.id
+    board.lastBumpedAt = block.timestamp
     board.isNsfw = ("true" === ensureBoolean(data.get("nsfw"))) || false
     board.isLocked = false
 
+    createBoardCreationEvent(message, board)
+
     let boardJanny = new BoardJanny(boardJannyId(user.id, board.id))
-    boardJanny.createdAt = createdAt
+    boardJanny.grantedAtBlock = block.id
+    boardJanny.grantedAt = block.timestamp
     boardJanny.board = board.id
     boardJanny.user = user.id
     

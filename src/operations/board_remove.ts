@@ -4,6 +4,7 @@ import { Board, User } from "../../generated/schema";
 import { ensureString } from "../ensure";
 import { isBoardJanny } from "../internal/board_janny";
 import { eventId } from "../id";
+import { loadBoardFromId } from "../internal/board";
 
 export function boardRemove(
   message: Message, 
@@ -20,7 +21,7 @@ export function boardRemove(
 
   log.debug("Requested board removal: {}", [boardId]);
 
-  let board = Board.load(boardId);
+  let board = loadBoardFromId(boardId)
   if (board == null) {
     log.warning("Board {} not found, skipping {}", [boardId, evtId]);
 

@@ -24,11 +24,17 @@ type Board @entity {
   isNsfw: Boolean!
   isLocked: Boolean!
   createdBy: User!
+  createdAtBlock: Block!
   createdAt: BigInt!
-  createdAtBlock: BigInt!
+  lastBumpedAtBlock: Block!
   lastBumpedAt: BigInt!
   jannies: [BoardJanny!]! @derivedFrom(field: "board")
   threads: [Thread!]! @derivedFrom(field: "board")
+}
+
+type BoardCreationEvent @entity {
+  id: ID!
+  board: Board!
 }
 
 type Thread @entity {
@@ -41,10 +47,16 @@ type Thread @entity {
   replies: [Post!]! @derivedFrom(field: "thread")
   replyCount: BigInt!
   imageCount: BigInt!
+  createdAtBlock: Block!
   createdAt: BigInt!
-  createdAtBlock: BigInt!
+  lastBumpedAtBlock: Block!
   lastBumpedAt: BigInt!
   score: BigInt!
+}
+
+type ThreadCreationEvent @entity {
+  id: ID!
+  thread: Thread!
 }
 
 type Post @entity {
@@ -56,29 +68,42 @@ type Post @entity {
   from: User!
   comment: String!
   image: Image
+  createdAtBlock: Block!
   createdAt: BigInt!
-  createdAtBlock: BigInt!
   bans: [PostBan!]! @derivedFrom(field: "post")
   score: BigInt!
+}
+
+type PostCreationEvent @entity {
+  id: ID!
+  post: Post!
+}
+
+type Report @entity {
+  id: ID!
+  createdAtBlock: Block!
+  createdAt: BigInt!
+  reason: String!
+  from: User!
 }
 
 type PostReport @entity {
   id: ID!
   post: Post!
-  reason: String!
-  from: User!
+  report: Report!
 }
 
 type BoardReport @entity {
   id: ID!
   board: Board!
-  reason: String!
-  from: User!
+  report: Report!
 }
 
 type Ban @entity {
   id: ID!
   user: User!
+  issuedAtBlock: Block!
+  issuedAt: BigInt!
   expiresAt: BigInt!
   reason: String!
   from: User!
@@ -107,7 +132,7 @@ type PostBan @entity {
 type User @entity {
   id: ID!
   address: String!
-  lastPostedAt: BigInt
+  lastPostedAtBlock: Block
   bans: [Ban!]! @derivedFrom(field: "user")
   jannies: [BoardJanny!]! @derivedFrom(field: "user")
   score: BigInt!
@@ -115,13 +140,16 @@ type User @entity {
 
 type Admin @entity {
   id: ID!
+  grantedAtBlock: Block!
+  grantedAt: BigInt!
 }
 
 type BoardJanny @entity {
   id: ID!
   user: User!
   board: Board
-  createdAt: BigInt!
+  grantedAtBlock: Block!
+  grantedAt: BigInt!
 }
 
 type Image @entity {

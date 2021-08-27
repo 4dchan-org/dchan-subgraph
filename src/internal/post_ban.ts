@@ -1,8 +1,7 @@
-import { BoardId } from "./board";
-import { PostId } from "./post";
+import { Board, Post } from "../../generated/schema";
 
 export type PostBanId = string
 
-export function postBanId(postId: PostId, boardId: BoardId): PostBanId {
-    return postId + ":" + boardId
+export function postBanId(post: Post, board: Board): PostBanId {
+    return post.id + ":" + board.id
 }

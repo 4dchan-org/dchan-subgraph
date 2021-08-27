@@ -4,6 +4,8 @@ import { Post, Thread, User } from "../../generated/schema";
 import { ensureArray, ensureString } from "../ensure";
 import { isBoardJanny } from "../internal/board_janny";
 import { eventId } from "../id";
+import { loadPostFromId } from "../internal/post";
+import { loadThreadFromId } from "../internal/thread";
 
 export function postRemove(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -35,7 +37,7 @@ export function postRemove(message: Message, user: User, data: TypedMap<string, 
 
         log.debug("Requested post removal: {}", [postId]);
 
-        let post = Post.load(postId)
+        let post = loadPostFromId(postId)
         if (post == null) {
             log.warning("Post {} not found, skipping {}", [postId, evtId])
 
@@ -51,7 +53,7 @@ export function postRemove(message: Message, user: User, data: TypedMap<string, 
 
     for (let i = 0; i < postIdValues.length; i++) {
         let postId: string = ensureString((postIdValues as JSONValue[])[i])
-        let thread = Thread.load(postId)
+        let thread = loadThreadFromId(postId)
         if (thread != null) {
             store.remove('Thread', thread.id)
         }

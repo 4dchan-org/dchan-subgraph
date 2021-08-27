@@ -5,10 +5,16 @@ import { ensureBoolean, ensureNumber, ensureObject, ensureString } from "../ensu
 import { eventId, shortenId } from "../id";
 import { POST_COMMENT_MAX_LENGTH, POST_FILENAME_MAX_LENGTH, POST_NAME_MAX_LENGTH, POST_SUBJECT_MAX_LENGTH } from "../constants";
 import { scoreDefault } from "../score";
+import { createPostCreationEvent, createThreadCreationEvent } from "../internal/creation_event";
 import { userIsBoardBanned } from "../internal/board_ban";
+import { postId } from "../internal/post";
+import { createBlockFromMessage } from "../internal/block";
+import { loadThreadFromId } from "../internal/thread";
+import { loadBoardFromId } from "../internal/board";
 
 export function postCreate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
+    let block = createBlockFromMessage(message)
 
     let board: Board | null = null
     let boardId = ensureString(data.get("board"))
@@ -26,25 +32,25 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     if (threadId != null) {
         log.info("Replying to {}", [threadId]);
 
-        thread = Thread.load(threadId)
+        thread = loadThreadFromId(threadId)
         if (thread == null) {
             log.warning("Invalid thread {}, skipping {}", [threadId, evtId])
-    
+
             return false
         }
-        
-        board = Board.load(thread.board)
+
+        boardId = thread.board
     } else {
-        if(boardId == null) {
+        if (boardId == null) {
             log.warning("Invalid post create request", [])
 
             return false
         }
-        
-        log.info("Creating new thread on {}", [boardId]);
 
-        board = Board.load(boardId)
+        log.info("Creating new thread on {}", [boardId]);
     }
+
+    board = loadBoardFromId(boardId)
 
     if (board == null) {
         log.warning("Invalid board {}, skipping {}", [boardId, evtId])
@@ -52,14 +58,26 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         return false
     }
 
-    if (userIsBoardBanned(message, user.id, boardId)) {
+    if (userIsBoardBanned(message, user, board as Board)) {
         log.warning("User is banned from this board, skipping {}", [evtId])
 
         return false
     }
-    
+
+    if (thread != null && thread.isLocked) {
+        log.warning("Thread {} locked, skipping {}", [threadId, evtId])
+
+        return false
+    }
+
+    if (board.isLocked) {
+        log.warning("Board {} locked, skipping {}", [board.id, evtId])
+
+        return false
+    }
+
     let comment = ensureString(data.get("comment"))
-    if(comment.length > POST_COMMENT_MAX_LENGTH) {
+    if (comment.length > POST_COMMENT_MAX_LENGTH) {
         log.warning("Comment over length limit, skipping {}", [evtId])
 
         return false
@@ -67,7 +85,8 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
 
     let newPostCount = board.postCount.plus(BigInt.fromI32(1))
     board.postCount = newPostCount
-    board.lastBumpedAt = message.block.timestamp
+    board.lastBumpedAtBlock = block.id
+    board.lastBumpedAt = block.timestamp
 
     log.info("Creating image: {}", [evtId]);
     let image: Image | null = null
@@ -79,15 +98,15 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         let ipfsHash: string | null = ipfs != null ? ensureString(ipfs.get('hash')) : null
 
         if (name != null && byteSize != null && ipfsHash != null) {
-            if(name.length > POST_FILENAME_MAX_LENGTH) {
+            if (name.length > POST_FILENAME_MAX_LENGTH) {
                 log.warning("Filename over length limit, skipping {}", [evtId])
-        
+
                 return false
             }
 
             let isNsfw = "true" == ensureBoolean(file.get('is_nsfw'))
             let isSpoiler = "true" == ensureBoolean(file.get('is_spoiler'))
-            
+
             image = new Image(shortenId(evtId))
             image.score = scoreDefault()
             image.name = name
@@ -104,23 +123,26 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
 
     log.info("Creating post: {}", [evtId]);
     let name = ensureString(data.get("name"))
-    if(name.length > POST_NAME_MAX_LENGTH) {
+    if (name.length > POST_NAME_MAX_LENGTH) {
         log.warning("Name over length limit, skipping {}", [evtId])
 
         return false
     }
 
-    let post = new Post(evtId)
+    let pId = postId(message)
+    let post = new Post(pId)
     post.score = scoreDefault()
     post.n = newPostCount
     post.comment = comment || ""
-    post.createdAt = message.block.timestamp
-    post.createdAtBlock = message.block.number
+    post.createdAtBlock = block.id
+    post.createdAt = block.timestamp
     post.name = (!!name && name != "") ? name : "Anonymous"
     post.from = user.id
     if (image != null) {
         post.image = image.id
     }
+
+    createPostCreationEvent(message, post)
 
     if (thread != null) {
         post.thread = threadId
@@ -129,48 +151,38 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         thread.imageCount = thread.imageCount.plus(BigInt.fromI32(image != null ? 1 : 0))
     } else {
         log.info("Creating thread {}", [evtId]);
-        
+
         let subject = ensureString(data.get("subject"))
-        if(subject.length > POST_SUBJECT_MAX_LENGTH) {
+        if (subject.length > POST_SUBJECT_MAX_LENGTH) {
             log.warning("Subject over length limit, skipping {}", [evtId])
-    
+
             return false
         }
 
         board.threadCount = board.threadCount.plus(BigInt.fromI32(1))
-
-        thread = new Thread(evtId)
+        
+        thread = new Thread(pId)
         thread.score = scoreDefault()
         thread.board = board.id
         thread.subject = subject
         thread.isPinned = false
         thread.isLocked = false
-        thread.op = evtId
+        thread.op = pId
         thread.replyCount = BigInt.fromI32(0)
         thread.imageCount = BigInt.fromI32(0)
-        thread.createdAt = message.block.timestamp
-        thread.createdAtBlock = message.block.number
-    }
-
-    if (thread.isLocked) {
-        log.warning("Thread {} locked, skipping {}", [threadId, evtId])
-
-        return false
-    }
-
-    if (board.isLocked) {
-        log.warning("Board {} locked, skipping {}", [board.id, evtId])
-
-        return false
+        thread.createdAtBlock = block.id
+        thread.createdAt = block.timestamp
+        
+        createThreadCreationEvent(message, thread as Thread)
     }
 
     post.board = thread.board
-
-    thread.lastBumpedAt = message.block.timestamp
-    user.lastPostedAt = message.block.timestamp
+    thread.lastBumpedAtBlock = block.id
+    thread.lastBumpedAt = block.timestamp
+    user.lastPostedAtBlock = block.id
 
     log.info("Saving: {}", [evtId]);
-    
+
     if (image != null) {
         image.save()
     }

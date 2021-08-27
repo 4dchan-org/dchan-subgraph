@@ -35,14 +35,6 @@ type Data = TypedMap<string, JSONValue>
 export function handleMessage(message: Message): void {
   let success = false
   let evtId = eventId(message)
-  let chanId = message.transaction.to.toHexString()
-
-  let chanStatus = ChanStatus.load(chanId)
-  if (chanStatus == null) {
-    chanStatus = new ChanStatus(chanId)
-    chanStatus.isLocked = false
-    chanStatus.save()
-  }
 
   log.debug("Handling message: {}", [evtId])
 

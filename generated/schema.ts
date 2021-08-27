@@ -114,6 +114,15 @@ export class Board extends Entity {
     this.set("createdBy", Value.fromString(value));
   }
 
+  get createdAtBlock(): string {
+    let value = this.get("createdAtBlock");
+    return value.toString();
+  }
+
+  set createdAtBlock(value: string) {
+    this.set("createdAtBlock", Value.fromString(value));
+  }
+
   get createdAt(): BigInt {
     let value = this.get("createdAt");
     return value.toBigInt();
@@ -123,13 +132,13 @@ export class Board extends Entity {
     this.set("createdAt", Value.fromBigInt(value));
   }
 
-  get createdAtBlock(): BigInt {
-    let value = this.get("createdAtBlock");
-    return value.toBigInt();
+  get lastBumpedAtBlock(): string {
+    let value = this.get("lastBumpedAtBlock");
+    return value.toString();
   }
 
-  set createdAtBlock(value: BigInt) {
-    this.set("createdAtBlock", Value.fromBigInt(value));
+  set lastBumpedAtBlock(value: string) {
+    this.set("lastBumpedAtBlock", Value.fromString(value));
   }
 
   get lastBumpedAt(): BigInt {
@@ -157,6 +166,46 @@ export class Board extends Entity {
 
   set threads(value: Array<string>) {
     this.set("threads", Value.fromStringArray(value));
+  }
+}
+
+export class BoardCreationEvent extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save BoardCreationEvent entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save BoardCreationEvent entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("BoardCreationEvent", id.toString(), this);
+  }
+
+  static load(id: string): BoardCreationEvent | null {
+    return store.get("BoardCreationEvent", id) as BoardCreationEvent | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get board(): string {
+    let value = this.get("board");
+    return value.toString();
+  }
+
+  set board(value: string) {
+    this.set("board", Value.fromString(value));
   }
 }
 
@@ -262,6 +311,15 @@ export class Thread extends Entity {
     this.set("imageCount", Value.fromBigInt(value));
   }
 
+  get createdAtBlock(): string {
+    let value = this.get("createdAtBlock");
+    return value.toString();
+  }
+
+  set createdAtBlock(value: string) {
+    this.set("createdAtBlock", Value.fromString(value));
+  }
+
   get createdAt(): BigInt {
     let value = this.get("createdAt");
     return value.toBigInt();
@@ -271,13 +329,13 @@ export class Thread extends Entity {
     this.set("createdAt", Value.fromBigInt(value));
   }
 
-  get createdAtBlock(): BigInt {
-    let value = this.get("createdAtBlock");
-    return value.toBigInt();
+  get lastBumpedAtBlock(): string {
+    let value = this.get("lastBumpedAtBlock");
+    return value.toString();
   }
 
-  set createdAtBlock(value: BigInt) {
-    this.set("createdAtBlock", Value.fromBigInt(value));
+  set lastBumpedAtBlock(value: string) {
+    this.set("lastBumpedAtBlock", Value.fromString(value));
   }
 
   get lastBumpedAt(): BigInt {
@@ -296,6 +354,46 @@ export class Thread extends Entity {
 
   set score(value: BigInt) {
     this.set("score", Value.fromBigInt(value));
+  }
+}
+
+export class ThreadCreationEvent extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save ThreadCreationEvent entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save ThreadCreationEvent entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("ThreadCreationEvent", id.toString(), this);
+  }
+
+  static load(id: string): ThreadCreationEvent | null {
+    return store.get("ThreadCreationEvent", id) as ThreadCreationEvent | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get thread(): string {
+    let value = this.get("thread");
+    return value.toString();
+  }
+
+  set thread(value: string) {
+    this.set("thread", Value.fromString(value));
   }
 }
 
@@ -424,6 +522,15 @@ export class Post extends Entity {
     }
   }
 
+  get createdAtBlock(): string {
+    let value = this.get("createdAtBlock");
+    return value.toString();
+  }
+
+  set createdAtBlock(value: string) {
+    this.set("createdAtBlock", Value.fromString(value));
+  }
+
   get createdAt(): BigInt {
     let value = this.get("createdAt");
     return value.toBigInt();
@@ -431,15 +538,6 @@ export class Post extends Entity {
 
   set createdAt(value: BigInt) {
     this.set("createdAt", Value.fromBigInt(value));
-  }
-
-  get createdAtBlock(): BigInt {
-    let value = this.get("createdAtBlock");
-    return value.toBigInt();
-  }
-
-  set createdAtBlock(value: BigInt) {
-    this.set("createdAtBlock", Value.fromBigInt(value));
   }
 
   get bans(): Array<string> {
@@ -458,6 +556,113 @@ export class Post extends Entity {
 
   set score(value: BigInt) {
     this.set("score", Value.fromBigInt(value));
+  }
+}
+
+export class PostCreationEvent extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save PostCreationEvent entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save PostCreationEvent entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("PostCreationEvent", id.toString(), this);
+  }
+
+  static load(id: string): PostCreationEvent | null {
+    return store.get("PostCreationEvent", id) as PostCreationEvent | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get post(): string {
+    let value = this.get("post");
+    return value.toString();
+  }
+
+  set post(value: string) {
+    this.set("post", Value.fromString(value));
+  }
+}
+
+export class Report extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Report entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Report entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Report", id.toString(), this);
+  }
+
+  static load(id: string): Report | null {
+    return store.get("Report", id) as Report | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get createdAtBlock(): string {
+    let value = this.get("createdAtBlock");
+    return value.toString();
+  }
+
+  set createdAtBlock(value: string) {
+    this.set("createdAtBlock", Value.fromString(value));
+  }
+
+  get createdAt(): BigInt {
+    let value = this.get("createdAt");
+    return value.toBigInt();
+  }
+
+  set createdAt(value: BigInt) {
+    this.set("createdAt", Value.fromBigInt(value));
+  }
+
+  get reason(): string {
+    let value = this.get("reason");
+    return value.toString();
+  }
+
+  set reason(value: string) {
+    this.set("reason", Value.fromString(value));
+  }
+
+  get from(): string {
+    let value = this.get("from");
+    return value.toString();
+  }
+
+  set from(value: string) {
+    this.set("from", Value.fromString(value));
   }
 }
 
@@ -500,22 +705,13 @@ export class PostReport extends Entity {
     this.set("post", Value.fromString(value));
   }
 
-  get reason(): string {
-    let value = this.get("reason");
+  get report(): string {
+    let value = this.get("report");
     return value.toString();
   }
 
-  set reason(value: string) {
-    this.set("reason", Value.fromString(value));
-  }
-
-  get from(): string {
-    let value = this.get("from");
-    return value.toString();
-  }
-
-  set from(value: string) {
-    this.set("from", Value.fromString(value));
+  set report(value: string) {
+    this.set("report", Value.fromString(value));
   }
 }
 
@@ -558,22 +754,13 @@ export class BoardReport extends Entity {
     this.set("board", Value.fromString(value));
   }
 
-  get reason(): string {
-    let value = this.get("reason");
+  get report(): string {
+    let value = this.get("report");
     return value.toString();
   }
 
-  set reason(value: string) {
-    this.set("reason", Value.fromString(value));
-  }
-
-  get from(): string {
-    let value = this.get("from");
-    return value.toString();
-  }
-
-  set from(value: string) {
-    this.set("from", Value.fromString(value));
+  set report(value: string) {
+    this.set("report", Value.fromString(value));
   }
 }
 
@@ -614,6 +801,24 @@ export class Ban extends Entity {
 
   set user(value: string) {
     this.set("user", Value.fromString(value));
+  }
+
+  get issuedAtBlock(): string {
+    let value = this.get("issuedAtBlock");
+    return value.toString();
+  }
+
+  set issuedAtBlock(value: string) {
+    this.set("issuedAtBlock", Value.fromString(value));
+  }
+
+  get issuedAt(): BigInt {
+    let value = this.get("issuedAt");
+    return value.toBigInt();
+  }
+
+  set issuedAt(value: BigInt) {
+    this.set("issuedAt", Value.fromBigInt(value));
   }
 
   get expiresAt(): BigInt {
@@ -848,20 +1053,20 @@ export class User extends Entity {
     this.set("address", Value.fromString(value));
   }
 
-  get lastPostedAt(): BigInt | null {
-    let value = this.get("lastPostedAt");
+  get lastPostedAtBlock(): string | null {
+    let value = this.get("lastPostedAtBlock");
     if (value === null || value.kind == ValueKind.NULL) {
       return null;
     } else {
-      return value.toBigInt();
+      return value.toString();
     }
   }
 
-  set lastPostedAt(value: BigInt | null) {
+  set lastPostedAtBlock(value: string | null) {
     if (value === null) {
-      this.unset("lastPostedAt");
+      this.unset("lastPostedAtBlock");
     } else {
-      this.set("lastPostedAt", Value.fromBigInt(value as BigInt));
+      this.set("lastPostedAtBlock", Value.fromString(value as string));
     }
   }
 
@@ -922,6 +1127,24 @@ export class Admin extends Entity {
   set id(value: string) {
     this.set("id", Value.fromString(value));
   }
+
+  get grantedAtBlock(): string {
+    let value = this.get("grantedAtBlock");
+    return value.toString();
+  }
+
+  set grantedAtBlock(value: string) {
+    this.set("grantedAtBlock", Value.fromString(value));
+  }
+
+  get grantedAt(): BigInt {
+    let value = this.get("grantedAt");
+    return value.toBigInt();
+  }
+
+  set grantedAt(value: BigInt) {
+    this.set("grantedAt", Value.fromBigInt(value));
+  }
 }
 
 export class BoardJanny extends Entity {
@@ -980,13 +1203,22 @@ export class BoardJanny extends Entity {
     }
   }
 
-  get createdAt(): BigInt {
-    let value = this.get("createdAt");
+  get grantedAtBlock(): string {
+    let value = this.get("grantedAtBlock");
+    return value.toString();
+  }
+
+  set grantedAtBlock(value: string) {
+    this.set("grantedAtBlock", Value.fromString(value));
+  }
+
+  get grantedAt(): BigInt {
+    let value = this.get("grantedAt");
     return value.toBigInt();
   }
 
-  set createdAt(value: BigInt) {
-    this.set("createdAt", Value.fromBigInt(value));
+  set grantedAt(value: BigInt) {
+    this.set("grantedAt", Value.fromBigInt(value));
   }
 }
 

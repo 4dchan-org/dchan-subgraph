@@ -1,10 +1,11 @@
-import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
+import { JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Post, PostReport, Thread, User } from "../../generated/schema";
+import { Post, Thread, User } from "../../generated/schema";
 import { ensureString } from "../ensure";
 import { scorePenalty } from "../score";
 import { eventId } from "../id";
-import { postReportId } from "../internal/post_report";
+import { createPostReport, postReportId } from "../internal/post_report";
+import { loadPostFromId } from "../internal/post";
 
 export function postReport(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -19,7 +20,7 @@ export function postReport(message: Message, user: User, data: TypedMap<string, 
 
     log.debug("Reported post: {}", [postId]);
     
-    let post = Post.load(postId)
+    let post = loadPostFromId(postId)
     if (post == null) {
         log.warning("Post {} not found, skipping {}", [postId, evtId])
 
@@ -35,15 +36,7 @@ export function postReport(message: Message, user: User, data: TypedMap<string, 
         thread.save()
     }
 
-    let reportId = postReportId(user, post as Post)
-    let postReport = PostReport.load(reportId)
-    if (postReport == null) {
-        postReport = new PostReport(reportId)
-    }
-    postReport.reason = reason
-    postReport.post = post.id
-    postReport.from = user.id
-    postReport.save()
+    createPostReport(message, user, post as Post, reason)
 
     return true
 }

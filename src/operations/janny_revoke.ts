@@ -5,6 +5,7 @@ import { ensureString } from "../ensure";
 import { isBoardJanny } from "../internal/board_janny";
 import { eventId } from "../id";
 import { boardJannyId } from "../internal/board_janny";
+import { loadBoardFromId } from "../internal/board";
 
 export function jannyrevoke(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -23,7 +24,7 @@ export function jannyrevoke(message: Message, user: User, data: TypedMap<string,
         return false
     }
     
-    let board = Board.load(boardId)
+    let board = loadBoardFromId(boardId)
     if(board.createdBy === userId) {
         log.info("Cannot revoke janny status of board creator: {}", [evtId])
 

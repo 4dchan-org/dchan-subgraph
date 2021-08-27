@@ -5,9 +5,11 @@ import { ensureString } from "../ensure";
 import { isBoardJanny } from "../internal/board_janny";
 import { eventId } from "../id";
 import { boardJannyId } from "../internal/board_janny";
+import { createBlockFromMessage } from "../internal/block";
 
 export function jannyGrant(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
+    let block = createBlockFromMessage(message)
 
     log.info("Janny grant attempt by {}: {}", [user.id, evtId]);
 
@@ -26,7 +28,8 @@ export function jannyGrant(message: Message, user: User, data: TypedMap<string, 
     let janny = new BoardJanny(boardJannyId(userId, boardId))
     janny.user = userId
     janny.board = boardId
-    janny.createdAt = message.block.timestamp
+    janny.grantedAtBlock = block.id
+    janny.grantedAt = block.timestamp
     janny.save()
 
     log.info("Janny granted to {}: {}", [user.id, evtId]);

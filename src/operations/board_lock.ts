@@ -3,6 +3,7 @@ import { Message } from "../../generated/Relay/Relay";
 import { Board, User } from "../../generated/schema";
 import { ensureString } from "../ensure";
 import { eventId } from "../id";
+import { loadBoardFromId } from "../internal/board";
 import { isBoardJanny } from "../internal/board_janny";
 
 export function boardLock(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
@@ -16,7 +17,7 @@ export function boardLock(message: Message, user: User, data: TypedMap<string, J
 
     log.info("Locking board: {}", [boardId]);
     
-    let board = Board.load(boardId)
+    let board = loadBoardFromId(boardId)
     if (board == null) {
         log.warning("Board {} not found", [boardId]);
 

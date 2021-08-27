@@ -1,10 +1,11 @@
 import { JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Board, BoardReport, User } from "../../generated/schema";
+import { Board, User } from "../../generated/schema";
 import { ensureString } from "../ensure";
 import { scorePenalty } from "../score";
 import { eventId } from "../id";
-import { boardReportId } from "../internal/board_report";
+import { createBoardReport } from "../internal/board_report";
+import { loadBoardFromId } from "../internal/board";
 
 export function boardReport(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -19,7 +20,7 @@ export function boardReport(message: Message, user: User, data: TypedMap<string,
 
     log.debug("Reported board: {}", [boardId]);
 
-    let board = Board.load(boardId)
+    let board = loadBoardFromId(boardId)
     if (board == null) {
         log.warning("Board {} not found, skipping {}", [boardId, evtId])
 
@@ -28,15 +29,7 @@ export function boardReport(message: Message, user: User, data: TypedMap<string,
     board.score = scorePenalty(board.score)
     board.save()
 
-    let reportId = boardReportId(user, board as Board)
-    let boardReport = BoardReport.load(reportId)
-    if (boardReport == null) {
-        boardReport = new BoardReport(reportId)
-    }
-    boardReport.reason = reason
-    boardReport.board = board.id
-    boardReport.from = user.id
-    boardReport.save()
+    createBoardReport(message, user, board as Board, reason)
 
     return true
 }

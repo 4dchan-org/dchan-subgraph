@@ -4,6 +4,7 @@ import { Board, User } from "../../generated/schema";
 import { ensureBoolean, ensureString } from "../ensure";
 import { isBoardJanny } from "../internal/board_janny";
 import { eventId } from "../id";
+import { loadBoardFromId } from "../internal/board";
 
 export function boardUpdate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -17,7 +18,7 @@ export function boardUpdate(message: Message, user: User, data: TypedMap<string,
         return false
     }
     
-    let board = Board.load(boardId)
+    let board = loadBoardFromId(boardId)
     if (board == null) {
         log.warning("Board {} not found", [boardId]);
 
