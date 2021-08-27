@@ -159,12 +159,12 @@ export class Board extends Entity {
     this.set("jannies", Value.fromStringArray(value));
   }
 
-  get threads(): Array<string> {
+  get threads(): Array<string | null> {
     let value = this.get("threads");
     return value.toStringArray();
   }
 
-  set threads(value: Array<string>) {
+  set threads(value: Array<string | null>) {
     this.set("threads", Value.fromStringArray(value));
   }
 }
@@ -199,13 +199,21 @@ export class BoardCreationEvent extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get board(): string {
+  get board(): string | null {
     let value = this.get("board");
-    return value.toString();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set board(value: string) {
-    this.set("board", Value.fromString(value));
+  set board(value: string | null) {
+    if (value === null) {
+      this.unset("board");
+    } else {
+      this.set("board", Value.fromString(value as string));
+    }
   }
 }
 
@@ -239,13 +247,21 @@ export class Thread extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get board(): string {
+  get board(): string | null {
     let value = this.get("board");
-    return value.toString();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set board(value: string) {
-    this.set("board", Value.fromString(value));
+  set board(value: string | null) {
+    if (value === null) {
+      this.unset("board");
+    } else {
+      this.set("board", Value.fromString(value as string));
+    }
   }
 
   get isPinned(): boolean {
@@ -266,13 +282,30 @@ export class Thread extends Entity {
     this.set("isLocked", Value.fromBoolean(value));
   }
 
-  get op(): string {
+  get op(): string | null {
     let value = this.get("op");
-    return value.toString();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set op(value: string) {
-    this.set("op", Value.fromString(value));
+  set op(value: string | null) {
+    if (value === null) {
+      this.unset("op");
+    } else {
+      this.set("op", Value.fromString(value as string));
+    }
+  }
+
+  get n(): BigInt {
+    let value = this.get("n");
+    return value.toBigInt();
+  }
+
+  set n(value: BigInt) {
+    this.set("n", Value.fromBigInt(value));
   }
 
   get subject(): string {
@@ -284,12 +317,12 @@ export class Thread extends Entity {
     this.set("subject", Value.fromString(value));
   }
 
-  get replies(): Array<string> {
+  get replies(): Array<string | null> {
     let value = this.get("replies");
     return value.toStringArray();
   }
 
-  set replies(value: Array<string>) {
+  set replies(value: Array<string | null>) {
     this.set("replies", Value.fromStringArray(value));
   }
 
@@ -387,13 +420,21 @@ export class ThreadCreationEvent extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get thread(): string {
+  get thread(): string | null {
     let value = this.get("thread");
-    return value.toString();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set thread(value: string) {
-    this.set("thread", Value.fromString(value));
+  set thread(value: string | null) {
+    if (value === null) {
+      this.unset("thread");
+    } else {
+      this.set("thread", Value.fromString(value as string));
+    }
   }
 }
 
@@ -589,13 +630,21 @@ export class PostCreationEvent extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get post(): string {
+  get post(): string | null {
     let value = this.get("post");
-    return value.toString();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set post(value: string) {
-    this.set("post", Value.fromString(value));
+  set post(value: string | null) {
+    if (value === null) {
+      this.unset("post");
+    } else {
+      this.set("post", Value.fromString(value as string));
+    }
   }
 }
 
@@ -696,13 +745,21 @@ export class PostReport extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get post(): string {
+  get post(): string | null {
     let value = this.get("post");
-    return value.toString();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set post(value: string) {
-    this.set("post", Value.fromString(value));
+  set post(value: string | null) {
+    if (value === null) {
+      this.unset("post");
+    } else {
+      this.set("post", Value.fromString(value as string));
+    }
   }
 
   get report(): string {
@@ -745,13 +802,21 @@ export class BoardReport extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get board(): string {
+  get board(): string | null {
     let value = this.get("board");
-    return value.toString();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set board(value: string) {
-    this.set("board", Value.fromString(value));
+  set board(value: string | null) {
+    if (value === null) {
+      this.unset("board");
+    } else {
+      this.set("board", Value.fromString(value as string));
+    }
   }
 
   get report(): string {
@@ -937,13 +1002,21 @@ export class BoardBan extends Entity {
     this.set("user", Value.fromString(value));
   }
 
-  get board(): string {
+  get board(): string | null {
     let value = this.get("board");
-    return value.toString();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set board(value: string) {
-    this.set("board", Value.fromString(value));
+  set board(value: string | null) {
+    if (value === null) {
+      this.unset("board");
+    } else {
+      this.set("board", Value.fromString(value as string));
+    }
   }
 
   get ban(): string {
@@ -995,13 +1068,21 @@ export class PostBan extends Entity {
     this.set("user", Value.fromString(value));
   }
 
-  get post(): string {
+  get post(): string | null {
     let value = this.get("post");
-    return value.toString();
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set post(value: string) {
-    this.set("post", Value.fromString(value));
+  set post(value: string | null) {
+    if (value === null) {
+      this.unset("post");
+    } else {
+      this.set("post", Value.fromString(value as string));
+    }
   }
 
   get ban(): string {

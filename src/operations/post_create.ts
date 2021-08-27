@@ -168,6 +168,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         thread.isPinned = false
         thread.isLocked = false
         thread.op = pId
+        thread.n = newPostCount
         thread.replyCount = BigInt.fromI32(0)
         thread.imageCount = BigInt.fromI32(0)
         thread.createdAtBlock = block.id
