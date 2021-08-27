@@ -13,6 +13,19 @@ type _Schema_
       }
     ]
   )
+  @fulltext(
+    name: "boardSearch",
+    language: en,
+    algorithm: rank,
+    include: [
+      {
+        entity: "Board",
+        fields: [
+          { name: "title" }
+        ]
+      }
+    ]
+  )
 
 type Board @entity {
   id: ID!
