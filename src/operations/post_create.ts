@@ -145,8 +145,6 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     createPostCreationEvent(message, post)
 
     if (thread != null) {
-        post.thread = threadId
-
         thread.replyCount = thread.replyCount.plus(BigInt.fromI32(1))
         thread.imageCount = thread.imageCount.plus(BigInt.fromI32(image != null ? 1 : 0))
     } else {
@@ -177,7 +175,8 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         createThreadCreationEvent(message, thread as Thread)
     }
 
-    post.board = thread.board
+    post.thread = thread.id
+    post.board = board.id
     thread.lastBumpedAtBlock = block.id
     thread.lastBumpedAt = block.timestamp
     user.lastPostedAtBlock = block.id
