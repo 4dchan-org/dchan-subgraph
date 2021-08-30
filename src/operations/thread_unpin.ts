@@ -7,7 +7,7 @@ import { eventId } from "../id";
 import { loadThreadFromId } from "../internal/thread";
 import { loadPostFromId } from "../internal/post";
 
-export function threadPin(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
+export function threadUnpin(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let threadId = ensureString(data.get("id"))
     let evtId = eventId(message)
     if(threadId == null) {
@@ -16,7 +16,7 @@ export function threadPin(message: Message, user: User, data: TypedMap<string, J
         return false
     }
 
-    log.info("Pinning thread: {}", [threadId]);
+    log.info("Unpinning thread: {}", [threadId]);
     
     let thread = loadThreadFromId(threadId)
     if (thread == null) {
@@ -39,15 +39,15 @@ export function threadPin(message: Message, user: User, data: TypedMap<string, J
     }
 
     if(thread.isPinned) {
-        log.warning("Thread {} already pinned, skipping {}", [threadId, evtId])
+        log.warning("Thread {} not pinned, skipping {}", [threadId, evtId])
 
         return false
     }
     
-    thread.isPinned = true
+    thread.isPinned = false
     thread.save()
 
-    log.info("Thread pinned: {}", [threadId])
+    log.info("Thread unpinned: {}", [threadId])
     
     return true
 }

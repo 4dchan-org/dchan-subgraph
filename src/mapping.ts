@@ -19,6 +19,7 @@ import { postRemove } from './operations/post_remove';
 import { postReport } from './operations/post_report';
 import { threadLock } from './operations/thread_lock';
 import { threadPin } from './operations/thread_pin';
+import { threadUnpin } from './operations/thread_unpin';
 import { threadUnlock } from './operations/thread_unlock';
 import { userBan } from './operations/user_ban';
 import { userUnban } from './operations/user_unban';
@@ -133,6 +134,8 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
         return userUnban(message, user, data as Data)
       } else if (operation == "thread:pin") {
         return threadPin(message, user, data as Data)
+      } else if (operation == "thread:unpin") {
+        return threadUnpin(message, user, data as Data)
       } else if (operation == "thread:lock") {
         return threadLock(message, user, data as Data)
       } else if (operation == "thread:unlock") {
