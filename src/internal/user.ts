@@ -1,11 +1,11 @@
-import { BigInt, log } from "@graphprotocol/graph-ts";
+import { log } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
 import { User } from "../../generated/schema";
 import { scoreDefault } from "../score";
 
 export type UserId = string
 
-export function userId(message: Message): UserId {
+export function userIdFromMessage(message: Message): UserId {
     return userIdFromHex(message.transaction.from.toHexString())
 }
 
@@ -14,7 +14,7 @@ export function userIdFromHex(hexAddress: string): UserId {
 }
 
 export function userLoadOrCreate(message: Message): User {
-    let uid = userId(message)
+    let uid = userIdFromMessage(message)
 
     log.info("Loading user: {}", [uid]);
     let user = User.load(uid);

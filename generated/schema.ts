@@ -215,6 +215,15 @@ export class BoardCreationEvent extends Entity {
       this.set("board", Value.fromString(value as string));
     }
   }
+
+  get user(): string {
+    let value = this.get("user");
+    return value.toString();
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
+  }
 }
 
 export class Thread extends Entity {
@@ -436,6 +445,15 @@ export class ThreadCreationEvent extends Entity {
       this.set("thread", Value.fromString(value as string));
     }
   }
+
+  get user(): string {
+    let value = this.get("user");
+    return value.toString();
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
+  }
 }
 
 export class Post extends Entity {
@@ -645,6 +663,15 @@ export class PostCreationEvent extends Entity {
     } else {
       this.set("post", Value.fromString(value as string));
     }
+  }
+
+  get user(): string {
+    let value = this.get("user");
+    return value.toString();
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
   }
 }
 

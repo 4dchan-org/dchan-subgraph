@@ -11,5 +11,5 @@ export function boardJannyId(userId: UserId, boardId: BoardId): BoardJannyId {
 
 export function isBoardJanny(userId: UserId, boardId: BoardId): boolean {
     let boardJanny = BoardJanny.load(boardJannyId(userId, boardId))
-    return isAdmin(userId) || boardJanny == null
+    return boardJanny !== null || isAdmin(userId)
 }

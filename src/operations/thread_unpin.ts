@@ -38,7 +38,7 @@ export function threadUnpin(message: Message, user: User, data: TypedMap<string,
         return false
     }
 
-    if(thread.isPinned) {
+    if(!thread.isPinned) {
         log.warning("Thread {} not pinned, skipping {}", [threadId, evtId])
 
         return false

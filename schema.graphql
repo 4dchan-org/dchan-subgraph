@@ -48,6 +48,7 @@ type Board @entity {
 type BoardCreationEvent @entity {
   id: ID!
   board: Board
+  user: User!
 }
 
 type Thread @entity {
@@ -71,6 +72,7 @@ type Thread @entity {
 type ThreadCreationEvent @entity {
   id: ID!
   thread: Thread
+  user: User!
 }
 
 type Post @entity {
@@ -91,6 +93,7 @@ type Post @entity {
 type PostCreationEvent @entity {
   id: ID!
   post: Post
+  user: User!
 }
 
 type Report @entity {

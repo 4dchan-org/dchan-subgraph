@@ -2,7 +2,7 @@ import { Message } from "../../generated/Relay/Relay";
 import { Report } from "../../generated/schema";
 import { eventId } from "../id";
 import { createBlockFromMessage } from "./block";
-import { userId } from "./user";
+import { userIdFromMessage } from "./user";
 
 export type ReportId = string
 
@@ -18,7 +18,7 @@ export function createReport(message: Message, reason: string): Report {
     report.reason = reason
     report.createdAtBlock = block.id
     report.createdAt = block.timestamp
-    report.from = userId(message)
+    report.from = userIdFromMessage(message)
     report.save()
 
     return report
