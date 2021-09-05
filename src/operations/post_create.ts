@@ -11,6 +11,7 @@ import { postId } from "../internal/post";
 import { createBlockFromMessage } from "../internal/block";
 import { loadThreadFromId } from "../internal/thread";
 import { loadBoardFromId } from "../internal/board";
+import { isBoardJanny } from "../internal/board_janny";
 
 export function postCreate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -64,13 +65,13 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         return false
     }
 
-    if (thread != null && thread.isLocked) {
+    if (thread != null && thread.isLocked && !isBoardJanny(user.id, board.id)) {
         log.warning("Thread {} locked, skipping {}", [threadId, evtId])
 
         return false
     }
 
-    if (board.isLocked) {
+    if (board.isLocked && !isBoardJanny(user.id, board.id)) {
         log.warning("Board {} locked, skipping {}", [board.id, evtId])
 
         return false
