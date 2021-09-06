@@ -86,8 +86,6 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
 
     let newPostCount = board.postCount.plus(BigInt.fromI32(1))
     board.postCount = newPostCount
-    board.lastBumpedAtBlock = block.id
-    board.lastBumpedAt = block.timestamp
 
     log.info("Creating image: {}", [evtId]);
     let image: Image | null = null
@@ -179,9 +177,16 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     }
 
     post.board = board.id
-    thread.lastBumpedAtBlock = block.id
-    thread.lastBumpedAt = block.timestamp
     user.lastPostedAtBlock = block.id
+
+    // Bump?
+    let sage = ensureBoolean(data.get("sage"))
+    if(!sage) {
+        board.lastBumpedAtBlock = block.id
+        board.lastBumpedAt = block.timestamp
+        thread.lastBumpedAtBlock = block.id
+        thread.lastBumpedAt = block.timestamp
+    }
 
     log.info("Saving: {}", [evtId]);
 
