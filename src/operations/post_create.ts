@@ -180,8 +180,8 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     user.lastPostedAtBlock = block.id
 
     // Bump?
-    let sage = ensureBoolean(data.get("sage"))
-    if(!sage) {
+    let sage = "true" == ensureBoolean(data.get("sage"))
+    if(sage == false) {
         board.lastBumpedAtBlock = block.id
         board.lastBumpedAt = block.timestamp
         thread.lastBumpedAtBlock = block.id

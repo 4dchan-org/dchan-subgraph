@@ -36,7 +36,7 @@ export function boardUpdate(message: Message, user: User, data: TypedMap<string,
         board.title = title
     }
     let isNsfw = "true" == ensureBoolean(data.get("nsfw"))
-    if(isNsfw != null) {
+    if(isNsfw == true) {
         board.isNsfw = isNsfw
     }
     board.save()
