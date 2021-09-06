@@ -1,11 +1,12 @@
-import { JSONValue, log, store, TypedMap } from "@graphprotocol/graph-ts";
+import { BigInt, JSONValue, log, store, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Post, Thread, User } from "../../generated/schema";
+import { User } from "../../generated/schema";
 import { ensureArray, ensureString } from "../ensure";
 import { isBoardJanny } from "../internal/board_janny";
 import { eventId } from "../id";
 import { loadPostFromId } from "../internal/post";
 import { loadThreadFromId } from "../internal/thread";
+import { loadBoardFromId } from "../internal/board";
 
 export function postRemove(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -55,12 +56,18 @@ export function postRemove(message: Message, user: User, data: TypedMap<string, 
         let postId: string = ensureString((postIdValues as JSONValue[])[i])
         let thread = loadThreadFromId(postId)
         if (thread != null) {
-            store.remove('Thread', thread.id)
+            let board = loadBoardFromId(thread.board)
+            if(board != null) {
+                board.threadCount = board.threadCount.minus(BigInt.fromI32(1))
+                board.save()
+            }
+
+            store.remove("Thread", thread.id)
         }
 
         log.debug("Removing post: {}", [postId])
 
-        store.remove('Post', postId)
+        store.remove("Post", postId)
 
         log.info("Post removed: {}", [postId])
     }
