@@ -183,7 +183,6 @@ type Image @entity {
 type ChanStatus @entity {
   id: ID!
   isLocked: Boolean!
-  client: Client
 }
 
 type Block @entity {
@@ -194,6 +193,8 @@ type Block @entity {
 
 type Client @entity {
   id: ID!
+  version: String!
   ipfsHash: String!
-  publishedAt: Block!
+  publishedAtBlock: Block!
+  publishedAt: BigInt!
 }

@@ -19,15 +19,18 @@ export function clientPublish(message: Message, user: User, data: TypedMap<strin
     }
 
     let ipfsHash = ensureString(data.get("ipfs_hash"))
-    if (ipfsHash) {
+    let version = ensureString(data.get("version"))
+    if (ipfsHash == null || version == null) {
         log.info("Invalid client publish request: {}", [evtId])
 
         return false
     }
 
     let client = new Client(clientIdFromMessage(message))
+    client.version = version
     client.ipfsHash = ipfsHash
-    client.publishedAt = block.id
+    client.publishedAtBlock = block.id
+    client.publishedAt = block.timestamp
     client.save()
 
     log.info("Client published {}: {}", [ipfsHash, evtId]);

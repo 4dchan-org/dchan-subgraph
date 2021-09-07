@@ -1462,23 +1462,6 @@ export class ChanStatus extends Entity {
   set isLocked(value: boolean) {
     this.set("isLocked", Value.fromBoolean(value));
   }
-
-  get client(): string | null {
-    let value = this.get("client");
-    if (value === null || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
-  }
-
-  set client(value: string | null) {
-    if (value === null) {
-      this.unset("client");
-    } else {
-      this.set("client", Value.fromString(value as string));
-    }
-  }
 }
 
 export class Block extends Entity {
@@ -1560,6 +1543,15 @@ export class Client extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get version(): string {
+    let value = this.get("version");
+    return value.toString();
+  }
+
+  set version(value: string) {
+    this.set("version", Value.fromString(value));
+  }
+
   get ipfsHash(): string {
     let value = this.get("ipfsHash");
     return value.toString();
@@ -1569,12 +1561,21 @@ export class Client extends Entity {
     this.set("ipfsHash", Value.fromString(value));
   }
 
-  get publishedAt(): string {
-    let value = this.get("publishedAt");
+  get publishedAtBlock(): string {
+    let value = this.get("publishedAtBlock");
     return value.toString();
   }
 
-  set publishedAt(value: string) {
-    this.set("publishedAt", Value.fromString(value));
+  set publishedAtBlock(value: string) {
+    this.set("publishedAtBlock", Value.fromString(value));
+  }
+
+  get publishedAt(): BigInt {
+    let value = this.get("publishedAt");
+    return value.toBigInt();
+  }
+
+  set publishedAt(value: BigInt) {
+    this.set("publishedAt", Value.fromBigInt(value));
   }
 }
