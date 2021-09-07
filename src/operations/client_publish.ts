@@ -33,7 +33,7 @@ export function clientPublish(message: Message, user: User, data: TypedMap<strin
     client.publishedAt = block.timestamp
     client.save()
 
-    log.info("Client published {}: {}", [ipfsHash, evtId]);
+    log.info("Client published {} version {}: {}", [ipfsHash, version, evtId]);
 
     return true
 }
