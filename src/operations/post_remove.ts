@@ -54,7 +54,12 @@ export function postRemove(message: Message, user: User, data: TypedMap<string, 
 
     for (let i = 0; i < postIdValues.length; i++) {
         let postId: string = ensureString((postIdValues as JSONValue[])[i])
+
+        // @TODO I hate to load twice
+        let post = loadPostFromId(postId)
         let thread = loadThreadFromId(postId)
+
+        // Thread creation post?
         if (thread != null) {
             let board = loadBoardFromId(thread.board)
             if(board != null) {
@@ -62,7 +67,19 @@ export function postRemove(message: Message, user: User, data: TypedMap<string, 
                 board.save()
             }
 
+            // Remove the thread
             store.remove("Thread", thread.id)
+        } else {
+            thread = loadThreadFromId(post.thread)
+            if(thread != null) {
+                // Keep counts in check
+                thread.replyCount = thread.replyCount.minus(BigInt.fromI32(1))
+                if(post.image) {
+                    thread.imageCount = thread.imageCount.minus(BigInt.fromI32(1))
+                }
+
+                thread.save()
+            }
         }
 
         log.debug("Removing post: {}", [postId])
