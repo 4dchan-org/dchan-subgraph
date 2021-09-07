@@ -1462,36 +1462,22 @@ export class ChanStatus extends Entity {
   set isLocked(value: boolean) {
     this.set("isLocked", Value.fromBoolean(value));
   }
-}
 
-export class IPFSReference extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
+  get client(): string | null {
+    let value = this.get("client");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  save(): void {
-    let id = this.get("id");
-    assert(id !== null, "Cannot save IPFSReference entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save IPFSReference entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("IPFSReference", id.toString(), this);
-  }
-
-  static load(id: string): IPFSReference | null {
-    return store.get("IPFSReference", id) as IPFSReference | null;
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
+  set client(value: string | null) {
+    if (value === null) {
+      this.unset("client");
+    } else {
+      this.set("client", Value.fromString(value as string));
+    }
   }
 }
 
@@ -1541,5 +1527,54 @@ export class Block extends Entity {
 
   set number(value: BigInt) {
     this.set("number", Value.fromBigInt(value));
+  }
+}
+
+export class Client extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save Client entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save Client entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("Client", id.toString(), this);
+  }
+
+  static load(id: string): Client | null {
+    return store.get("Client", id) as Client | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get ipfsHash(): string {
+    let value = this.get("ipfsHash");
+    return value.toString();
+  }
+
+  set ipfsHash(value: string) {
+    this.set("ipfsHash", Value.fromString(value));
+  }
+
+  get publishedAt(): string {
+    let value = this.get("publishedAt");
+    return value.toString();
+  }
+
+  set publishedAt(value: string) {
+    this.set("publishedAt", Value.fromString(value));
   }
 }

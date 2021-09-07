@@ -30,6 +30,7 @@ import { blockId } from './internal/block';
 import { userIsBanned } from './internal/user_ban';
 import { isChanLocked } from './internal/chan_status';
 import { boardReport } from './operations/board_report';
+import { clientPublish } from './operations/client_publish';
 
 type Data = TypedMap<string, JSONValue>
 
@@ -88,6 +89,11 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
 
     let data = ensureObject(payload.get('data'));
     if (data != null) {
+      // IPFS client
+      if (operation == "client:publish") {
+        return clientPublish(message, user, data as Data)
+      }
+
       // Admin
       if (operation == "chan:unlock") {
         return chanUnlock(message, user)
@@ -99,7 +105,7 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
         return adminGrant(message, user, data as Data)
       } else if (operation == "admin:revoke") {
         return adminRevoke(message, user, data as Data)
-      } else
+      }
 
       // Checks
       if (isChanLocked(message)) {

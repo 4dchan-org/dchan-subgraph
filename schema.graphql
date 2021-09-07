@@ -183,14 +183,17 @@ type Image @entity {
 type ChanStatus @entity {
   id: ID!
   isLocked: Boolean!
-}
-
-type IPFSReference @entity {
-  id: ID!
+  client: Client
 }
 
 type Block @entity {
   id: ID!
   timestamp: BigInt!
   number: BigInt!
+}
+
+type Client @entity {
+  id: ID!
+  ipfsHash: String!
+  publishedAt: Block!
 }
