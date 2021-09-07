@@ -616,6 +616,15 @@ export class Post extends Entity {
   set score(value: BigInt) {
     this.set("score", Value.fromBigInt(value));
   }
+
+  get sage(): boolean {
+    let value = this.get("sage");
+    return value.toBoolean();
+  }
+
+  set sage(value: boolean) {
+    this.set("sage", Value.fromBoolean(value));
+  }
 }
 
 export class PostCreationEvent extends Entity {

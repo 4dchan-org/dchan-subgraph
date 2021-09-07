@@ -88,6 +88,7 @@ type Post @entity {
   createdAt: BigInt!
   bans: [PostBan!]! @derivedFrom(field: "post")
   score: BigInt!
+  sage: Boolean!
 }
 
 type PostCreationEvent @entity {

@@ -23,6 +23,8 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     let thread: Thread | null = null
     let threadId = ensureString(data.get("thread"))
 
+    let sage = "true" == ensureBoolean(data.get("sage"))
+
     // Throttling
     // if(user.lastPostedAt != null && message.block.timestamp < user.lastPostedAt.plus(BigInt.fromI32(50))) {
     //     log.info("Throttling user {}: {}", [user.id, evtId]);
@@ -137,6 +139,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     post.createdAt = block.timestamp
     post.name = (!!name && name != "") ? name : "Anonymous"
     post.from = user.id
+    post.sage = sage
     if (image != null) {
         post.image = image.id
     }
@@ -172,6 +175,8 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         thread.imageCount = BigInt.fromI32(0)
         thread.createdAtBlock = block.id
         thread.createdAt = block.timestamp
+        thread.lastBumpedAtBlock = block.id
+        thread.lastBumpedAt = block.timestamp
         
         createThreadCreationEvent(message, thread as Thread)
     }
@@ -179,8 +184,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     post.board = board.id
     user.lastPostedAtBlock = block.id
 
-    // Bump?
-    let sage = "true" == ensureBoolean(data.get("sage"))
+    // If saging do not bump
     if(sage == false) {
         board.lastBumpedAtBlock = block.id
         board.lastBumpedAt = block.timestamp
