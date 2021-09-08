@@ -59,34 +59,44 @@ export function postRemove(message: Message, user: User, data: TypedMap<string, 
         let post = loadPostFromId(postId)
         let thread = loadThreadFromId(postId)
 
-        // Thread creation post?
-        if (thread != null) {
-            let board = loadBoardFromId(thread.board)
-            if(board != null) {
-                board.threadCount = board.threadCount.minus(BigInt.fromI32(1))
-                board.save()
-            }
-
-            // Remove the thread
-            store.remove("Thread", thread.id)
-        } else {
-            thread = loadThreadFromId(post.thread)
-            if(thread != null) {
-                // Keep counts in check
-                thread.replyCount = thread.replyCount.minus(BigInt.fromI32(1))
-                if(post.image) {
-                    thread.imageCount = thread.imageCount.minus(BigInt.fromI32(1))
+        // Avoid duplicate post deletion
+        if (post != null) {
+            // Thread creation post?
+            if (thread != null) {
+                let board = loadBoardFromId(thread.board)
+                if(board != null) {
+                    board.threadCount = board.threadCount.minus(BigInt.fromI32(1))
+                    board.save()
                 }
 
-                thread.save()
+                // Remove the thread
+                store.remove("Thread", thread.id)
+            } else {
+                // Keep counts in check
+                thread = loadThreadFromId(post.thread)
+                if(thread != null) {
+                    thread.replyCount = thread.replyCount.minus(BigInt.fromI32(1))
+                    thread.imageCount = thread.imageCount.minus(BigInt.fromI32(post.image != null ? 1 : 0))
+
+                    thread.save()
+                }
+
+                let board = loadBoardFromId(post.board)
+                if(board != null) {
+                    board.postCount = board.threadCount.minus(BigInt.fromI32(1))
+
+                    board.save()
+                }
             }
+
+            log.debug("Removing post: {}okow", [postId])
+    
+            store.remove("Post", postId)
+    
+            log.info("Post removed: {}", [postId])
+        } else {
+            log.warning("Duplicate post deletion value {}: {}", [postId, evtId])
         }
-
-        log.debug("Removing post: {}", [postId])
-
-        store.remove("Post", postId)
-
-        log.info("Post removed: {}", [postId])
     }
 
     return true
