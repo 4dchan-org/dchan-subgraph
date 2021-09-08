@@ -1552,6 +1552,15 @@ export class Client extends Entity {
     this.set("version", Value.fromString(value));
   }
 
+  get channel(): string {
+    let value = this.get("channel");
+    return value.toString();
+  }
+
+  set channel(value: string) {
+    this.set("channel", Value.fromString(value));
+  }
+
   get ipfsHash(): string {
     let value = this.get("ipfsHash");
     return value.toString();

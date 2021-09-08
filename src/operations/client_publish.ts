@@ -20,6 +20,7 @@ export function clientPublish(message: Message, user: User, data: TypedMap<strin
 
     let ipfsHash = ensureString(data.get("ipfs_hash"))
     let version = ensureString(data.get("version"))
+    let channel = ensureString(data.get("channel"))
     if (ipfsHash == null || version == null) {
         log.info("Invalid client publish request: {}", [evtId])
 
@@ -29,6 +30,7 @@ export function clientPublish(message: Message, user: User, data: TypedMap<strin
     let client = new Client(clientIdFromMessage(message))
     client.version = version
     client.ipfsHash = ipfsHash
+    client.channel = channel != null ? channel : ""
     client.publishedAtBlock = block.id
     client.publishedAt = block.timestamp
     client.save()

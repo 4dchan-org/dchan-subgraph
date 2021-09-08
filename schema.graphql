@@ -194,6 +194,7 @@ type Block @entity {
 type Client @entity {
   id: ID!
   version: String!
+  channel: String!
   ipfsHash: String!
   publishedAtBlock: Block!
   publishedAt: BigInt!
