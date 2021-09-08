@@ -86,8 +86,8 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         return false
     }
 
-    let newPostCount = board.postCount.plus(BigInt.fromI32(1))
-    board.postCount = newPostCount
+    let nCount = board.nCount.plus(BigInt.fromI32(1))
+    board.nCount = nCount
 
     log.info("Creating image: {}", [evtId]);
     let image: Image | null = null
@@ -133,7 +133,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     let pId = postId(message)
     let post = new Post(pId)
     post.score = scoreDefault()
-    post.n = newPostCount
+    post.n = nCount
     post.comment = comment || ""
     post.createdAtBlock = block.id
     post.createdAt = block.timestamp
@@ -170,7 +170,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         thread.isPinned = false
         thread.isLocked = false
         thread.op = pId
-        thread.n = newPostCount
+        thread.n = nCount
         thread.replyCount = BigInt.fromI32(0)
         thread.imageCount = BigInt.fromI32(0)
         thread.createdAtBlock = block.id
@@ -183,6 +183,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
 
     post.board = board.id
     user.lastPostedAtBlock = block.id
+    board.postCount = board.postCount.plus(BigInt.fromI32(1))
 
     // If saging do not bump
     if(sage == false) {

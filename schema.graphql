@@ -32,6 +32,7 @@ type Board @entity {
   title: String!
   postCount: BigInt!
   threadCount: BigInt!
+  nCount: BigInt!
   name: String!
   score: BigInt!
   isNsfw: Boolean!

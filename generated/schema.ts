@@ -69,6 +69,15 @@ export class Board extends Entity {
     this.set("threadCount", Value.fromBigInt(value));
   }
 
+  get nCount(): BigInt {
+    let value = this.get("nCount");
+    return value.toBigInt();
+  }
+
+  set nCount(value: BigInt) {
+    this.set("nCount", Value.fromBigInt(value));
+  }
+
   get name(): string {
     let value = this.get("name");
     return value.toString();
