@@ -31,6 +31,7 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
     board.title = title
     board.threadCount = BigInt.fromI32(0)
     board.postCount = BigInt.fromI32(0)
+    board.nCount = BigInt.fromI32(0)
     board.score = scoreDefault()
     board.createdBy = user.id
     board.createdAtBlock = block.id
