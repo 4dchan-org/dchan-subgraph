@@ -13,7 +13,7 @@ export function adminGrant(message: Message, user: User, data: TypedMap<string, 
 
     log.info("Admin grant attempt by {}: {}", [user.id, evtId]);
 
-    if(!isAdmin(user.id)) {
+    if(!isAdmin(user)) {
         // Curses! Foiled again...
         return false
     }

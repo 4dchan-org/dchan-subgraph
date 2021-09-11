@@ -6,11 +6,15 @@ import { scoreDefault } from "../score";
 export type UserId = string
 
 export function userIdFromMessage(message: Message): UserId {
-    return userIdFromHex(message.transaction.from.toHexString())
+    return shortUserIdFromHex(message.transaction.from.toHexString())
 }
 
 export function userIdFromHex(hexAddress: string): UserId {
     return hexAddress
+}
+
+export function shortUserIdFromHex(hexAddress: string): UserId {
+    return "0x"+hexAddress.substr(2, 3)+hexAddress.substr(-3, 3)
 }
 
 export function userLoadOrCreate(message: Message): User {

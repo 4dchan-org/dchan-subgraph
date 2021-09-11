@@ -32,7 +32,7 @@ export function threadUnpin(message: Message, user: User, data: TypedMap<string,
         return false
     }
 
-    if((op.from != user.id) && !isBoardJanny(user.id, thread.board)) {
+    if((op.from != user.id) && !isBoardJanny(user, thread.board)) {
         log.warning("Thread {} not owned by {}, skipping {}", [threadId, user.id, evtId])
 
         return false

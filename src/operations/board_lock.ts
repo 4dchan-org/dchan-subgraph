@@ -1,6 +1,6 @@
 import { JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Board, User } from "../../generated/schema";
+import { User } from "../../generated/schema";
 import { ensureString } from "../ensure";
 import { eventId } from "../id";
 import { loadBoardFromId } from "../internal/board";
@@ -24,7 +24,7 @@ export function boardLock(message: Message, user: User, data: TypedMap<string, J
         return false
     }
 
-    if((board.createdBy != user.id) && !isBoardJanny(user.id, board.id)) {
+    if((board.createdBy != user.id) && !isBoardJanny(user, board.id)) {
         log.warning("User {} is not janny of {}, skipping {}", [user.id, boardId, evtId])
 
         return false

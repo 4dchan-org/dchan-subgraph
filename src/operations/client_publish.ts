@@ -13,7 +13,7 @@ export function clientPublish(message: Message, user: User, data: TypedMap<strin
 
     log.info("Client publish attempt by {}: {}", [user.id, evtId]);
 
-    if (!isAdmin(user.id)) {
+    if (!isAdmin(user)) {
         // Curses! Foiled again...
         return false
     }

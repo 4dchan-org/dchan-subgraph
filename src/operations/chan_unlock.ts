@@ -8,7 +8,7 @@ import { chanStatusId, isChanLocked } from "../internal/chan_status";
 export function chanUnlock(message: Message, user: User): boolean {
     let evtId = eventId(message)
 
-    if(!isAdmin(user.id)) {
+    if(!isAdmin(user)) {
         log.warning("{} is not admin", [user.id])
 
         return false

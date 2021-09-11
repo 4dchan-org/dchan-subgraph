@@ -8,7 +8,7 @@ import { isAdmin } from "./admin";
 export function dchanUnlock(message: Message, user: User): boolean {
     let evtId = eventId(message)
 
-    if(!isAdmin(user.id)) {
+    if(!isAdmin(user)) {
         log.warning("{} is not admin", [user.id])
 
         return false

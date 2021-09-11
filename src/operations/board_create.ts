@@ -31,7 +31,6 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
     board.title = title
     board.threadCount = BigInt.fromI32(0)
     board.postCount = BigInt.fromI32(0)
-    board.nCount = BigInt.fromI32(0)
     board.score = scoreDefault()
     board.createdBy = user.id
     board.createdAtBlock = block.id
@@ -43,7 +42,7 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
 
     createBoardCreationEvent(message, board)
 
-    let boardJanny = new BoardJanny(boardJannyId(user.id, board.id))
+    let boardJanny = new BoardJanny(boardJannyId(user, board.id))
     boardJanny.grantedAtBlock = block.id
     boardJanny.grantedAt = block.timestamp
     boardJanny.board = board.id

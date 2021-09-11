@@ -54,7 +54,7 @@ export function postBan(message: Message, user: User, data: TypedMap<string, JSO
         return false
     }
 
-    if(!isBoardJanny(user.id, thread.board)) {
+    if(!isBoardJanny(user, thread.board)) {
         log.warning("Unauthorized, skipping {}", [evtId])
 
         return false

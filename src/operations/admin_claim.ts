@@ -25,7 +25,7 @@ export function adminClaim(message: Message, user: User): boolean {
     admin.save()
 
     // Actual admin
-    admin = new Admin(user.id)
+    admin = new Admin(user.address)
     admin.grantedAtBlock = block.id
     admin.grantedAt = block.timestamp
     admin.save()

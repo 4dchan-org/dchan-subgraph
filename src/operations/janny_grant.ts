@@ -15,17 +15,18 @@ export function jannyGrant(message: Message, user: User, data: TypedMap<string, 
 
     let boardId = ensureString(data.get("board"))
     let userId = ensureString(data.get("user"))
-    if(userId === null || boardId === null) {
+    let targetUser = User.load(userId)
+    if(userId === null || boardId === null || targetUser === null) {
         log.info("Invalid janny grant request: {}", [evtId])
 
         return false
     }
 
-    if(!isBoardJanny(user.id, boardId)) {
+    if(!isBoardJanny(user, boardId)) {
         return false
     }
 
-    let janny = new BoardJanny(boardJannyId(userId, boardId))
+    let janny = new BoardJanny(boardJannyId(targetUser, boardId))
     janny.user = userId
     janny.board = boardId
     janny.grantedAtBlock = block.id

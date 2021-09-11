@@ -32,7 +32,6 @@ type Board @entity {
   title: String!
   postCount: BigInt!
   threadCount: BigInt!
-  nCount: BigInt!
   name: String!
   score: BigInt!
   isNsfw: Boolean!
@@ -68,6 +67,7 @@ type Thread @entity {
   lastBumpedAtBlock: Block!
   lastBumpedAt: BigInt!
   score: BigInt!
+  from: User!
 }
 
 type ThreadCreationEvent @entity {

@@ -1,6 +1,5 @@
-import { Admin } from "../../generated/schema";
-import { UserId } from "./user";
+import { Admin, User } from "../../generated/schema";
 
-export function isAdmin(userId: UserId): boolean {
-    return Admin.load(userId) != null
+export function isAdmin(user: User): boolean {
+    return Admin.load(user.address) != null
 }

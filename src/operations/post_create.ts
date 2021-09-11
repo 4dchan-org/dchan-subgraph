@@ -67,13 +67,13 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         return false
     }
 
-    if (thread != null && thread.isLocked && !isBoardJanny(user.id, board.id)) {
+    if (thread != null && thread.isLocked && !isBoardJanny(user, board.id)) {
         log.warning("Thread {} locked, skipping {}", [threadId, evtId])
 
         return false
     }
 
-    if (board.isLocked && !isBoardJanny(user.id, board.id)) {
+    if (board.isLocked && !isBoardJanny(user, board.id)) {
         log.warning("Board {} locked, skipping {}", [board.id, evtId])
 
         return false
@@ -85,9 +85,6 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
 
         return false
     }
-
-    let nCount = board.nCount.plus(BigInt.fromI32(1))
-    board.nCount = nCount
 
     log.info("Creating image: {}", [evtId]);
     let image: Image | null = null
@@ -133,7 +130,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     let pId = postId(message)
     let post = new Post(pId)
     post.score = scoreDefault()
-    post.n = nCount
+    post.n = block.timestamp
     post.comment = comment || ""
     post.createdAtBlock = block.id
     post.createdAt = block.timestamp
@@ -170,7 +167,8 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         thread.isPinned = false
         thread.isLocked = false
         thread.op = pId
-        thread.n = nCount
+        thread.n = block.timestamp
+        thread.from = user.id
         thread.replyCount = BigInt.fromI32(0)
         thread.imageCount = BigInt.fromI32(0)
         thread.createdAtBlock = block.id

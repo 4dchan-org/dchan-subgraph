@@ -45,7 +45,7 @@ export function postRemove(message: Message, user: User, data: TypedMap<string, 
             return false
         }
 
-        if ((post.from != user.id) && !isBoardJanny(user.id, post.board)) {
+        if ((post.from != user.id) && !isBoardJanny(user, post.board)) {
             log.warning("Post {} not owned by {}, skipping {}", [postId, user.id, evtId])
 
             return false

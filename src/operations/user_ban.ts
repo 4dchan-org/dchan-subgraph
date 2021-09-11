@@ -11,7 +11,7 @@ import { isAdmin } from "../internal/admin";
 export function userBan(message: Message, from: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
     
-    if(!isAdmin(from.id)) {
+    if(!isAdmin(from)) {
         log.warning("Unauthorized, skipping {}", [evtId])
         
         return false

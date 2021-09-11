@@ -20,7 +20,7 @@ export function jannyrevoke(message: Message, user: User, data: TypedMap<string,
         return false
     }
 
-    if(!isBoardJanny(user.id, boardId)) {
+    if(!isBoardJanny(user, boardId)) {
         return false
     }
     
