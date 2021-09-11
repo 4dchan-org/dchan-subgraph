@@ -66,6 +66,7 @@ export function postRemove(message: Message, user: User, data: TypedMap<string, 
                 let board = loadBoardFromId(thread.board)
                 if(board != null) {
                     board.threadCount = board.threadCount.minus(BigInt.fromI32(1))
+                    board.postCount = board.postCount.minus(thread.replyCount).minus(BigInt.fromI32(1))
                     board.save()
                 }
 
