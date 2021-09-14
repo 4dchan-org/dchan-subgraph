@@ -14,10 +14,16 @@ export function jannyGrant(message: Message, user: User, data: TypedMap<string, 
     log.info("Janny grant attempt by {}: {}", [user.id, evtId]);
 
     let boardId = ensureString(data.get("board"))
-    let userId = ensureString(data.get("user"))
-    let targetUser = User.load(userId)
-    if(userId === null || boardId === null || targetUser === null) {
+    let targetUserId = ensureString(data.get("user"))
+    if(targetUserId === null || boardId === null) {
         log.info("Invalid janny grant request: {}", [evtId])
+
+        return false
+    }
+
+    let targetUser = User.load(targetUserId)
+    if(targetUser === null) {
+        log.info("Invalid janny grant request to inexistent user {}: {}", [targetUserId, evtId])
 
         return false
     }
@@ -26,8 +32,8 @@ export function jannyGrant(message: Message, user: User, data: TypedMap<string, 
         return false
     }
 
-    let janny = new BoardJanny(boardJannyId(targetUser, boardId))
-    janny.user = userId
+    let janny = new BoardJanny(boardJannyId(targetUser as User, boardId))
+    janny.user = targetUserId
     janny.board = boardId
     janny.grantedAtBlock = block.id
     janny.grantedAt = block.timestamp

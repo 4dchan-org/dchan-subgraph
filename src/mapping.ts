@@ -13,6 +13,8 @@ import { boardUnlock } from './operations/board_unlock';
 import { boardUpdate } from './operations/board_update';
 import { chanLock } from './operations/chan_lock';
 import { chanUnlock } from './operations/chan_unlock';
+import { jannyGrant } from './operations/janny_grant';
+import { jannyRevoke } from './operations/janny_revoke';
 import { postBan } from './operations/post_ban';
 import { postCreate } from './operations/post_create';
 import { postRemove } from './operations/post_remove';
@@ -132,6 +134,10 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
         return boardUpdate(message, user, data as Data)
       } else if (operation == "board:unlock") {
         return boardUnlock(message, user, data as Data)
+      } else if (operation == "janny:grant") {
+        return jannyGrant(message, user, data as Data)
+      } else if (operation == "janny:revoke") {
+        return jannyRevoke(message, user, data as Data)
       } else if (operation == "post:ban") {
         return postBan(message, user, data as Data)
       } else if (operation == "user:ban") {
