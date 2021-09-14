@@ -141,6 +141,12 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         post.image = image.id
     }
 
+    if (post.comment == "" && post.image == null) {
+        log.warning("Invalid post, skipping {}", [evtId])
+
+        return false
+    }
+
     createPostCreationEvent(message, post)
 
     if (thread != null) {
