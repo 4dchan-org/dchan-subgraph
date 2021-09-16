@@ -8,14 +8,14 @@ import { scoreDefault } from "../score";
 import { createPostCreationEvent, createThreadCreationEvent } from "../internal/creation_event";
 import { userIsBoardBanned } from "../internal/board_ban";
 import { postId } from "../internal/post";
-import { createBlockFromMessage } from "../internal/block";
+import { locateBlockFromMessage } from "../internal/block";
 import { loadThreadFromId } from "../internal/thread";
 import { loadBoardFromId } from "../internal/board";
 import { isBoardJanny } from "../internal/board_janny";
 
 export function postCreate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
-    let block = createBlockFromMessage(message)
+    let block = locateBlockFromMessage(message)
 
     let board: Board | null = null
     let boardId = ensureString(data.get("board"))

@@ -5,11 +5,11 @@ import { ensureString } from "../ensure";
 import { isBoardJanny } from "../internal/board_janny";
 import { eventId } from "../id";
 import { boardJannyId } from "../internal/board_janny";
-import { createBlockFromMessage } from "../internal/block";
+import { locateBlockFromMessage } from "../internal/block";
 
 export function jannyGrant(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
-    let block = createBlockFromMessage(message)
+    let block = locateBlockFromMessage(message)
 
     log.info("Janny grant attempt by {}: {}", [user.id, evtId]);
 

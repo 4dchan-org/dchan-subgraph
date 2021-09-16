@@ -2,13 +2,13 @@ import { log } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
 import { Admin, User } from "../../generated/schema";
 import { eventId } from "../id";
-import { createBlockFromMessage } from "../internal/block";
+import { locateBlockFromMessage } from "../internal/block";
 
 const ADMIN_ID = "op"
 
 export function adminClaim(message: Message, user: User): boolean {
     let evtId = eventId(message)
-    let block = createBlockFromMessage(message)
+    let block = locateBlockFromMessage(message)
 
     log.info("Admin claim attempt by {}: {}", [user.id, evtId]);
 
@@ -19,6 +19,7 @@ export function adminClaim(message: Message, user: User): boolean {
 
         return false
     }
+
     admin = new Admin(ADMIN_ID)
     admin.grantedAtBlock = block.id
     admin.grantedAt = block.timestamp

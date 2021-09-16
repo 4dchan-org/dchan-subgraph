@@ -26,7 +26,7 @@ import { threadUnlock } from './operations/thread_unlock';
 import { userBan } from './operations/user_ban';
 import { userUnban } from './operations/user_unban';
 
-import { userLoadOrCreate } from './internal/user';
+import { locateUserFromMessage } from './internal/user';
 import { eventId } from './id';
 import { blockId } from './internal/block';
 import { userIsBanned } from './internal/user_ban';
@@ -78,7 +78,7 @@ export function parseJsonMessage(message: Message, bytes: Bytes): TypedMap<strin
 }
 
 function processMessagePayload(message: Message, payload: TypedMap<string, JSONValue>): boolean {
-  let user = userLoadOrCreate(message)
+  let user = locateUserFromMessage(message)
   let evtId = eventId(message)
 
   // Always good to have but not needed now

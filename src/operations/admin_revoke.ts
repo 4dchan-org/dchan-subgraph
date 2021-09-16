@@ -2,7 +2,6 @@ import { JSONValue, log, store, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
 import { ensureString } from "../ensure";
 import { eventId } from "../id";
-import { userIdFromHex } from "../internal/user";
 import { User } from "../../generated/schema";
 import { isAdmin } from "../internal/admin";
 
@@ -23,7 +22,7 @@ export function adminRevoke(message: Message, user: User, data: TypedMap<string,
         return false
     }
 
-    store.remove("Admin", userIdFromHex(hexAddress))
+    store.remove("Admin", hexAddress)
 
     log.info("Admin {} revoked by {}: {}", [hexAddress, user.id, evtId]);
 

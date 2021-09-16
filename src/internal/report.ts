@@ -1,7 +1,7 @@
 import { Message } from "../../generated/Relay/Relay";
 import { Report } from "../../generated/schema";
 import { eventId } from "../id";
-import { createBlockFromMessage } from "./block";
+import { locateBlockFromMessage } from "./block";
 import { userIdFromMessage } from "./user";
 
 export type ReportId = string
@@ -11,7 +11,7 @@ export function reportId(message: Message): ReportId {
 }
 
 export function createReport(message: Message, reason: string): Report {
-    let block = createBlockFromMessage(message)
+    let block = locateBlockFromMessage(message)
 
     let id = reportId(message)
     let report = new Report(id)

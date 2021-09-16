@@ -5,11 +5,11 @@ import { ensureString } from "../ensure";
 import { eventId } from "../id";
 import { isAdmin } from "../internal/admin";
 import { clientIdFromMessage } from "../internal/client";
-import { createBlockFromMessage } from "../internal/block";
+import { locateBlockFromMessage } from "../internal/block";
 
 export function clientPublish(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
-    let block = createBlockFromMessage(message)
+    let block = locateBlockFromMessage(message)
 
     log.info("Client publish attempt by {}: {}", [user.id, evtId]);
 

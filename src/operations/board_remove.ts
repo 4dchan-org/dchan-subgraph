@@ -1,6 +1,6 @@
 import { JSONValue, log, store, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Board, User } from "../../generated/schema";
+import { User } from "../../generated/schema";
 import { ensureString } from "../ensure";
 import { isBoardJanny } from "../internal/board_janny";
 import { eventId } from "../id";

@@ -6,18 +6,14 @@ import { scoreDefault } from "../score";
 export type UserId = string
 
 export function userIdFromMessage(message: Message): UserId {
-    return shortUserIdFromHex(message.transaction.from.toHexString())
+    return userIdFromHexAddress(message.transaction.from.toHexString())
 }
 
-export function userIdFromHex(hexAddress: string): UserId {
-    return hexAddress
-}
-
-export function shortUserIdFromHex(hexAddress: string): UserId {
+export function userIdFromHexAddress(hexAddress: string): UserId {
     return "0x"+hexAddress.substr(2, 3)+hexAddress.substr(-3, 3)
 }
 
-export function userLoadOrCreate(message: Message): User {
+export function locateUserFromMessage(message: Message): User {
     let uid = userIdFromMessage(message)
 
     log.info("Loading user: {}", [uid]);
@@ -28,8 +24,8 @@ export function userLoadOrCreate(message: Message): User {
         user = new User(uid)
         user.score = scoreDefault()
         user.address = message.transaction.from.toHex()
+        user.save()
     }
-    user.save()
     
     return user as User
 }

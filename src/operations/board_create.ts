@@ -3,16 +3,16 @@ import { Message } from "../../generated/Relay/Relay";
 import { Board, BoardJanny, User } from "../../generated/schema";
 import { ensureBoolean, ensureString } from "../ensure";
 import { scoreDefault } from "../score";
-import { eventId, shortenId } from "../id";
+import { eventId } from "../id";
 import { boardJannyId } from "../internal/board_janny";
-import { createBlockFromMessage } from "../internal/block";
+import { locateBlockFromMessage } from "../internal/block";
 import { BOARD_NAME_MAX_LENGTH, BOARD_TITLE_MAX_LENGTH } from '../constants'
 import { boardId } from "../internal/board";
 import { createBoardCreationEvent } from "../internal/creation_event";
 
 export function boardCreate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
-    let block = createBlockFromMessage(message)
+    let block = locateBlockFromMessage(message)
 
     log.info("Creating board: {}", [evtId]);
 

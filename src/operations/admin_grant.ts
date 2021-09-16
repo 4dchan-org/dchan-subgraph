@@ -4,12 +4,11 @@ import { Admin, User } from "../../generated/schema";
 import { ensureString } from "../ensure";
 import { eventId } from "../id";
 import { isAdmin } from "../internal/admin";
-import { createBlockFromMessage } from "../internal/block";
-import { userIdFromHex } from "../internal/user";
+import { locateBlockFromMessage } from "../internal/block";
 
 export function adminGrant(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
-    let block = createBlockFromMessage(message)
+    let block = locateBlockFromMessage(message)
 
     log.info("Admin grant attempt by {}: {}", [user.id, evtId]);
 
@@ -25,7 +24,7 @@ export function adminGrant(message: Message, user: User, data: TypedMap<string, 
         return false
     }
 
-    let admin = new Admin(userIdFromHex(hexAddress))
+    let admin = new Admin(hexAddress)
     admin.grantedAtBlock = block.id
     admin.grantedAt = block.timestamp
     admin.save()
