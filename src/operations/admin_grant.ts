@@ -18,7 +18,7 @@ export function adminGrant(message: Message, user: User, data: TypedMap<string, 
     }
 
     let hexAddress = ensureString(data.get("hex_address"))
-    if(hexAddress.indexOf("0x") != -1) {
+    if(hexAddress.indexOf("0x") != 0) {
         log.info("Invalid admin grant request: {}", [evtId])
 
         return false

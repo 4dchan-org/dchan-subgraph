@@ -16,7 +16,7 @@ export function adminRevoke(message: Message, user: User, data: TypedMap<string,
     }
 
     let hexAddress = ensureString(data.get("hex_address"))
-    if(hexAddress.indexOf("0x") != -1) {
+    if(hexAddress.indexOf("0x") != 0) {
         log.info("Invalid admin revoke request: {}", [evtId])
 
         return false
