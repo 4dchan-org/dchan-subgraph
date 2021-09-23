@@ -8,6 +8,7 @@ import { banId } from "../internal/ban";
 import { boardBanId } from "../internal/board_ban";
 import { postBanId } from "../internal/post_ban";
 import { loadPostFromId } from "../internal/post";
+import { loadUserFromId } from "../internal/user";
 
 export function postBan(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -31,7 +32,7 @@ export function postBan(message: Message, user: User, data: TypedMap<string, JSO
     }
 
     let postFrom = post.from
-    let postUser = User.load(postFrom)
+    let postUser = loadUserFromId(postFrom)
     if (postUser == null) {
         log.warning("User {} not found", [postFrom]);
 

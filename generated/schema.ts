@@ -636,6 +636,46 @@ export class Post extends Entity {
   }
 }
 
+export class PostRef extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save PostRef entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save PostRef entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("PostRef", id.toString(), this);
+  }
+
+  static load(id: string): PostRef | null {
+    return store.get("PostRef", id) as PostRef | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get post(): string {
+    let value = this.get("post");
+    return value.toString();
+  }
+
+  set post(value: string) {
+    this.set("post", Value.fromString(value));
+  }
+}
+
 export class PostCreationEvent extends Entity {
   constructor(id: string) {
     super();
@@ -1221,6 +1261,46 @@ export class User extends Entity {
 
   set score(value: BigInt) {
     this.set("score", Value.fromBigInt(value));
+  }
+}
+
+export class ShortAddressRef extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save ShortAddressRef entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save ShortAddressRef entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("ShortAddressRef", id.toString(), this);
+  }
+
+  static load(id: string): ShortAddressRef | null {
+    return store.get("ShortAddressRef", id) as ShortAddressRef | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get user(): string {
+    let value = this.get("user");
+    return value.toString();
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
   }
 }
 

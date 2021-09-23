@@ -4,6 +4,7 @@ import { Ban, User, UserBan } from "../../generated/schema";
 import { ensureString } from "../ensure";
 import { eventId } from "../id";
 import { isAdmin } from "../internal/admin";
+import { loadUserFromId } from "../internal/user";
 import { userBanId, userIsBanned } from "../internal/user_ban";
 
 export function userUnban(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
@@ -24,7 +25,7 @@ export function userUnban(message: Message, user: User, data: TypedMap<string, J
 
     log.info("Unbanning user: {}", [bUserId]);
     
-    let bUser = User.load(bUserId)
+    let bUser = loadUserFromId(bUserId)
     if (bUser == null) {
         log.info("User {} not found", [bUserId]);
 

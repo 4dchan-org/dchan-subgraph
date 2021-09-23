@@ -7,6 +7,7 @@ import { eventId } from "../id";
 import { userBanId } from "../internal/user_ban";
 import { banId } from "../internal/ban";
 import { isAdmin } from "../internal/admin";
+import { loadUserFromId } from "../internal/user";
 
 export function userBan(message: Message, from: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -26,7 +27,7 @@ export function userBan(message: Message, from: User, data: TypedMap<string, JSO
 
     log.info("Banning user: {}", [userId]);
     
-    let user = User.load(userId)
+    let user = loadUserFromId(userId)
     if (user == null) {
         log.warning("User {} not found", [userId]);
 

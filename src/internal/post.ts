@@ -1,11 +1,11 @@
 import { Message } from "../../generated/Relay/Relay";
 import { Post, PostCreationEvent } from "../../generated/schema";
-import { eventId, shortenId } from "../id";
+import { eventId, shortUniqueId } from "../id";
 
 export type PostId = string
 
 export function postId(message: Message): PostId {
-    return shortenId(eventId(message))
+    return shortUniqueId(eventId(message))
 }
 
 export function loadPostFromId(id: PostId) : Post | null {

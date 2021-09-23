@@ -1,11 +1,11 @@
 import { Message } from "../../generated/Relay/Relay";
 import { Board, BoardCreationEvent, Post, Thread } from "../../generated/schema";
-import { eventId, shortenId } from "../id";
+import { eventId, shortUniqueId } from "../id";
 
 export type BoardId = string
 
 export function boardId(message: Message) : BoardId {
-    return shortenId(eventId(message))
+    return shortUniqueId(eventId(message))
 }
 
 export function loadBoardFromId(id: BoardId) : Board | null {

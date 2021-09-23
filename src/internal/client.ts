@@ -1,8 +1,8 @@
 import { Message } from "../../generated/Relay/Relay";
-import { eventId, shortenId } from "../id";
+import { eventId, shortUniqueId } from "../id";
 
 export type ClientId = string
 
 export function clientIdFromMessage(message: Message): ClientId {
-    return shortenId(eventId(message))
+    return shortUniqueId(eventId(message))
 }

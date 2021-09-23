@@ -6,6 +6,7 @@ import { isBoardJanny } from "../internal/board_janny";
 import { eventId } from "../id";
 import { boardJannyId } from "../internal/board_janny";
 import { locateBlockFromMessage } from "../internal/block";
+import { loadUserFromId } from "../internal/user";
 
 export function jannyGrant(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -21,7 +22,7 @@ export function jannyGrant(message: Message, user: User, data: TypedMap<string, 
         return false
     }
 
-    let targetUser = User.load(targetUserId)
+    let targetUser = loadUserFromId(targetUserId)
     if(targetUser === null) {
         log.info("Invalid janny grant request to inexistent user {}: {}", [targetUserId, evtId])
 

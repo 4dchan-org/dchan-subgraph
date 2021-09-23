@@ -92,6 +92,11 @@ type Post @entity {
   sage: Boolean!
 }
 
+type PostRef @entity {
+  id: ID!
+  post: Post!
+}
+
 type PostCreationEvent @entity {
   id: ID!
   post: Post
@@ -155,6 +160,11 @@ type User @entity {
   bans: [Ban!]! @derivedFrom(field: "user")
   jannies: [BoardJanny!]! @derivedFrom(field: "user")
   score: BigInt!
+}
+
+type ShortAddressRef @entity {
+  id: ID!
+  user: User!
 }
 
 type Admin @entity {
