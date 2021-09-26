@@ -9,7 +9,7 @@ module.exports = async function(deployer, network, accounts) {
   const token = await dChanToken.deployed()
 
   // Use that address to deploy the relay contract
-  await deployer.deploy(Relay, token.address);
+  await deployer.deploy(Relay);
   const relay = await Relay.deployed()
 
   // Deploy the proxy contract last, and set the implementation to the relay contract
