@@ -476,8 +476,8 @@ contract dChanToken is Context, IERC20, Ownable {
             block.timestamp
         );
 
-        // Now queryPayer has the GRT, deposit it into the billing contract
-        billingContract.addTo(_queryPayer, tokenAmount);
+        // Now _queryPayer has the GRT, deposit it into the billing contract
+        billingContract.addTo(_queryPayer, tokenAmount); 
 
     }
 
