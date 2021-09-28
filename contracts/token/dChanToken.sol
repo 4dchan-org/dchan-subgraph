@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "./IUniswapV2Router02.sol";
 import "./IUniswapV2Factory.sol";
+import "./IGRTBilling.sol";
 
 
 contract dChanToken is Context, IERC20, Ownable {
@@ -39,7 +40,9 @@ contract dChanToken is Context, IERC20, Ownable {
     uint256 private _previousLiquidityFee = _liquidityFee;
 
     uint256 public _queryFee = 4;
-    address private _queryPayer = address(0);        // Address of the query fee payer
+    address private _queryPayer = address(0);           // Address of the query fee payer
+    address private _grtTokenContract = address(0);   // Address of the GRT token contract
+    address private _grtDepositContract = address(0);   // Address of the GRT billing contract
     uint256 private _previousQueryFee = _queryFee;
 
     IUniswapV2Router02 public uniswapV2Router; //immutable uniswapV2Router;
@@ -73,6 +76,11 @@ contract dChanToken is Context, IERC20, Ownable {
         _rOwned[_msgSender()] = _rTotal;
         
         IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff);       // Mainnet Quickswap address
+
+
+        IGRTBilling billingContract = IGRTBilling(0xa382f75b375d6a07bfd1af99d4383c6e1d1c4004);                     // Mainnet GRT billing address
+
+
          // Create a uniswap pair for this new token
         uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory())
             .createPair(address(this), _uniswapV2Router.WETH());
@@ -376,6 +384,7 @@ contract dChanToken is Context, IERC20, Ownable {
             contractTokenBalance = numTokensSellToAddToLiquidity;
             //add liquidity
             swapAndLiquify(contractTokenBalance);
+
         }
         
         //indicates if fee should be deducted from transfer
@@ -446,8 +455,38 @@ contract dChanToken is Context, IERC20, Ownable {
         );
     }
 
+
+
+    function swapAndDepositQuery(uint256 tokenAmount) private {
+        // generate the uniswap pair path of token -> weth
+        address[] memory path = new address[](2);
+        path[0] = address(this);                        // From token
+        path[1] = uniswapV2Router.WETH();               // to WETH
+        path[2] = _grtTokenContract;                   // to GRT (this ensures the best liquidity)
+
+        // This may not be needed?
+        _approve(address(this), address(uniswapV2Router), tokenAmount);
+
+        // make the swap
+        uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+            tokenAmount,
+            0, // accept any amount of GRT
+            path,
+            _queryPayer,
+            block.timestamp
+        );
+
+        // Now queryPayer has the GRT, deposit it into the billing contract
+        billingContract.addTo(_queryPayer, tokenAmount);
+
+    }
+
+
+
+
+
     //this method is responsible for taking all fee, if takeFee is true
-    function _tokenTransfer(address sender, address recipient, uint256 amount,bool takeFee) private {
+    function _tokenTransfer(address sender, address recipient, uint256 amount, bool takeFee) private {
         if(!takeFee)
             removeAllFee();
         
