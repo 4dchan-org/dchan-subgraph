@@ -2,7 +2,7 @@ import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
 import { Board, Image, Post, Thread, User } from "../../generated/schema";
 import { ensureBoolean, ensureNumber, ensureObject, ensureString } from "../ensure";
-import { eventId, shortUniqueId } from "../id";
+import { eventId, uniqueId } from "../id";
 import { POST_COMMENT_MAX_LENGTH, POST_FILENAME_MAX_LENGTH, POST_NAME_MAX_LENGTH, POST_SUBJECT_MAX_LENGTH } from "../constants";
 import { scoreDefault } from "../score";
 import { createPostCreationEvent, createThreadCreationEvent } from "../internal/creation_event";
@@ -106,7 +106,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
             let isNsfw = "true" == ensureBoolean(file.get('is_nsfw'))
             let isSpoiler = "true" == ensureBoolean(file.get('is_spoiler'))
 
-            image = new Image(shortUniqueId(evtId))
+            image = new Image(uniqueId(evtId))
             image.score = scoreDefault()
             image.name = name
             image.byteSize = byteSize as BigInt

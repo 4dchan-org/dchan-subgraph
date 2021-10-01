@@ -1,11 +1,11 @@
 import { Message } from "../../generated/Relay/Relay";
 import { Thread, ThreadCreationEvent } from "../../generated/schema";
-import { eventId, shortUniqueId } from "../id";
+import { eventId, uniqueId } from "../id";
 
 export type ThreadId = string
 
 export function threadId(message: Message): ThreadId {
-    return shortUniqueId(eventId(message))
+    return uniqueId(eventId(message))
 }
 
 export function loadThreadFromId(id: ThreadId) : Thread | null {
