@@ -9,5 +9,9 @@ export function shortId(longId: string): string {
 }
 
 export function eventId(event: ethereum.Event): string {
-    return event.transaction.hash.toHex() + "-" + event.logIndex.toString()
+    return txId(event) + "-" + event.logIndex.toString()
+}
+
+export function txId(event: ethereum.Event): string {
+    return event.transaction.hash.toHex()
 }

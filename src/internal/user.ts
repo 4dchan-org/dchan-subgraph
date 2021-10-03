@@ -1,6 +1,6 @@
 import { log } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { ShortAddressRef, User } from "../../generated/schema";
+import { UserRef, User } from "../../generated/schema";
 import { scoreDefault } from "../score";
 
 export type UserId = string
@@ -9,13 +9,14 @@ export function userIdFromMessage(message: Message): UserId {
     return message.transaction.from.toHexString()
 }
 
-export function loadUserFromId(id: UserId): User | null {
-    let user = User.load(id)
-    if (user == null) {
-        let shortAddressRef = ShortAddressRef.load(id)
-        if(shortAddressRef != null) {
-            user = User.load(shortAddressRef.user)
-        }
+export function loadUserFromId(id: UserId) : User | null {
+    let user : User | null = null;
+    
+    let userRef = UserRef.load(id)
+    if(userRef != null) {
+        user = User.load(userRef.user)
+    } else {
+        user = User.load(id)
     }
 
     return user
@@ -36,9 +37,9 @@ export function locateUserFromMessage(message: Message): User {
         user.address = hexAddress
         user.save()
 
-        let shortAddressRef = new ShortAddressRef("0x"+hexAddress.substr(2, 3)+hexAddress.substr(-3, 3))
-        shortAddressRef.user = user.id
-        shortAddressRef.save()
+        let userRef = new UserRef("0x"+hexAddress.substr(2, 3)+hexAddress.substr(-3, 3))
+        userRef.user = user.id
+        userRef.save()
     }
     
     return user as User

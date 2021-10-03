@@ -5,14 +5,14 @@ import { ensureBoolean, ensureNumber, ensureObject, ensureString } from "../ensu
 import { eventId, shortUniqueId } from "../id";
 import { POST_COMMENT_MAX_LENGTH, POST_FILENAME_MAX_LENGTH, POST_NAME_MAX_LENGTH, POST_SUBJECT_MAX_LENGTH } from "../constants";
 import { scoreDefault } from "../score";
-import { createPostCreationEvent, createThreadCreationEvent } from "../internal/creation_event";
 import { userIsBoardBanned } from "../internal/board_ban";
-import { postId } from "../internal/post";
-import { createPostRef } from "../internal/post_ref";
+import { createPostRefs } from "../internal/post_ref";
+import { createThreadRefs } from "../internal/thread_ref";
 import { locateBlockFromMessage } from "../internal/block";
 import { loadThreadFromId } from "../internal/thread";
 import { loadBoardFromId } from "../internal/board";
 import { isBoardJanny } from "../internal/board_janny";
+import { postId } from "../internal/post";
 
 export function postCreate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -92,11 +92,10 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     let file = ensureObject(data.get("file"))
     if (file != null) {
         let name = ensureString(file.get('name'))
-        let byteSize = ensureNumber(file.get('byte_size'))
         let ipfs = ensureObject(file.get('ipfs'))
         let ipfsHash: string | null = ipfs != null ? ensureString(ipfs.get('hash')) : null
 
-        if (name != null && byteSize != null && ipfsHash != null) {
+        if (name != null && ipfsHash != null) {
             if (name.length > POST_FILENAME_MAX_LENGTH) {
                 log.warning("Filename over length limit, skipping {}", [evtId])
 
@@ -109,7 +108,6 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
             image = new Image(shortUniqueId(evtId))
             image.score = scoreDefault()
             image.name = name
-            image.byteSize = byteSize as BigInt
             image.ipfsHash = ipfsHash as string
             image.isNsfw = isNsfw || false
             image.isSpoiler = isSpoiler || false
@@ -148,17 +146,16 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         return false
     }
 
-    createPostCreationEvent(message, post)
-
-    createPostRef(message, post)
+    createPostRefs(message, post)
 
     if (thread != null) {
+        log.debug("Replying to thread {}", [thread.id]);
         post.thread = thread.id
 
         thread.replyCount = thread.replyCount.plus(BigInt.fromI32(1))
         thread.imageCount = thread.imageCount.plus(BigInt.fromI32(image != null ? 1 : 0))
     } else {
-        log.info("Creating thread {}", [evtId]);
+        log.debug("Creating thread {}", [evtId]);
 
         let subject = ensureString(data.get("subject"))
         if (subject.length > POST_SUBJECT_MAX_LENGTH) {
@@ -184,8 +181,8 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         thread.createdAt = block.timestamp
         thread.lastBumpedAtBlock = block.id
         thread.lastBumpedAt = block.timestamp
-        
-        createThreadCreationEvent(message, thread as Thread)
+
+        createThreadRefs(message, thread as Thread)
     }
 
     post.board = board.id
@@ -199,6 +196,10 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         thread.lastBumpedAtBlock = block.id
         thread.lastBumpedAt = block.timestamp
     }
+
+    // Update ppm
+    thread.ppm = BigInt.fromI32(1_000_000_000).times(thread.replyCount).div(BigInt.fromI32(1).plus(block.timestamp).minus(thread.createdAt))
+    thread.popularity = BigInt.fromI32(86_400).times(thread.ppm).plus(thread.createdAt)
 
     log.info("Saving: {}", [evtId]);
 

@@ -6,6 +6,7 @@ import { scorePenalty } from "../score";
 import { eventId } from "../id";
 import { createPostReport, postReportId } from "../internal/post_report";
 import { loadPostFromId } from "../internal/post";
+import { loadThreadFromId } from "../internal/thread";
 
 export function postReport(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -29,7 +30,7 @@ export function postReport(message: Message, user: User, data: TypedMap<string, 
     post.score = scorePenalty(post.score)
     post.save()
 
-    let thread = Thread.load(post.id)
+    let thread = loadThreadFromId(post.id)
     if (thread != null) {
         thread.score = post.score
 

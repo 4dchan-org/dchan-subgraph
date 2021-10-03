@@ -1,10 +1,11 @@
 import { JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Post, Thread, User } from "../../generated/schema";
+import { User } from "../../generated/schema";
 import { ensureString } from "../ensure";
 import { isBoardJanny } from "../internal/board_janny";
 import { eventId } from "../id";
 import { loadThreadFromId } from "../internal/thread";
+import { loadPostFromId } from "../internal/post";
 
 export function threadUnlock(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let threadId = ensureString(data.get("id"))
@@ -24,7 +25,7 @@ export function threadUnlock(message: Message, user: User, data: TypedMap<string
         return false
     }
 
-    let op = Post.load(thread.op)
+    let op = loadPostFromId(thread.op)
     if(op == null) {
         log.error("Thread op for {} not found, wtf?", [threadId])
 

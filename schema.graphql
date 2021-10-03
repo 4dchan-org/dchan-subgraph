@@ -45,12 +45,6 @@ type Board @entity {
   threads: [Thread]! @derivedFrom(field: "board")
 }
 
-type BoardCreationEvent @entity {
-  id: ID!
-  board: Board
-  user: User!
-}
-
 type Thread @entity {
   id: ID!
   board: Board
@@ -68,12 +62,8 @@ type Thread @entity {
   lastBumpedAt: BigInt!
   score: BigInt!
   from: User!
-}
-
-type ThreadCreationEvent @entity {
-  id: ID!
-  thread: Thread
-  user: User!
+  ppm: BigInt!
+  popularity: BigInt!
 }
 
 type Post @entity {
@@ -90,17 +80,6 @@ type Post @entity {
   bans: [PostBan!]! @derivedFrom(field: "post")
   score: BigInt!
   sage: Boolean!
-}
-
-type PostRef @entity {
-  id: ID!
-  post: Post!
-}
-
-type PostCreationEvent @entity {
-  id: ID!
-  post: Post
-  user: User!
 }
 
 type Report @entity {
@@ -162,11 +141,6 @@ type User @entity {
   score: BigInt!
 }
 
-type ShortAddressRef @entity {
-  id: ID!
-  user: User!
-}
-
 type Admin @entity {
   id: ID!
   grantedAtBlock: Block!
@@ -184,7 +158,6 @@ type BoardJanny @entity {
 type Image @entity {
   id: ID!
   name: String!
-  byteSize: BigInt!
   ipfsHash: String!
   isNsfw: Boolean!
   isSpoiler: Boolean!
@@ -209,4 +182,31 @@ type Client @entity {
   ipfsHash: String!
   publishedAtBlock: Block!
   publishedAt: BigInt!
+}
+
+type UserTx @entity {
+  id: ID!
+  user: User!
+  success: Boolean!
+  error: String
+}
+
+type ThreadRef @entity {
+  id: ID!
+  thread: Thread
+}
+
+type BoardRef @entity {
+  id: ID!
+  board: Board
+}
+
+type PostRef @entity {
+  id: ID!
+  post: Post
+}
+
+type UserRef @entity {
+  id: ID!
+  user: User
 }

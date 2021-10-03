@@ -8,7 +8,7 @@ import { boardJannyId } from "../internal/board_janny";
 import { locateBlockFromMessage } from "../internal/block";
 import { BOARD_NAME_MAX_LENGTH, BOARD_TITLE_MAX_LENGTH } from '../constants'
 import { boardId } from "../internal/board";
-import { createBoardCreationEvent } from "../internal/creation_event";
+import { createBoardRefs } from "../internal/board_ref";
 
 export function boardCreate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -40,7 +40,7 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
     board.isNsfw = ("true" === ensureBoolean(data.get("nsfw"))) || false
     board.isLocked = false
 
-    createBoardCreationEvent(message, board)
+    createBoardRefs(message, board)
 
     let boardJanny = new BoardJanny(boardJannyId(user, board.id))
     boardJanny.grantedAtBlock = block.id

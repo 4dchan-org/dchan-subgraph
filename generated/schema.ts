@@ -169,63 +169,6 @@ export class Board extends Entity {
   }
 }
 
-export class BoardCreationEvent extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id !== null, "Cannot save BoardCreationEvent entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save BoardCreationEvent entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("BoardCreationEvent", id.toString(), this);
-  }
-
-  static load(id: string): BoardCreationEvent | null {
-    return store.get("BoardCreationEvent", id) as BoardCreationEvent | null;
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get board(): string | null {
-    let value = this.get("board");
-    if (value === null || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
-  }
-
-  set board(value: string | null) {
-    if (value === null) {
-      this.unset("board");
-    } else {
-      this.set("board", Value.fromString(value as string));
-    }
-  }
-
-  get user(): string {
-    let value = this.get("user");
-    return value.toString();
-  }
-
-  set user(value: string) {
-    this.set("user", Value.fromString(value));
-  }
-}
-
 export class Thread extends Entity {
   constructor(id: string) {
     super();
@@ -406,62 +349,23 @@ export class Thread extends Entity {
   set from(value: string) {
     this.set("from", Value.fromString(value));
   }
-}
 
-export class ThreadCreationEvent extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
+  get ppm(): BigInt {
+    let value = this.get("ppm");
+    return value.toBigInt();
   }
 
-  save(): void {
-    let id = this.get("id");
-    assert(id !== null, "Cannot save ThreadCreationEvent entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save ThreadCreationEvent entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("ThreadCreationEvent", id.toString(), this);
+  set ppm(value: BigInt) {
+    this.set("ppm", Value.fromBigInt(value));
   }
 
-  static load(id: string): ThreadCreationEvent | null {
-    return store.get("ThreadCreationEvent", id) as ThreadCreationEvent | null;
+  get popularity(): BigInt {
+    let value = this.get("popularity");
+    return value.toBigInt();
   }
 
-  get id(): string {
-    let value = this.get("id");
-    return value.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get thread(): string | null {
-    let value = this.get("thread");
-    if (value === null || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
-  }
-
-  set thread(value: string | null) {
-    if (value === null) {
-      this.unset("thread");
-    } else {
-      this.set("thread", Value.fromString(value as string));
-    }
-  }
-
-  get user(): string {
-    let value = this.get("user");
-    return value.toString();
-  }
-
-  set user(value: string) {
-    this.set("user", Value.fromString(value));
+  set popularity(value: BigInt) {
+    this.set("popularity", Value.fromBigInt(value));
   }
 }
 
@@ -633,103 +537,6 @@ export class Post extends Entity {
 
   set sage(value: boolean) {
     this.set("sage", Value.fromBoolean(value));
-  }
-}
-
-export class PostRef extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id !== null, "Cannot save PostRef entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save PostRef entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("PostRef", id.toString(), this);
-  }
-
-  static load(id: string): PostRef | null {
-    return store.get("PostRef", id) as PostRef | null;
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get post(): string {
-    let value = this.get("post");
-    return value.toString();
-  }
-
-  set post(value: string) {
-    this.set("post", Value.fromString(value));
-  }
-}
-
-export class PostCreationEvent extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id !== null, "Cannot save PostCreationEvent entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save PostCreationEvent entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("PostCreationEvent", id.toString(), this);
-  }
-
-  static load(id: string): PostCreationEvent | null {
-    return store.get("PostCreationEvent", id) as PostCreationEvent | null;
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get post(): string | null {
-    let value = this.get("post");
-    if (value === null || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
-  }
-
-  set post(value: string | null) {
-    if (value === null) {
-      this.unset("post");
-    } else {
-      this.set("post", Value.fromString(value as string));
-    }
-  }
-
-  get user(): string {
-    let value = this.get("user");
-    return value.toString();
-  }
-
-  set user(value: string) {
-    this.set("user", Value.fromString(value));
   }
 }
 
@@ -1264,46 +1071,6 @@ export class User extends Entity {
   }
 }
 
-export class ShortAddressRef extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id !== null, "Cannot save ShortAddressRef entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save ShortAddressRef entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("ShortAddressRef", id.toString(), this);
-  }
-
-  static load(id: string): ShortAddressRef | null {
-    return store.get("ShortAddressRef", id) as ShortAddressRef | null;
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get user(): string {
-    let value = this.get("user");
-    return value.toString();
-  }
-
-  set user(value: string) {
-    this.set("user", Value.fromString(value));
-  }
-}
-
 export class Admin extends Entity {
   constructor(id: string) {
     super();
@@ -1675,5 +1442,263 @@ export class Client extends Entity {
 
   set publishedAt(value: BigInt) {
     this.set("publishedAt", Value.fromBigInt(value));
+  }
+}
+
+export class UserTx extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save UserTx entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save UserTx entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("UserTx", id.toString(), this);
+  }
+
+  static load(id: string): UserTx | null {
+    return store.get("UserTx", id) as UserTx | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get user(): string {
+    let value = this.get("user");
+    return value.toString();
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
+  }
+
+  get success(): boolean {
+    let value = this.get("success");
+    return value.toBoolean();
+  }
+
+  set success(value: boolean) {
+    this.set("success", Value.fromBoolean(value));
+  }
+
+  get error(): string | null {
+    let value = this.get("error");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set error(value: string | null) {
+    if (value === null) {
+      this.unset("error");
+    } else {
+      this.set("error", Value.fromString(value as string));
+    }
+  }
+}
+
+export class ThreadRef extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save ThreadRef entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save ThreadRef entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("ThreadRef", id.toString(), this);
+  }
+
+  static load(id: string): ThreadRef | null {
+    return store.get("ThreadRef", id) as ThreadRef | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get thread(): string | null {
+    let value = this.get("thread");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set thread(value: string | null) {
+    if (value === null) {
+      this.unset("thread");
+    } else {
+      this.set("thread", Value.fromString(value as string));
+    }
+  }
+}
+
+export class BoardRef extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save BoardRef entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save BoardRef entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("BoardRef", id.toString(), this);
+  }
+
+  static load(id: string): BoardRef | null {
+    return store.get("BoardRef", id) as BoardRef | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get board(): string | null {
+    let value = this.get("board");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set board(value: string | null) {
+    if (value === null) {
+      this.unset("board");
+    } else {
+      this.set("board", Value.fromString(value as string));
+    }
+  }
+}
+
+export class PostRef extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save PostRef entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save PostRef entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("PostRef", id.toString(), this);
+  }
+
+  static load(id: string): PostRef | null {
+    return store.get("PostRef", id) as PostRef | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get post(): string | null {
+    let value = this.get("post");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set post(value: string | null) {
+    if (value === null) {
+      this.unset("post");
+    } else {
+      this.set("post", Value.fromString(value as string));
+    }
+  }
+}
+
+export class UserRef extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id !== null, "Cannot save UserRef entity without an ID");
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save UserRef entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("UserRef", id.toString(), this);
+  }
+
+  static load(id: string): UserRef | null {
+    return store.get("UserRef", id) as UserRef | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get user(): string | null {
+    let value = this.get("user");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set user(value: string | null) {
+    if (value === null) {
+      this.unset("user");
+    } else {
+      this.set("user", Value.fromString(value as string));
+    }
   }
 }

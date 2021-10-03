@@ -1,18 +1,23 @@
 import { Message } from "../../generated/Relay/Relay";
-import { Thread, ThreadCreationEvent } from "../../generated/schema";
-import { eventId, shortUniqueId } from "../id";
+import { Thread, ThreadRef } from "../../generated/schema";
+import { postId, shortPostId } from "./post";
 
 export type ThreadId = string
 
 export function threadId(message: Message): ThreadId {
-    return shortUniqueId(eventId(message))
+    return postId(message)
+}
+
+export function shortThreadId(message: Message): ThreadId {
+    return shortPostId(message)
 }
 
 export function loadThreadFromId(id: ThreadId) : Thread | null {
     let thread : Thread | null = null;
-    let threadCreationEvent = ThreadCreationEvent.load(id)
-    if(threadCreationEvent != null) {
-        thread = Thread.load(threadCreationEvent.thread)
+    
+    let threadRef = ThreadRef.load(id)
+    if(threadRef != null) {
+        thread = Thread.load(threadRef.thread)
     } else {
         thread = Thread.load(id)
     }

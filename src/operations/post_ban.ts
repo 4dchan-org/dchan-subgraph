@@ -9,6 +9,8 @@ import { boardBanId } from "../internal/board_ban";
 import { postBanId } from "../internal/post_ban";
 import { loadPostFromId } from "../internal/post";
 import { loadUserFromId } from "../internal/user";
+import { loadBoardFromId } from "../internal/board";
+import { loadThreadFromId } from "../internal/thread";
 
 export function postBan(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -40,7 +42,7 @@ export function postBan(message: Message, user: User, data: TypedMap<string, JSO
     }
 
     let threadId = post.thread
-    let thread = Thread.load(threadId)
+    let thread = loadThreadFromId(threadId)
     if(thread == null) {
         log.warning("Thread {} not found", [threadId]);
 
@@ -48,7 +50,7 @@ export function postBan(message: Message, user: User, data: TypedMap<string, JSO
     }
 
     let boardId = thread.board
-    let board = Board.load(boardId)
+    let board = loadBoardFromId(boardId)
     if(board == null) {
         log.info("Board {} not found", [boardId])
 
