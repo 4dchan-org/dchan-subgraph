@@ -134,6 +134,7 @@ type PostBan @entity {
 
 type User @entity {
   id: ID!
+  b58id: String!
   address: String!
   lastPostedAtBlock: Block
   bans: [Ban!]! @derivedFrom(field: "user")

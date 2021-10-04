@@ -1017,6 +1017,15 @@ export class User extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get b58id(): string {
+    let value = this.get("b58id");
+    return value.toString();
+  }
+
+  set b58id(value: string) {
+    this.set("b58id", Value.fromString(value));
+  }
+
   get address(): string {
     let value = this.get("address");
     return value.toString();
@@ -1232,15 +1241,6 @@ export class Image extends Entity {
 
   set name(value: string) {
     this.set("name", Value.fromString(value));
-  }
-
-  get byteSize(): BigInt {
-    let value = this.get("byteSize");
-    return value.toBigInt();
-  }
-
-  set byteSize(value: BigInt) {
-    this.set("byteSize", Value.fromBigInt(value));
   }
 
   get ipfsHash(): string {

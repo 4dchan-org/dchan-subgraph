@@ -1,11 +1,15 @@
 import { Message } from "../../generated/Relay/Relay";
-import { Thread, ThreadRef } from "../../generated/schema";
-import { shortThreadId } from "./thread";
+import { User, UserRef } from "../../generated/schema";
+import { shortUserIdFromMessage, userB58IdFromMessage } from "./user";
 
-export function createThreadRefs(message: Message, thread: Thread) : void {
-    let ref: ThreadRef | null = null
+export function createUserRefs(message: Message, user: User) : void {
+    let ref: UserRef | null = null
 
-    ref = new ThreadRef(shortThreadId(message))
-    ref.thread = thread.id
+    ref = new UserRef(shortUserIdFromMessage(message))
+    ref.user = user.id
+    ref.save()
+
+    ref = new UserRef(userB58IdFromMessage(message))
+    ref.user = user.id
     ref.save()
 }
