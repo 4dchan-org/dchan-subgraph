@@ -1,6 +1,8 @@
 require('babel-register')
 require('babel-polyfill')
 const HDWalletProvider = require('truffle-hdwallet-provider')
+const fs = require('fs');
+const mnemonic = fs.readFileSync(".secret").toString().trim();
 
 module.exports = {
   networks: {
@@ -17,6 +19,13 @@ module.exports = {
         )
       },
       network_id: '3',
+    },
+    matic: {
+      provider: () => new HDWalletProvider(mnemonic, `https://rpc-mumbai.matic.today`),
+      network_id: 80001,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
     },
   },
   compilers: {

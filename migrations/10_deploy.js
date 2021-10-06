@@ -9,13 +9,13 @@ module.exports = async function(deployer, network, accounts) {
   const token = await dChanToken.deployed()
 
   // Use that address to deploy the relay contract
-  await deployer.deploy(Relay);
-  const relay = await Relay.deployed()
+  //await deployer.deploy(Relay);
+  //const relay = await Relay.deployed()
 
   // Deploy the proxy contract last, and set the implementation to the relay contract
-  await deployer.deploy(dChanProxy, relay.address, accounts[0]);
-  const proxy = await dChanProxy.deployed()
-  await proxy.acceptUpgrade()
+  //await deployer.deploy(dChanProxy, relay.address, accounts[0]);
+  //const proxy = await dChanProxy.deployed()
+  //await proxy.acceptUpgrade()
 
-  console.log("Current Proxy Implementation Address: " + (await proxy.implementation.call()))
+  //console.log("Current Proxy Implementation Address: " + (await proxy.implementation.call()))
 }

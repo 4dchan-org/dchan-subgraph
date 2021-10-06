@@ -13,19 +13,8 @@ import "./IUniswapV2Pair.sol";
 
 import "hardhat/console.sol";
 
-/*
-      _      _                 
-     | |    | |                
-   __| | ___| |__   __ _ _ __  
-  / _` |/ __| '_ \ / _` | '_ \ 
- | (_| | (__| | | | (_| | | | |
-  \__,_|\___|_| |_|\__,_|_| |_|
 
-    Owner: The People          
- */
-
-
-contract dChanToken is Context, IERC20, Ownable {
+contract oldToken is Context, IERC20, Ownable {
     using SafeMath for uint256;
     using Address for address;
 
@@ -38,53 +27,51 @@ contract dChanToken is Context, IERC20, Ownable {
     mapping (address => bool) private _isExcluded;
     address[] private _excluded;
    
-    // ########################## Token Details ##########################
     uint256 private constant MAX = ~uint256(0);
-    // 50m Total initial supply, based on 20m average daily 4chan users 
-    uint256 private _tTotal = 5000 * 10**4 * 10**9;
+    uint256 private _tTotal = 50 * 10**6 * 10**9;                   // Total initial supply 
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal;
-    // Set max transaction amount and query checkpoint to .5% of total supply
-    uint256 public _maxTxAmount = 25 * 10**4 * 10**9;
-    uint256 private numTokensSellToAddToQuery = 50 * 10**9;
 
-
-    // ########################## Metadata ##########################
     string private _name = "Test Liquidity token";
     string private _symbol = "TEST";
     uint8 private _decimals = 9;
     
+    uint256 public _taxFee = 4;
+    uint256 private _previousTaxFee = _taxFee;
+    
+    uint256 public _liquidityFee = 4;
+    uint256 private _previousLiquidityFee = _liquidityFee;
 
-    // ########################## Ecosystem Details ##########################
-    uint256 public _reflectFeePercent = 4;
-    uint256 public _queryFeePercent = 4;
-    address public queryPayer;
-    uint256 private _previousQueryFeePercent = _queryFeePercent;
-    uint256 private _previousReflectFeePercent = _reflectFeePercent;
+    uint256 public _queryFee = 4;
+    address public queryPayer;           // Address of the query fee payer
+    address private immutable _grtTokenContract;  // Address of the GRT token contract
+    uint256 private _previousQueryFee = _queryFee;
 
-
-    // ########################## Immutable Details ##########################
     IUniswapV2Router02 public immutable uniswapV2Router;
+    IGRTBilling billingContract;
     address public immutable uniswapV2Pair;
-    IGRTBilling immutable billingContract;    
-    IERC20 private immutable _grtTokenContract;
     
-    
-    bool inSwapAndDepositQuery;
+    bool inSwapAndLiquify;
+    bool public swapAndLiquifyEnabled = true;
+
     bool public swapAndDepositQueryEnabled = true;
     
+    uint256 public _maxTxAmount = 5000 * 10**9;
+    uint256 private numTokensSellToAddToLiquidity = 50 * 10**9;
     
-    // ########################## Subgraph Events ##########################
     event MinTokensBeforeSwapUpdated(uint256 minTokensBeforeSwap);
     event SwapAndLiquifyEnabledUpdated(bool enabled);
     event SwapAndDepositQueryEnabledUpdated(bool enabled);
-    event SwapAndDepositQuery(uint256 tokensSwapped, uint256 grtDeposited);
+    event SwapAndLiquify(
+        uint256 tokensSwapped,
+        uint256 ethReceived,
+        uint256 tokensIntoLiqudity
+    );
     
-
     modifier lockTheSwap {
-        inSwapAndDepositQuery = true;
+        inSwapAndLiquify = true;
         _;
-        inSwapAndDepositQuery = false;
+        inSwapAndLiquify = false;
     }
 
     
@@ -93,22 +80,28 @@ contract dChanToken is Context, IERC20, Ownable {
         //console.log("Deployer & Owner: ", _msgSender());
         
         queryPayer = owner();
+
         _rOwned[_msgSender()] = _rTotal;
         
         IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff);       // Mainnet Quickswap address
-        _grtTokenContract = IERC20(0x5fe2B58c013d7601147DcdD68C143A77499f5531);
+        _grtTokenContract = address(0x5fe2B58c013d7601147DcdD68C143A77499f5531);
+        //console.log("Quickswap Address: ", address(_uniswapV2Router));
+
+
+
 
         // Will need to call approve() on the billing contract to spend the swapped GRT
         billingContract = IGRTBilling(0xa382f75b375D6a07bfD1af99D4383C6e1D1C4004);                     // Mainnet GRT billing address
+        //console.log("GRT Billing Address: ", address(billingContract));
 
+         // Create a uniswap pair for this new token
+        uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory())
+            .createPair(address(this), _uniswapV2Router.WETH());
 
-        // Create a uniswap pair for this new token
-        uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory()).createPair(address(this), _uniswapV2Router.WETH());
-
-        // Set the rest of the contract variables
+        // set the rest of the contract variables
         uniswapV2Router = _uniswapV2Router;
         
-        // Exclude owner and this contract from fee- ownership will be renounced when the network is stable.
+        //exclude owner and this contract from fee
         _isExcludedFromFee[owner()] = true;
         _isExcludedFromFee[address(this)] = true;
         
@@ -180,7 +173,7 @@ contract dChanToken is Context, IERC20, Ownable {
     function deliver(uint256 tAmount) public {
         address sender = _msgSender();
         require(!_isExcluded[sender], "Excluded addresses cannot call this function");
-        (uint256 rAmount,,,,,) = _getValues(tAmount);
+        (uint256 rAmount,,,,,,) = _getValues(tAmount);
         _rOwned[sender] = _rOwned[sender].sub(rAmount);
         _rTotal = _rTotal.sub(rAmount);
         _tFeeTotal = _tFeeTotal.add(tAmount);
@@ -189,10 +182,10 @@ contract dChanToken is Context, IERC20, Ownable {
     function reflectionFromToken(uint256 tAmount, bool deductTransferFee) public view returns(uint256) {
         require(tAmount <= _tTotal, "Amount must be less than supply");
         if (!deductTransferFee) {
-            (uint256 rAmount,,,,,) = _getValues(tAmount);
+            (uint256 rAmount,,,,,,) = _getValues(tAmount);
             return rAmount;
         } else {
-            (,uint256 rTransferAmount,,,,) = _getValues(tAmount);
+            (,uint256 rTransferAmount,,,,,) = _getValues(tAmount);
             return rTransferAmount;
         }
     }
@@ -235,11 +228,15 @@ contract dChanToken is Context, IERC20, Ownable {
     }
     
     function setTaxFeePercent(uint256 taxFee) external onlyOwner() {
-        _reflectFeePercent = taxFee;
+        _taxFee = taxFee;
+    }
+    
+    function setLiquidityFeePercent(uint256 liquidityFee) external onlyOwner {
+        _liquidityFee = liquidityFee;
     }
 
     function setQueryFeePercent(uint256 queryFee) public onlyOwner {
-        _queryFeePercent = queryFee;
+        _queryFee = queryFee;
     }
 
     function setQueryFeePayer(address _newPayer) public onlyOwner {
@@ -253,12 +250,21 @@ contract dChanToken is Context, IERC20, Ownable {
         );
     }
 
+    function setSwapAndLiquifyEnabled(bool _enabled) public onlyOwner {
+        swapAndLiquifyEnabled = _enabled;
+        emit SwapAndLiquifyEnabledUpdated(_enabled);
+    }
+
     function setSwapAndDepositQueryEnabled(bool _enabled) public onlyOwner {
         swapAndDepositQueryEnabled = _enabled;
         emit SwapAndDepositQueryEnabledUpdated(_enabled);
     }
 
-    //to recieve ETH from uniswapV2Router when swapping
+
+
+    
+    
+     //to recieve ETH from uniswapV2Router when swapping
     receive() external payable {}
 
     function _reflectFee(uint256 rFee, uint256 tFee) private {
@@ -266,24 +272,26 @@ contract dChanToken is Context, IERC20, Ownable {
         _tFeeTotal = _tFeeTotal.add(tFee);
     }
 
-    function _getValues(uint256 tAmount) private view returns (uint256, uint256, uint256, uint256, uint256, uint256) {
-        (uint256 tTransferAmount, uint256 tFee, uint256 tQuery) = _getTValues(tAmount);
-        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee) = _getRValues(tAmount, tFee, tQuery, _getRate());
-        return (rAmount, rTransferAmount, rFee, tTransferAmount, tFee, tQuery);
+    function _getValues(uint256 tAmount) private view returns (uint256, uint256, uint256, uint256, uint256, uint256, uint256) {
+        (uint256 tTransferAmount, uint256 tFee, uint256 tLiquidity, uint256 tQuery) = _getTValues(tAmount);
+        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee) = _getRValues(tAmount, tFee, tLiquidity, tQuery, _getRate());
+        return (rAmount, rTransferAmount, rFee, tTransferAmount, tFee, tLiquidity, tQuery);
     }
 
-    function _getTValues(uint256 tAmount) private view returns (uint256, uint256, uint256) {
-        uint256 tFee = calculateReflectFee(tAmount);
+    function _getTValues(uint256 tAmount) private view returns (uint256, uint256, uint256, uint256) {
+        uint256 tFee = calculateTaxFee(tAmount);
+        uint256 tLiquidity = calculateLiquidityFee(tAmount);
         uint256 tQuery = calculateQueryFee(tAmount);
-        uint256 tTransferAmount = tAmount.sub(tFee).sub(tQuery);
-        return (tTransferAmount, tFee, tQuery);
+        uint256 tTransferAmount = tAmount.sub(tFee).sub(tLiquidity).sub(tQuery);
+        return (tTransferAmount, tFee, tLiquidity, tQuery);
     }
 
-    function _getRValues(uint256 tAmount, uint256 tFee, uint256 tQuery, uint256 currentRate) private pure returns (uint256, uint256, uint256) {
+    function _getRValues(uint256 tAmount, uint256 tFee, uint256 tLiquidity, uint256 tQuery, uint256 currentRate) private pure returns (uint256, uint256, uint256) {
         uint256 rAmount = tAmount.mul(currentRate);
         uint256 rFee = tFee.mul(currentRate);
+        uint256 rLiquidity = tLiquidity.mul(currentRate);
         uint256 rQuery = tQuery.mul(currentRate);
-        uint256 rTransferAmount = rAmount.sub(rFee).sub(rQuery);
+        uint256 rTransferAmount = rAmount.sub(rFee).sub(rLiquidity).sub(rQuery);
         return (rAmount, rTransferAmount, rFee);
     }
 
@@ -304,6 +312,13 @@ contract dChanToken is Context, IERC20, Ownable {
         return (rSupply, tSupply);
     }
     
+    function _takeLiquidity(uint256 tLiquidity) private {
+        uint256 currentRate =  _getRate();
+        uint256 rLiquidity = tLiquidity.mul(currentRate);
+        _rOwned[address(this)] = _rOwned[address(this)].add(rLiquidity);
+        if(_isExcluded[address(this)])
+            _tOwned[address(this)] = _tOwned[address(this)].add(tLiquidity);
+    }
 
     function _takeQuery(uint256 tQuery) private {
         uint256 currentRate =  _getRate();
@@ -313,33 +328,42 @@ contract dChanToken is Context, IERC20, Ownable {
             _tOwned[address(this)] = _tOwned[address(this)].add(tQuery);
     }
     
-    function calculateReflectFee(uint256 _amount) private view returns (uint256) {
-        return _amount.mul(_reflectFeePercent).div(
+    function calculateTaxFee(uint256 _amount) private view returns (uint256) {
+        return _amount.mul(_taxFee).div(
+            10**2
+        );
+    }
+
+    function calculateLiquidityFee(uint256 _amount) private view returns (uint256) {
+        return _amount.mul(_liquidityFee).div(
             10**2
         );
     }
 
     
     function calculateQueryFee(uint256 _amount) private view returns (uint256) {
-        return _amount.mul(_queryFeePercent).div(
+        return _amount.mul(_queryFee).div(
             10**2
         );
     }
     
     
     function removeAllFee() private {
-        if(_reflectFeePercent == 0 && _queryFeePercent == 0) return;
+        if(_taxFee == 0 && _liquidityFee == 0) return;// && _queryFee == 0) return;
         
-        _previousReflectFeePercent = _reflectFeePercent;
-        _previousQueryFeePercent = _queryFeePercent;
+        _previousTaxFee = _taxFee;
+        _previousLiquidityFee = _liquidityFee;
+        //_previousQueryFee = _queryFee;
         
-        _reflectFeePercent = 0;
-        _queryFeePercent = 0;
+        _taxFee = 0;
+        _liquidityFee = 0;
+        //_queryFee = 0;
     }
     
     function restoreAllFee() private {
-        _reflectFeePercent = _previousReflectFeePercent;
-        _queryFeePercent = _previousQueryFeePercent;
+        _taxFee = _previousTaxFee;
+        _liquidityFee = _previousLiquidityFee;
+        //_queryFee = _previousQueryFee;
     }
     
     function isExcludedFromFee(address account) public view returns(bool) {
@@ -366,28 +390,45 @@ contract dChanToken is Context, IERC20, Ownable {
             require(amount <= _maxTxAmount, "Transfer amount exceeds the maxTxAmount.");
 
         // is the token balance of this contract address over the min number of
-        // tokens that we need to initiate a swap + query deposit?
-        // also, don't get caught in a circular swap event.
-        // also, don't swap & query if sender is quickswap pair.
+        // tokens that we need to initiate a swap + liquidity lock?
+        // also, don't get caught in a circular liquidity event.
+        // also, don't swap & liquify if sender is uniswap pair.
 
         uint256 contractTokenBalance = balanceOf(address(this));
 
         if(contractTokenBalance >= _maxTxAmount)
         {
+
+            //console.log("contractTokenBalance", contractTokenBalance);
             contractTokenBalance = _maxTxAmount;
         }
 
-        bool overMinTokenBalance = contractTokenBalance >= numTokensSellToAddToQuery;
+        bool overMinTokenBalance = contractTokenBalance >= numTokensSellToAddToLiquidity;
+
+        /*
+        console.log("========");
+        console.log("overMinTokenBalance: ", overMinTokenBalance);
+        console.log("inSwapAndLiquify: ", inSwapAndLiquify);
+        console.log("from: ", from);
+        console.log("swapAndLiquifyEnabled: ", swapAndLiquifyEnabled);
+        console.log("========");
+        */
 
         if (
             overMinTokenBalance &&
-            !inSwapAndDepositQuery &&
-            from != uniswapV2Pair &&
-            swapAndDepositQueryEnabled
+            !inSwapAndLiquify &&
+            from != uniswapV2Pair //&&
+            //swapAndLiquifyEnabled
         ) {
-            contractTokenBalance = numTokensSellToAddToQuery;
-            // Collect query fee
-            swapAndDepositQuery(calculateQueryFee(amount));
+            if (swapAndLiquifyEnabled) {
+                contractTokenBalance = numTokensSellToAddToLiquidity;
+                // Add liquidity
+                swapAndLiquify(contractTokenBalance);
+            }
+            if (swapAndDepositQueryEnabled) {
+                // Collect query fee
+                swapAndDepositQuery(calculateQueryFee(amount));
+            }
         }
         
         //indicates if fee should be deducted from transfer
@@ -399,9 +440,106 @@ contract dChanToken is Context, IERC20, Ownable {
             takeFee = false;
         }
         
-        // Perform the actual transfer
+        //transfer amount, it will take tax, burn, liquidity fee
         _tokenTransfer(from,to,amount,takeFee);
     }
+
+    function swapAndLiquify(uint256 contractTokenBalance) private lockTheSwap {
+        // split the contract balance into halves
+        uint256 half = contractTokenBalance.div(2);
+        uint256 otherHalf = contractTokenBalance.sub(half);
+
+        // capture the contract's current ETH balance.
+        // this is so that we can capture exactly the amount of ETH that the
+        // swap creates, and not make the liquidity event include any ETH that
+        // has been manually sent to the contract
+        uint256 initialBalance = address(this).balance;
+
+        // swap tokens for ETH
+        swapTokensForEth(half); // <- this breaks the ETH -> HATE swap when swap+liquify is triggered
+
+        // how much ETH did we just swap into?
+        uint256 newBalance = address(this).balance.sub(initialBalance);
+
+        // add liquidity to uniswap
+        addLiquidity(otherHalf, newBalance);
+        
+        emit SwapAndLiquify(half, newBalance, otherHalf);
+    }
+
+
+    function swapTokensForEth(uint256 tokenAmount) private {
+        // generate the uniswap pair path of token -> weth
+        address[] memory path = new address[](2);
+        path[0] = address(this);
+        path[1] = uniswapV2Router.WETH();
+
+
+        _approve(address(this), address(uniswapV2Router), tokenAmount);
+
+        console.log("Contract balance before token -> ETH swap", address(this).balance);
+
+        /*
+        console.log("YEET");
+        (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast) = IUniswapV2Pair(uniswapV2Pair).getReserves();
+        console.log(reserve0, reserve1);
+        console.log("YEET");
+        */
+
+        // make the swap
+        uniswapV2Router.swapExactTokensForETHSupportingFeeOnTransferTokens(
+            tokenAmount,
+            0, // accept any amount of ETH
+            path,
+            address(this),
+            block.timestamp
+        );
+
+        console.log("Contract balance after token -> ETH swap", address(this).balance);
+
+        console.log("YEET");
+        (uint112 reserve0, uint112 reserve1,) = IUniswapV2Pair(uniswapV2Pair).getReserves();
+        console.log(reserve0, reserve1);
+        console.log("YEET");
+
+    }
+
+    function addLiquidity(uint256 tokenAmount, uint256 ethAmount) private {
+        // approve token transfer to cover all possible scenarios
+        _approve(address(this), address(uniswapV2Router), tokenAmount);
+
+        // add the liquidity
+        uniswapV2Router.addLiquidityETH{value: ethAmount}(
+            address(this),
+            tokenAmount,
+            0, // slippage is unavoidable
+            0, // slippage is unavoidable
+            address(0),
+            block.timestamp
+        );
+
+        console.log("YEET");
+        (uint112 reserve0, uint112 reserve1,) = IUniswapV2Pair(uniswapV2Pair).getReserves();
+        console.log(reserve0, reserve1);
+        console.log("YEET");
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -411,34 +549,55 @@ contract dChanToken is Context, IERC20, Ownable {
         address[] memory path = new address[](3);
         path[0] = address(this);                        // From token
         path[1] = uniswapV2Router.WETH();              // To MATIC
-        path[2] = address(_grtTokenContract);         // to GRT (this ensures the best liquidity)
+        path[2] = _grtTokenContract;                  // to GRT (this ensures the best liquidity)
 
-        // Approve the tokens to be swapped- the tokens are technically held in custody by this contract, and swapped at a critical mass
+        //console.log("Transaction _msgSender: ", _msgSender());
+        //console.log("Address(this): ", address(this));
+
+        //console.log("Token Amount passed to swapAndDepositQuery: ", tokenAmount/10**9);
+
+        //_approve(sender, address(uniswapV2Router), tokenAmount);
         _approve(address(this), address(uniswapV2Router), tokenAmount);
 
-        // Make the swap
+
+
+
+        // make the swap
         uniswapV2Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
             tokenAmount,
-            0,                                                                          // accept any amount of GRT
+            0, // accept any amount of GRT
             path,
-            address(this),                                                              // Give the tokens to us for deposit      
+            queryPayer,
             block.timestamp
         );
         
-        // Get the GRT balance of this contract
-        uint256 balance = _grtTokenContract.balanceOf(address(this));
-        console.log("GRT balance: ", balance);
-         
-        // Approve that to be transferred by the billing contract
-        _grtTokenContract.approve(address(billingContract), balance);
+        // Get the balance of the 
         
-        // Deposit it into the billing contract
-        billingContract.addTo(queryPayer, balance);
-
-        emit SwapAndDepositQuery(tokenAmount, balance);
+        // Now _queryPayer has the GRT, deposit it into the billing contract
+        //billingContract.addTo(_queryPayer, tokenAmount);
 
     }
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -466,40 +625,44 @@ contract dChanToken is Context, IERC20, Ownable {
     function _transferStandard(address sender, address recipient, uint256 tAmount) private {
         //console.log("Standard Transfer from sender: ", sender);
         //console.log("Standard Transfer from recipient: ", recipient);
-        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tQuery) = _getValues(tAmount);
+        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tLiquidity, uint256 tQuery) = _getValues(tAmount);
         _rOwned[sender] = _rOwned[sender].sub(rAmount);
         _rOwned[recipient] = _rOwned[recipient].add(rTransferAmount);
+        _takeLiquidity(tLiquidity);
         _takeQuery(tQuery);
         _reflectFee(rFee, tFee);
         emit Transfer(sender, recipient, tTransferAmount);
     }
 
     function _transferToExcluded(address sender, address recipient, uint256 tAmount) private {
-        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tQuery) = _getValues(tAmount);
+        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tLiquidity, uint256 tQuery) = _getValues(tAmount);
         _rOwned[sender] = _rOwned[sender].sub(rAmount);
         _tOwned[recipient] = _tOwned[recipient].add(tTransferAmount);
         _rOwned[recipient] = _rOwned[recipient].add(rTransferAmount);          
+        _takeLiquidity(tLiquidity);
         _takeQuery(tQuery);
         _reflectFee(rFee, tFee);
         emit Transfer(sender, recipient, tTransferAmount);
     }
 
     function _transferFromExcluded(address sender, address recipient, uint256 tAmount) private {
-        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tQuery) = _getValues(tAmount);
+        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tLiquidity, uint256 tQuery) = _getValues(tAmount);
         _tOwned[sender] = _tOwned[sender].sub(tAmount);
         _rOwned[sender] = _rOwned[sender].sub(rAmount);
         _rOwned[recipient] = _rOwned[recipient].add(rTransferAmount);   
+        _takeLiquidity(tLiquidity);
         _takeQuery(tQuery);
         _reflectFee(rFee, tFee);
         emit Transfer(sender, recipient, tTransferAmount);
     }
 
     function _transferBothExcluded(address sender, address recipient, uint256 tAmount) private {
-        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tQuery) = _getValues(tAmount);
+        (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tLiquidity, uint256 tQuery) = _getValues(tAmount);
         _tOwned[sender] = _tOwned[sender].sub(tAmount);
         _rOwned[sender] = _rOwned[sender].sub(rAmount);
         _tOwned[recipient] = _tOwned[recipient].add(tTransferAmount);
-        _rOwned[recipient] = _rOwned[recipient].add(rTransferAmount);
+        _rOwned[recipient] = _rOwned[recipient].add(rTransferAmount);      
+        _takeLiquidity(tLiquidity);
         _takeQuery(tQuery);
         _reflectFee(rFee, tFee);
         emit Transfer(sender, recipient, tTransferAmount);
