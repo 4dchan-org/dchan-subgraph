@@ -2,7 +2,6 @@
 pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
@@ -10,6 +9,7 @@ import "./IUniswapV2Router02.sol";
 import "./IUniswapV2Factory.sol";
 import "./IGRTBilling.sol";
 import "./IUniswapV2Pair.sol";
+import "./IERC20.sol";              // Cannot use OZ since transfers are non-payable
 
 import "hardhat/console.sol";
 
@@ -58,7 +58,9 @@ contract dChanToken is Context, IERC20, Ownable {
     // ########################## Ecosystem Details ##########################
     uint256 public _reflectFeePercent = 4;
     uint256 public _queryFeePercent = 4;
+    uint256 public _faucetValue = 1;          // Denominated in gwei
     address public queryPayer;
+    address public faucet;
     uint256 private _previousQueryFeePercent = _queryFeePercent;
     uint256 private _previousReflectFeePercent = _reflectFeePercent;
 
@@ -72,13 +74,15 @@ contract dChanToken is Context, IERC20, Ownable {
     
     bool inSwapAndDepositQuery;
     bool public swapAndDepositQueryEnabled = true;
+    bool public faucetEnabled = true;
     
     
     // ########################## Subgraph Events ##########################
-    event MinTokensBeforeSwapUpdated(uint256 minTokensBeforeSwap);
-    event SwapAndLiquifyEnabledUpdated(bool enabled);
     event SwapAndDepositQueryEnabledUpdated(bool enabled);
     event SwapAndDepositQuery(uint256 tokensSwapped, uint256 grtDeposited);
+    event FaucetFeeChanged(uint256 _newFeeInGwei);
+    event FaucetUpdated(address _newFaucet);
+    event FaucetEnabled(bool _isEnabled);
     
 
     modifier lockTheSwap {
@@ -89,8 +93,6 @@ contract dChanToken is Context, IERC20, Ownable {
 
     
     constructor() {
-
-        //console.log("Deployer & Owner: ", _msgSender());
         
         queryPayer = owner();
         _rOwned[_msgSender()] = _rTotal;
@@ -101,6 +103,7 @@ contract dChanToken is Context, IERC20, Ownable {
         // Will need to call approve() on the billing contract to spend the swapped GRT
         billingContract = IGRTBilling(0xa382f75b375D6a07bfD1af99D4383C6e1D1C4004);                     // Mainnet GRT billing address
 
+        faucet = payable(0xa3b832e52Bc12Df5a5eeb885370Bc9b54D19BC1a);                                  // Faucet
 
         // Create a uniswap pair for this new token
         uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory()).createPair(address(this), _uniswapV2Router.WETH());
@@ -137,7 +140,7 @@ contract dChanToken is Context, IERC20, Ownable {
         return tokenFromReflection(_rOwned[account]);
     }
 
-    function transfer(address recipient, uint256 amount) public override returns (bool) {
+    function transfer(address recipient, uint256 amount) public payable override returns (bool) {
         _transfer(_msgSender(), recipient, amount);
         return true;
     }
@@ -151,9 +154,8 @@ contract dChanToken is Context, IERC20, Ownable {
         return true;
     }
 
-    function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) public payable override returns (bool) {
         _transfer(sender, recipient, amount);
-        console.log("TransferFrom invoked for sender %s and recipient %s for amount %s", sender, recipient, amount);
         _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
         return true;
         
@@ -203,7 +205,7 @@ contract dChanToken is Context, IERC20, Ownable {
         return rAmount.div(currentRate);
     }
 
-    function excludeFromReward(address account) public onlyOwner() {
+    function excludeFromReward(address account) public onlyOwner {
         // require(account != 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D, 'We can not exclude Uniswap router.');
         require(!_isExcluded[account], "Account is already excluded");
         if(_rOwned[account] > 0) {
@@ -213,7 +215,7 @@ contract dChanToken is Context, IERC20, Ownable {
         _excluded.push(account);
     }
 
-    function includeInReward(address account) external onlyOwner() {
+    function includeInReward(address account) external onlyOwner {
         require(_isExcluded[account], "Account is already excluded");
         for (uint256 i = 0; i < _excluded.length; i++) {
             if (_excluded[i] == account) {
@@ -234,7 +236,7 @@ contract dChanToken is Context, IERC20, Ownable {
         _isExcludedFromFee[account] = false;
     }
     
-    function setTaxFeePercent(uint256 taxFee) external onlyOwner() {
+    function setTaxFeePercent(uint256 taxFee) external onlyOwner {
         _reflectFeePercent = taxFee;
     }
 
@@ -247,7 +249,7 @@ contract dChanToken is Context, IERC20, Ownable {
     }
     
    
-    function setMaxTxPercent(uint256 maxTxPercent) external onlyOwner() {
+    function setMaxTxPercent(uint256 maxTxPercent) external onlyOwner {
         _maxTxAmount = _tTotal.mul(maxTxPercent).div(
             10**2
         );
@@ -256,6 +258,21 @@ contract dChanToken is Context, IERC20, Ownable {
     function setSwapAndDepositQueryEnabled(bool _enabled) public onlyOwner {
         swapAndDepositQueryEnabled = _enabled;
         emit SwapAndDepositQueryEnabledUpdated(_enabled);
+    }
+
+    function setFaucetAddress(address _newFaucet) public onlyOwner {
+        faucet = payable(_newFaucet);
+        emit FaucetUpdated(_newFaucet);
+    }
+
+    function setFaucetFee(uint256 _newFeeInGwei) public onlyOwner {
+        _faucetValue = _newFeeInGwei;
+        emit FaucetFeeChanged(_newFeeInGwei);
+    }
+
+    function setFaucetEnabled(bool _isEnabled) public onlyOwner {
+        faucetEnabled = _isEnabled;
+        emit FaucetEnabled(_isEnabled);
     }
 
     //to recieve ETH from uniswapV2Router when swapping
@@ -354,7 +371,7 @@ contract dChanToken is Context, IERC20, Ownable {
         emit Approval(owner, spender, amount);
     }
 
-    function _transfer(
+    function _transfer (
         address from,
         address to,
         uint256 amount
@@ -364,6 +381,14 @@ contract dChanToken is Context, IERC20, Ownable {
         require(amount > 0, "Transfer amount must be greater than zero");
         if(from != owner() && to != owner())
             require(amount <= _maxTxAmount, "Transfer amount exceeds the maxTxAmount.");
+
+            // If faucet is enabled, distribute it.
+            // Double check how this works with swaps.
+            if (faucetEnabled && _msgSender() != address(uniswapV2Router)) {
+                console.log("Message Value: ", msg.value);
+                require(msg.value >= (_faucetValue * 10**9), "DCHAN: FAUCET_FEE_REQUIRED");
+                payable(faucet).transfer(msg.value);
+            }
 
         // is the token balance of this contract address over the min number of
         // tokens that we need to initiate a swap + query deposit?
@@ -386,7 +411,7 @@ contract dChanToken is Context, IERC20, Ownable {
             swapAndDepositQueryEnabled
         ) {
             contractTokenBalance = numTokensSellToAddToQuery;
-            // Collect query fee
+            // Collect query fee if we're above the threshold
             swapAndDepositQuery(calculateQueryFee(amount));
         }
         
@@ -427,7 +452,6 @@ contract dChanToken is Context, IERC20, Ownable {
         
         // Get the GRT balance of this contract
         uint256 balance = _grtTokenContract.balanceOf(address(this));
-        console.log("GRT balance: ", balance);
          
         // Approve that to be transferred by the billing contract
         _grtTokenContract.approve(address(billingContract), balance);
@@ -464,8 +488,6 @@ contract dChanToken is Context, IERC20, Ownable {
     }
 
     function _transferStandard(address sender, address recipient, uint256 tAmount) private {
-        //console.log("Standard Transfer from sender: ", sender);
-        //console.log("Standard Transfer from recipient: ", recipient);
         (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tQuery) = _getValues(tAmount);
         _rOwned[sender] = _rOwned[sender].sub(rAmount);
         _rOwned[recipient] = _rOwned[recipient].add(rTransferAmount);
@@ -511,6 +533,9 @@ contract dChanToken is Context, IERC20, Ownable {
         setQueryFeePercent(0);
         setQueryFeePayer(address(0));
         setSwapAndDepositQueryEnabled(false);
+        setFaucetEnabled(false);
+        setFaucetAddress(address(0));
+        setFaucetFee(0);
         super.renounceOwnership();
     }
 

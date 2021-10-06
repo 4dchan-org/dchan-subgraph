@@ -115,7 +115,7 @@ describe("==== dChanToken ====", function () {
     // Send tokens from account 0 to account 1
     await getDChanBalances(accounts, connectedDChan);
     console.log("Sending ", 100000, " tokens from account 0 to account 1....");
-    let tx2 = await connectedDChan.transfer(accounts[1].address, 100000000000000);
+    let tx2 = await connectedDChan.transfer(accounts[1].address, 100000000000000, {value: ETH_TO_ADD});
     console.log("\n=================================AFTER===================================\n");    
 
     await getDChanBalances(accounts, connectedDChan);
