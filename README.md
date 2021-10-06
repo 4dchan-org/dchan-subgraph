@@ -1,15 +1,18 @@
-# Basic Sample Hardhat Project
+# dchan-subgraph
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+Official [dchan](https://dchan.network) subgraph.
 
-Try running some of the following tasks:
+## Development
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+* `./bin/docker_start_node.sh`
+* Once started open a new terminal and `./bin/docker_bash.sh`
+  * `cp subgraph.ganache.yaml subgraph.yaml`
+  * `./bin/deploy.sh`
+    * Change `address` in `subgraph.yaml` everytime you deploy a new contract
+  * `./bin/subgraph_deploy.sh` to update the subgraph
+
+In case of problems refer to [this guide](https://thegraph.com/docs/developer/quick-start) or to the google of internet
+
+## Credits
+
+Based on [@DennisonBertram](https://twitter.com/DennisonBertram/)'s [`poster-token`](https://github.com/crazyrabbitLTC/poster-token).
