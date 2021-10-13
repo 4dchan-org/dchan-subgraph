@@ -208,8 +208,11 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     }
 
     // Update ppm
+    // Is this correct?
     thread.ppm = BigInt.fromI32(1_000_000_000).times(thread.replyCount).div(BigInt.fromI32(1).plus(block.timestamp).minus(thread.createdAt))
+    // This is basically le reddit's epic upboat algorithm but probably wrong
     thread.popularity = BigInt.fromI32(86_400).times(thread.ppm).plus(thread.createdAt)
+    // @TODO Fix this
 
     log.info("Saving: {}", [evtId]);
 

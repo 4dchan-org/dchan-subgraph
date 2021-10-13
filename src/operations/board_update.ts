@@ -1,7 +1,7 @@
 import { JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
-import { Board, User } from "../../generated/schema";
-import { ensureBoolean, ensureString } from "../ensure";
+import { User } from "../../generated/schema";
+import { ensureBoolean, ensureNumber, ensureString } from "../ensure";
 import { isBoardJanny } from "../internal/board_janny";
 import { eventId } from "../id";
 import { loadBoardFromId } from "../internal/board";
@@ -9,7 +9,7 @@ import { loadBoardFromId } from "../internal/board";
 export function boardUpdate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
 
-    log.info("Creating board: {}", [evtId]);
+    log.info("Updating board: {}", [evtId]);
 
     let boardId = ensureString(data.get("id"))
     if (boardId == null) {
@@ -38,6 +38,10 @@ export function boardUpdate(message: Message, user: User, data: TypedMap<string,
     let isNsfw = "true" == ensureBoolean(data.get("nsfw"))
     if(isNsfw == true) {
         board.isNsfw = isNsfw
+    }
+    let threadLifetime = ensureNumber(data.get("thread_lifetime"))
+    if(threadLifetime != null) {
+        board.threadLifetime = threadLifetime
     }
     board.save()
 
