@@ -43,6 +43,7 @@ type Board @entity {
   lastBumpedAt: BigInt!
   jannies: [BoardJanny!]! @derivedFrom(field: "board")
   threads: [Thread]! @derivedFrom(field: "board")
+  threadLifetime: BigInt
 }
 
 type Thread @entity {
@@ -60,6 +61,7 @@ type Thread @entity {
   createdAt: BigInt!
   lastBumpedAtBlock: Block!
   lastBumpedAt: BigInt!
+  archivedAt: BigInt
   score: BigInt!
   from: User!
   ppm: BigInt!

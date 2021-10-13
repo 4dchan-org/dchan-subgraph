@@ -146,6 +146,12 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         return false
     }
 
+    if (thread.archivedAt !== null && thread.archivedAt.lt(block.timestamp)) {
+        log.warning("Cannot reply to archived thread {}", [evtId])
+
+        return false
+    }
+
     createPostRefs(message, post)
 
     if (thread != null) {
@@ -195,6 +201,10 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         board.lastBumpedAt = block.timestamp
         thread.lastBumpedAtBlock = block.id
         thread.lastBumpedAt = block.timestamp
+
+        if(board.threadLifetime !== null) {
+            thread.archivedAt = block.timestamp.plus(board.threadLifetime as BigInt)
+        }
     }
 
     // Update ppm

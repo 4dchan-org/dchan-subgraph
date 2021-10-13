@@ -167,6 +167,23 @@ export class Board extends Entity {
   set threads(value: Array<string | null>) {
     this.set("threads", Value.fromStringArray(value));
   }
+
+  get threadLifetime(): BigInt | null {
+    let value = this.get("threadLifetime");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set threadLifetime(value: BigInt | null) {
+    if (value === null) {
+      this.unset("threadLifetime");
+    } else {
+      this.set("threadLifetime", Value.fromBigInt(value as BigInt));
+    }
+  }
 }
 
 export class Thread extends Entity {
@@ -330,6 +347,23 @@ export class Thread extends Entity {
 
   set lastBumpedAt(value: BigInt) {
     this.set("lastBumpedAt", Value.fromBigInt(value));
+  }
+
+  get archivedAt(): BigInt | null {
+    let value = this.get("archivedAt");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set archivedAt(value: BigInt | null) {
+    if (value === null) {
+      this.unset("archivedAt");
+    } else {
+      this.set("archivedAt", Value.fromBigInt(value as BigInt));
+    }
   }
 
   get score(): BigInt {
