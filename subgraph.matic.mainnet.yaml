@@ -1,5 +1,5 @@
 specVersion: 0.0.3
-description: dchan
+description: dchan-network
 repository: https://github.com/dchan-network/dchan-subgraph
 schema:
   file: ./schema.graphql
