@@ -8,31 +8,32 @@ import { loadThreadFromId } from "../internal/thread";
 import { loadPostFromId } from "../internal/post";
 
 export function threadUnlock(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
-    let threadId = ensureString(data.get("id"))
+    let maybeThreadId = ensureString(data.get("id"))
     let evtId = eventId(message)
-    if(threadId == null) {
+    if(!maybeThreadId) {
         log.warning("Invalid thread lock request: {}", [evtId]);
 
         return false
     }
 
+    let threadId = maybeThreadId as string
     log.info("Unlocking thread: {}", [threadId]);
     
     let thread = loadThreadFromId(threadId)
-    if (thread == null) {
+    if (!thread) {
         log.warning("Thread not found: {}", [threadId]);
 
         return false
     }
 
-    let op = loadPostFromId(thread.op)
-    if(op == null) {
+    let op = thread.op ? loadPostFromId(thread.op as string) : null
+    if(!op) {
         log.error("Thread op for {} not found, wtf?", [threadId])
 
         return false
     }
 
-    if((op.from != user.id) && !isBoardJanny(user, thread.board)) {
+    if((op.from != user.id) && thread.board && !isBoardJanny(user, thread.board as string)) {
         log.warning("Thread {} not owned by {}, skipping {}", [threadId, user.id, evtId])
 
         return false

@@ -10,14 +10,15 @@ import { loadBoardFromId } from "../internal/board";
 export function boardReport(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
 
-    let boardId = ensureString(data.get("id"))
+    let maybeBoardId = ensureString(data.get("id"))
     let reason = ensureString(data.get("reason"))
-    if (boardId == null) {
+    if (maybeBoardId == null) {
         log.warning("Invalid board report request: {}", [evtId]);
 
         return false
     }
 
+    let boardId = maybeBoardId as string
     log.debug("Reported board: {}", [boardId]);
 
     let board = loadBoardFromId(boardId)
@@ -29,7 +30,7 @@ export function boardReport(message: Message, user: User, data: TypedMap<string,
     board.score = scorePenalty(board.score)
     board.save()
 
-    createBoardReport(message, user, board as Board, reason)
+    createBoardReport(message, user, board as Board, reason ? reason as string : "")
 
     return true
 }

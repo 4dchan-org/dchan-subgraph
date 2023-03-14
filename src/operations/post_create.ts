@@ -1,7 +1,7 @@
 import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
 import { Board, Image, Post, Thread, User } from "../../generated/schema";
-import { ensureBoolean, ensureNumber, ensureObject, ensureString } from "../ensure";
+import { ensureBoolean, ensureObject, ensureString } from "../ensure";
 import { eventId, shortUniqueId } from "../id";
 import { POST_COMMENT_MAX_LENGTH, POST_FILENAME_MAX_LENGTH, POST_NAME_MAX_LENGTH, POST_SUBJECT_MAX_LENGTH } from "../constants";
 import { scoreDefault } from "../score";
@@ -18,70 +18,65 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     let evtId = eventId(message)
     let block = locateBlockFromMessage(message)
 
-    let board: Board | null = null
-    let boardId = ensureString(data.get("board"))
-
-    let thread: Thread | null = null
     let threadId = ensureString(data.get("thread"))
-
+    let boardId = ensureString(data.get("board"))
     let sage = "true" == ensureBoolean(data.get("sage"))
 
     // Throttling
-    // if(user.lastPostedAt != null && message.block.timestamp < user.lastPostedAt.plus(BigInt.fromI32(50))) {
+    // if(user.lastPostedAt && message.block.timestamp < user.lastPostedAt.plus(BigInt.fromI32(50))) {
     //     log.info("Throttling user {}: {}", [user.id, evtId]);
 
     //     return  false
     // }
 
-    if (threadId != null) {
+    let thread: Thread | null = null
+    if (threadId) {
         log.info("Replying to {}", [threadId]);
 
         thread = loadThreadFromId(threadId)
-        if (thread == null) {
+        if (thread) {
+            boardId = thread.board
+        } else {
             log.warning("Invalid thread {}, skipping {}", [threadId, evtId])
 
             return false
         }
-
-        boardId = thread.board
-    } else {
-        if (boardId == null) {
-            log.warning("Invalid post create request", [])
-
-            return false
-        }
-
+    } else if (boardId) {
         log.info("Creating new thread on {}", [boardId]);
+    } else {
+        log.warning("Invalid post create request", [])
+
+        return false
     }
 
-    board = loadBoardFromId(boardId)
-
-    if (board == null) {
+    let maybeBoard = boardId ? loadBoardFromId(boardId) : null
+    if (!maybeBoard && boardId) {
         log.warning("Invalid board {}, skipping {}", [boardId, evtId])
 
         return false
     }
 
-    if (userIsBoardBanned(message, user, board as Board)) {
+    let board = maybeBoard as Board;
+    if (userIsBoardBanned(message, user, board)) {
         log.warning("User is banned from this board, skipping {}", [evtId])
 
         return false
     }
 
-    if (thread != null && thread.isLocked && !isBoardJanny(user, board.id)) {
+    if (thread && thread.isLocked && board && !isBoardJanny(user, board.id) && threadId) {
         log.warning("Thread {} locked, skipping {}", [threadId, evtId])
 
         return false
     }
 
-    if (board.isLocked && !isBoardJanny(user, board.id)) {
+    if (board && board.isLocked && !isBoardJanny(user, board.id)) {
         log.warning("Board {} locked, skipping {}", [board.id, evtId])
 
         return false
     }
 
     let comment = ensureString(data.get("comment"))
-    if (comment.length > POST_COMMENT_MAX_LENGTH) {
+    if (comment && comment.length > POST_COMMENT_MAX_LENGTH) {
         log.warning("Comment over length limit, skipping {}", [evtId])
 
         return false
@@ -90,12 +85,12 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     log.info("Creating image: {}", [evtId]);
     let image: Image | null = null
     let file = ensureObject(data.get("file"))
-    if (file != null) {
+    if (file) {
         let name = ensureString(file.get('name'))
         let ipfs = ensureObject(file.get('ipfs'))
-        let ipfsHash: string | null = ipfs != null ? ensureString(ipfs.get('hash')) : null
+        let ipfsHash: string | null = ipfs ? ensureString(ipfs.get('hash')) : null
 
-        if (name != null && ipfsHash != null) {
+        if (name && ipfsHash) {
             if (name.length > POST_FILENAME_MAX_LENGTH) {
                 log.warning("Filename over length limit, skipping {}", [evtId])
 
@@ -120,7 +115,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
 
     log.info("Creating post: {}", [evtId]);
     let name = ensureString(data.get("name"))
-    if (name.length > POST_NAME_MAX_LENGTH) {
+    if (name && name.length > POST_NAME_MAX_LENGTH) {
         log.warning("Name over length limit, skipping {}", [evtId])
 
         return false
@@ -130,23 +125,23 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     let post = new Post(pId)
     post.score = scoreDefault()
     post.n = block.timestamp
-    post.comment = comment || ""
+    post.comment = comment ? comment as string : ""
     post.createdAtBlock = block.id
     post.createdAt = block.timestamp
-    post.name = (!!name && name != "") ? name : "Anonymous"
+    post.name = (!!name && name !== "") ? name : "Anonymous"
     post.from = user.id
     post.sage = sage
-    if (image != null) {
+    if (image) {
         post.image = image.id
     }
 
-    if (post.comment == "" && post.image == null) {
+    if (post.comment === "" && post.image) {
         log.warning("Invalid post, skipping {}", [evtId])
 
         return false
     }
 
-    if (thread.archivedAt !== null && thread.archivedAt.lt(block.timestamp)) {
+    if (thread && thread.archivedAt !== null && (thread.archivedAt as BigInt).lt(block.timestamp)) {
         log.warning("Cannot reply to archived thread {}", [evtId])
 
         return false
@@ -154,17 +149,17 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
 
     createPostRefs(message, post)
 
-    if (thread != null) {
+    if (thread) {
         log.debug("Replying to thread {}", [thread.id]);
         post.thread = thread.id
 
         thread.replyCount = thread.replyCount.plus(BigInt.fromI32(1))
-        thread.imageCount = thread.imageCount.plus(BigInt.fromI32(image != null ? 1 : 0))
-    } else {
+        thread.imageCount = thread.imageCount.plus(BigInt.fromI32(image ? 1 : 0))
+    } else if (board) {
         log.debug("Creating thread {}", [evtId]);
 
         let subject = ensureString(data.get("subject"))
-        if (subject.length > POST_SUBJECT_MAX_LENGTH) {
+        if (subject && subject.length > POST_SUBJECT_MAX_LENGTH) {
             log.warning("Subject over length limit, skipping {}", [evtId])
 
             return false
@@ -191,6 +186,8 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         createThreadRefs(message, thread as Thread)
     }
 
+    thread = thread as Thread
+
     post.board = board.id
     user.lastPostedAtBlock = block.id
     board.postCount = board.postCount.plus(BigInt.fromI32(1))
@@ -216,7 +213,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
 
     log.info("Saving: {}", [evtId]);
 
-    if (image != null) {
+    if (image) {
         image.save()
     }
     thread.save()

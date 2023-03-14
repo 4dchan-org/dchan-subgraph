@@ -1,6 +1,4 @@
 import { ByteArray, Bytes, json, JSONValue, log, TypedMap } from '@graphprotocol/graph-ts';
-import { Message } from '../generated/Relay/Relay'
-import { Block, ChanStatus } from '../generated/schema'
 import { ensureObject, ensureString } from './ensure'
 
 import { adminClaim } from './operations/admin_claim';
@@ -33,6 +31,9 @@ import { userIsBanned } from './internal/user_ban';
 import { isChanLocked } from './internal/chan_status';
 import { boardReport } from './operations/board_report';
 import { clientPublish } from './operations/client_publish';
+
+import { Message } from '../generated/Relay/Relay'
+import { Block } from '../generated/schema'
 
 type Data = TypedMap<string, JSONValue>
 
@@ -84,88 +85,94 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
   // Always good to have but not needed now
   // let version = payload.get('v');
   // let namespace = payload.get('ns');
-  let operation = ensureString(payload.get('op'));
-
-  if (operation != null) {
-    log.debug("Received operation: {}", [operation])
-
-    let data = ensureObject(payload.get('data'));
-    if (data != null) {
-      // IPFS client
-      if (operation == "client:publish") {
-        return clientPublish(message, user, data as Data)
-      }
-
-      // Admin
-      if (operation == "chan:unlock") {
-        return chanUnlock(message, user)
-      } else if (operation == "chan:lock") {
-        return chanLock(message, user)
-      } else if (operation == "admin:claim") {
-        return adminClaim(message, user)
-      } else if (operation == "admin:grant") {
-        return adminGrant(message, user, data as Data)
-      } else if (operation == "admin:revoke") {
-        return adminRevoke(message, user, data as Data)
-      }
-
-      // Checks
-      if (isChanLocked(message)) {
-        log.warning("Chan locked, skipping {}", [evtId])
-
-        return false
-      }
-      if (userIsBanned(message, user.id)) {
-        log.info("User {} is banned, skipping {}", [user.id, evtId])
-
-        return false
-      }
-
-      // AI
-      if (operation == "board:create") {
-        return boardCreate(message, user, data as Data)
-      } else if (operation == "board:lock") {
-        return boardLock(message, user, data as Data)
-      } else if (operation == "board:remove") {
-        return boardRemove(message, user, data as Data)
-      } else if (operation == "board:report") {
-        return boardReport(message, user, data as Data)
-      } else if (operation == "board:update") {
-        return boardUpdate(message, user, data as Data)
-      } else if (operation == "board:unlock") {
-        return boardUnlock(message, user, data as Data)
-      } else if (operation == "janny:grant") {
-        return jannyGrant(message, user, data as Data)
-      } else if (operation == "janny:revoke") {
-        return jannyRevoke(message, user, data as Data)
-      } else if (operation == "post:ban") {
-        return postBan(message, user, data as Data)
-      } else if (operation == "user:ban") {
-        return userBan(message, user, data as Data)
-      } else if (operation == "user:unban") {
-        return userUnban(message, user, data as Data)
-      } else if (operation == "thread:pin") {
-        return threadPin(message, user, data as Data)
-      } else if (operation == "thread:unpin") {
-        return threadUnpin(message, user, data as Data)
-      } else if (operation == "thread:lock") {
-        return threadLock(message, user, data as Data)
-      } else if (operation == "thread:unlock") {
-        return threadUnlock(message, user, data as Data)
-      } else if (operation == "post:create") {
-        return postCreate(message, user, data as Data)
-      } else if (operation == "post:remove") {
-        return postRemove(message, user, data as Data)
-      } else if (operation == "post:report") {
-        return postReport(message, user, data as Data)
-      } else {
-        log.warning("Invalid operation {}, skipping: {}", [operation, evtId]);
-      }
-    } else {
-      log.warning("Invalid data, skipping {}", [evtId])
-    }
-  } else {
+  let maybeOperation = ensureString(payload.get('op'));
+  if(!maybeOperation) {
     log.warning("Invalid format, skipping: {}", [evtId]);
+
+    return false
+  }
+  
+  let operation = maybeOperation as string
+  log.debug("Received operation: {}", [operation])
+
+  let maybeData = ensureObject(payload.get('data'));
+  if (!maybeData) {
+    log.warning("Invalid data, skipping {}", [evtId])
+
+    return false
+  }
+
+  let data = maybeData as Data
+
+  // IPFS client
+  if (operation == "client:publish") {
+    return clientPublish(message, user, data)
+  }
+
+  // Admin
+  if (operation == "chan:unlock") {
+    return chanUnlock(message, user)
+  } else if (operation == "chan:lock") {
+    return chanLock(message, user)
+  } else if (operation == "admin:claim") {
+    return adminClaim(message, user)
+  } else if (operation == "admin:grant") {
+    return adminGrant(message, user, data)
+  } else if (operation == "admin:revoke") {
+    return adminRevoke(message, user, data)
+  }
+
+  // Checks
+  if (isChanLocked(message)) {
+    log.warning("Chan locked, skipping {}", [evtId])
+
+    return false
+  }
+  if (userIsBanned(message, user.id)) {
+    log.info("User {} is banned, skipping {}", [user.id, evtId])
+
+    return false
+  }
+
+  // AI
+  if (operation == "board:create") {
+    return boardCreate(message, user, data)
+  } else if (operation == "board:lock") {
+    return boardLock(message, user, data)
+  } else if (operation == "board:remove") {
+    return boardRemove(message, user, data)
+  } else if (operation == "board:report") {
+    return boardReport(message, user, data)
+  } else if (operation == "board:update") {
+    return boardUpdate(message, user, data)
+  } else if (operation == "board:unlock") {
+    return boardUnlock(message, user, data)
+  } else if (operation == "janny:grant") {
+    return jannyGrant(message, user, data)
+  } else if (operation == "janny:revoke") {
+    return jannyRevoke(message, user, data)
+  } else if (operation == "post:ban") {
+    return postBan(message, user, data)
+  } else if (operation == "user:ban") {
+    return userBan(message, user, data)
+  } else if (operation == "user:unban") {
+    return userUnban(message, user, data)
+  } else if (operation == "thread:pin") {
+    return threadPin(message, user, data)
+  } else if (operation == "thread:unpin") {
+    return threadUnpin(message, user, data)
+  } else if (operation == "thread:lock") {
+    return threadLock(message, user, data)
+  } else if (operation == "thread:unlock") {
+    return threadUnlock(message, user, data)
+  } else if (operation == "post:create") {
+    return postCreate(message, user, data)
+  } else if (operation == "post:remove") {
+    return postRemove(message, user, data)
+  } else if (operation == "post:report") {
+    return postReport(message, user, data)
+  } else {
+    log.warning("Invalid operation {}, skipping: {}", [operation, evtId]);
   }
 
   return false

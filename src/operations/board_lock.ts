@@ -7,18 +7,20 @@ import { loadBoardFromId } from "../internal/board";
 import { isBoardJanny } from "../internal/board_janny";
 
 export function boardLock(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
-    let boardId = ensureString(data.get("id"))
+    let maybeBoardId = ensureString(data.get("id"))
     let evtId = eventId(message)
-    if(boardId == null) {
+    if(!maybeBoardId) {
         log.warning("Invalid board lock request: {}", [evtId]);
 
         return false
     }
 
+    let boardId = maybeBoardId as string
+
     log.info("Locking board: {}", [boardId]);
     
     let board = loadBoardFromId(boardId)
-    if (board == null) {
+    if (!board) {
         log.warning("Board {} not found", [boardId]);
 
         return false

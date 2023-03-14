@@ -1,26 +1,21 @@
 {
-  "name": "dchan-subgraph",
-  "version": "0.1.0",
+  "name": "4dchan-subgraph",
+  "version": "0.2.0",
   "scripts": {
-    "build-contract": "solc contracts/Relay.sol --abi -o abis --overwrite && solc contracts/Relay.sol --bin -o bin --overwrite",
-    "create": "graph create dchan-network/dchan-subgraph --node https://api.thegraph.com/deploy/",
-    "create-local": "graph create dchan-network/dchan-subgraph --node http://graph-node:8020",
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --access-token $GRAPH_ACCESS_TOKEN --product hosted-service --ipfs https://api.thegraph.com/ipfs/ $SUBGRAPH",
-    "deploy-local": "graph deploy dchan-network/dchan-subgraph --ipfs http://ipfs:5001 --node http://graph-node:8020"
-  },
-  "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.20.1",
-    "@graphprotocol/graph-ts": "^0.20.0"
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ 4dchan-subgraph",
+    "create-local": "graph create --node http://localhost:8020/ 4dchan-subgraph",
+    "remove-local": "graph remove --node http://localhost:8020/ 4dchan-subgraph",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 4dchan-subgraph",
+    "test": "graph test"
   },
   "dependencies": {
-    "@types/uuid": "^8.3.1",
-    "babel-polyfill": "^6.26.0",
-    "babel-register": "^6.26.0",
-    "truffle": "^5.0.4",
-    "truffle-contract": "^4.0.5",
-    "truffle-hdwallet-provider": "^1.0.4",
-    "uuid": "^8.3.2"
+    "@graphprotocol/graph-cli": "0.42.4",
+    "@graphprotocol/graph-ts": "0.29.1",
+    "source-map-support": "^0.5.21"
+  },
+  "devDependencies": {
+    "matchstick-as": "0.5.0"
   }
 }

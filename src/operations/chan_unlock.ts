@@ -22,10 +22,14 @@ export function chanUnlock(message: Message, user: User): boolean {
 
     let chanId = chanStatusId(message)
     let chanStatus = ChanStatus.load(chanId)
-    chanStatus.isLocked = false
-    chanStatus.save()
+    if(chanStatus !== null) {
+        chanStatus.isLocked = false
+        chanStatus.save()
 
-    log.info("Chan unlocked: {}", [chanId])
-    
-    return true
+        log.info("Chan unlocked: {}", [chanId])
+        
+        return true
+    } else {
+        return false
+    }
 }

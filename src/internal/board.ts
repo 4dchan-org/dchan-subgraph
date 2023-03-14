@@ -14,22 +14,17 @@ export function shortBoardId(message: Message) : BoardId {
 }
 
 export function loadBoardFromId(id: BoardId) : Board | null {
-    let board : Board | null = null;
-    
     let boardRef = BoardRef.load(id)
-    if(boardRef != null) {
-        board = Board.load(boardRef.board)
-    } else {
-        board = Board.load(id)
-    }
+    let boardId: string = boardRef != null && boardRef.board !== null ? boardRef.board as string : id
 
-    return board
+    return Board.load(boardId)
 }
 
 export function loadBoardFromPost(post: Post) : Board | null {
     let threadId = post.thread
-    let thread = loadThreadFromId(threadId)
-    if(thread == null) {
+
+    let thread = threadId !== null ? loadThreadFromId(threadId) : null
+    if(thread === null || thread.board === null) {
         return null
     }
 

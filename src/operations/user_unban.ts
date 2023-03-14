@@ -16,13 +16,14 @@ export function userUnban(message: Message, user: User, data: TypedMap<string, J
         return false
     }
     
-    let bUserId = ensureString(data.get("id"))
-    if (bUserId == null) {
+    let maybeBannedUserId = ensureString(data.get("id"))
+    if (maybeBannedUserId == null) {
         log.info("Invalid user unban request: {}", [evtId]);
 
         return false
     }
 
+    let bUserId = maybeBannedUserId as string
     log.info("Unbanning user: {}", [bUserId]);
     
     let bUser = loadUserFromId(bUserId)
@@ -39,11 +40,17 @@ export function userUnban(message: Message, user: User, data: TypedMap<string, J
     }
 
     let userBan = UserBan.load(userBanId(bUserId))
-    let ban = Ban.load(userBan.ban)
-    ban.expiresAt = message.block.timestamp
-    ban.save()
+    let ban = userBan ? Ban.load(userBan.ban) : null
+    if(ban) {
+        ban.expiresAt = message.block.timestamp
+        ban.save()
 
-    log.info("User {} unbanned", [bUserId])
-    
-    return true
+        log.info("User {} unbanned", [bUserId])
+        
+        return true
+    } else {
+        log.info("Ban {} not found", [userBan ? userBan.ban : ""]);
+
+        return false
+    }
 }

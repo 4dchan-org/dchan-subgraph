@@ -1,4 +1,4 @@
-import { JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
+import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
 import { Message } from "../../generated/Relay/Relay";
 import { User } from "../../generated/schema";
 import { ensureBoolean, ensureNumber, ensureString } from "../ensure";
@@ -11,13 +11,14 @@ export function boardUpdate(message: Message, user: User, data: TypedMap<string,
 
     log.info("Updating board: {}", [evtId]);
 
-    let boardId = ensureString(data.get("id"))
-    if (boardId == null) {
+    let maybeBoardId = ensureString(data.get("id"))
+    if (maybeBoardId == null) {
         log.warning("Invalid board", [])
 
         return false
     }
-    
+
+    let boardId = maybeBoardId as string
     let board = loadBoardFromId(boardId)
     if (board == null) {
         log.warning("Board {} not found", [boardId]);
@@ -33,16 +34,13 @@ export function boardUpdate(message: Message, user: User, data: TypedMap<string,
     
     let title = ensureString(data.get("title"))
     if(title != null) {
-        board.title = title
+        board.title = title as string
     }
     let isNsfw = "true" == ensureBoolean(data.get("nsfw"))
     if(isNsfw == true) {
-        board.isNsfw = isNsfw
+        board.isNsfw = isNsfw as boolean
     }
-    let threadLifetime = ensureNumber(data.get("thread_lifetime"))
-    if(threadLifetime != null) {
-        board.threadLifetime = threadLifetime
-    }
+    board.threadLifetime = ensureNumber(data.get("thread_lifetime"))
     board.save()
 
     log.info("Board updated: {}", [evtId]);

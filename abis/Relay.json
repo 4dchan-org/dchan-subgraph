@@ -1,34 +1,30 @@
 [
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "jsonMessage",
-				"type": "string"
-			}
-		],
-		"name": "Message",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "jsonMessage",
-				"type": "string"
-			}
-		],
-		"name": "message",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	}
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "jsonMessage",
+        "type": "string"
+      }
+    ],
+    "name": "Message",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "jsonMessage", "type": "string" }
+    ],
+    "name": "message",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
 ]

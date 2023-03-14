@@ -1,19 +1,19 @@
-specVersion: 0.0.3
+specVersion: 0.0.5
 description: dchan-network
-repository: https://github.com/dchan-network/dchan-subgraph
+repository: https://github.com/4dchan/4dchan-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
-  - kind: ethereum/contract
+  - kind: ethereum
     name: Relay
-    network: matic
+    network: mumbai
     source:
-      address: "0x5a139ee9f56c4f24240af366807490c171922b0e"
+      address: "0x6f38B1C604371b20AC96Ec9307664A4500621D61"
       abi: Relay
-      startBlock: 17765847
+      startBlock: 32904705
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - Message
@@ -23,4 +23,4 @@ dataSources:
       eventHandlers:
         - event: Message(address,string)
           handler: handleMessage
-      file: ./src/mapping.ts
+      file: ./src/relay.ts

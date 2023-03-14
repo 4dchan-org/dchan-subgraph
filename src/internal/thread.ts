@@ -13,14 +13,8 @@ export function shortThreadId(message: Message): ThreadId {
 }
 
 export function loadThreadFromId(id: ThreadId) : Thread | null {
-    let thread : Thread | null = null;
-    
     let threadRef = ThreadRef.load(id)
-    if(threadRef != null) {
-        thread = Thread.load(threadRef.thread)
-    } else {
-        thread = Thread.load(id)
-    }
+    let threadId: string = threadRef != null && threadRef.thread !== null ? threadRef.thread as string : id
 
-    return thread
+    return Thread.load(threadId)
 }

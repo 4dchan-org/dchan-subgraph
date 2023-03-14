@@ -24,16 +24,10 @@ export function userB58IdFromMessage(message: Message): UserId {
 }
 
 export function loadUserFromId(id: UserId) : User | null {
-    let user : User | null = null;
-    
     let userRef = UserRef.load(id)
-    if(userRef != null) {
-        user = User.load(userRef.user)
-    } else {
-        user = User.load(id)
-    }
+    let userId: string = userRef != null && userRef.user !== null ? userRef.user as string : id
 
-    return user
+    return User.load(userId)
 }
 
 export function locateUserFromMessage(message: Message): User {

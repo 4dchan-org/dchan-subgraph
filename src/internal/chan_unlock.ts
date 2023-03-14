@@ -5,7 +5,7 @@ import { eventId } from "../id";
 import { chanStatusId, isChanLocked } from "../internal/chan_status";
 import { isAdmin } from "./admin";
 
-export function dchanUnlock(message: Message, user: User): boolean {
+export function chanUnlock(message: Message, user: User): boolean {
     let evtId = eventId(message)
 
     if(!isAdmin(user)) {
@@ -22,10 +22,14 @@ export function dchanUnlock(message: Message, user: User): boolean {
 
     let chanId = chanStatusId(message)
     let chanStatus = ChanStatus.load(chanId)
-    chanStatus.isLocked = false
-    chanStatus.save()
+    if(chanStatus !== null) {
+        chanStatus.isLocked = false
+        chanStatus.save()
 
-    log.info("Dchan unlocked: {}", [chanId])
-    
-    return true
+        log.info("Dchan unlocked: {}", [chanId])
+        
+        return true
+    } else {
+        return false
+    }
 }

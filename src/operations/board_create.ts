@@ -17,19 +17,24 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
     log.info("Creating board: {}", [evtId]);
 
     // { "name": "dchan", "title": "dchan.network" }
-    let name = ensureString(data.get("name"))
-    let title = ensureString(data.get("title"))
-    let threadLifetime = ensureNumber(data.get("thread_lifetime"))
+    let maybeName = ensureString(data.get("name"))
+    let maybeTitle = ensureString(data.get("title"))
+    let maybeThreadLifetime = ensureNumber(data.get("thread_lifetime"))
 
-    if (name == null || title == null || name.length == 0 || name.length > BOARD_NAME_MAX_LENGTH || title.length == 0 || title.length > BOARD_TITLE_MAX_LENGTH) {
-        log.warning("Invalid board", [])
+    if(!maybeName || !maybeTitle) {
+        return false
+    }
 
+    let name = maybeName as string
+    let title = maybeTitle as string
+
+    if (name.length == 0 || name.length > BOARD_NAME_MAX_LENGTH || title.length == 0 || title.length > BOARD_TITLE_MAX_LENGTH) {
         return false
     }
 
     let board = new Board(boardId(message))
-    board.name = name
-    board.title = title
+    board.name = name as string
+    board.title = title as string
     board.threadCount = BigInt.fromI32(0)
     board.postCount = BigInt.fromI32(0)
     board.score = scoreDefault()
@@ -40,7 +45,7 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
     board.lastBumpedAt = block.timestamp
     board.isNsfw = ("true" === ensureBoolean(data.get("nsfw"))) || false
     board.isLocked = false
-    board.threadLifetime = threadLifetime
+    board.threadLifetime = maybeThreadLifetime
 
     createBoardRefs(message, board)
 

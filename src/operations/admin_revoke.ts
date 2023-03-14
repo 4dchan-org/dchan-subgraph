@@ -11,11 +11,19 @@ export function adminRevoke(message: Message, user: User, data: TypedMap<string,
     log.info("Admin revoke attempt by {}: {}", [user.id, evtId]);
 
     if(!isAdmin(user)) {
-        // Curses! Foiled again...
+        log.info("Rejected admin revoke requested by unprivileged user {}", [user.id])
+
         return false
     }
 
-    let hexAddress = ensureString(data.get("hex_address"))
+    let maybeHexAddress = ensureString(data.get("hex_address"))
+    if(!maybeHexAddress) {
+        log.info("Invalid admin revoke request: hex_address not provided", [])
+
+        return false
+    }
+
+    let hexAddress = maybeHexAddress as string
     if(hexAddress.indexOf("0x") != 0) {
         log.info("Invalid admin revoke request: {}", [evtId])
 

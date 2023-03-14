@@ -6,7 +6,6 @@ import {
   Value,
   ValueKind,
   store,
-  Address,
   Bytes,
   BigInt,
   BigDecimal
@@ -20,22 +19,23 @@ export class Board extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save Board entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save Board entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("Board", id.toString(), this);
+    assert(id != null, "Cannot save Board entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Board must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Board", id.toString(), this);
+    }
   }
 
   static load(id: string): Board | null {
-    return store.get("Board", id) as Board | null;
+    return changetype<Board | null>(store.get("Board", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -44,7 +44,7 @@ export class Board extends Entity {
 
   get title(): string {
     let value = this.get("title");
-    return value.toString();
+    return value!.toString();
   }
 
   set title(value: string) {
@@ -53,7 +53,7 @@ export class Board extends Entity {
 
   get postCount(): BigInt {
     let value = this.get("postCount");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set postCount(value: BigInt) {
@@ -62,7 +62,7 @@ export class Board extends Entity {
 
   get threadCount(): BigInt {
     let value = this.get("threadCount");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set threadCount(value: BigInt) {
@@ -71,7 +71,7 @@ export class Board extends Entity {
 
   get name(): string {
     let value = this.get("name");
-    return value.toString();
+    return value!.toString();
   }
 
   set name(value: string) {
@@ -80,7 +80,7 @@ export class Board extends Entity {
 
   get score(): BigInt {
     let value = this.get("score");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set score(value: BigInt) {
@@ -89,7 +89,7 @@ export class Board extends Entity {
 
   get isNsfw(): boolean {
     let value = this.get("isNsfw");
-    return value.toBoolean();
+    return value!.toBoolean();
   }
 
   set isNsfw(value: boolean) {
@@ -98,7 +98,7 @@ export class Board extends Entity {
 
   get isLocked(): boolean {
     let value = this.get("isLocked");
-    return value.toBoolean();
+    return value!.toBoolean();
   }
 
   set isLocked(value: boolean) {
@@ -107,7 +107,7 @@ export class Board extends Entity {
 
   get createdBy(): string {
     let value = this.get("createdBy");
-    return value.toString();
+    return value!.toString();
   }
 
   set createdBy(value: string) {
@@ -116,7 +116,7 @@ export class Board extends Entity {
 
   get createdAtBlock(): string {
     let value = this.get("createdAtBlock");
-    return value.toString();
+    return value!.toString();
   }
 
   set createdAtBlock(value: string) {
@@ -125,7 +125,7 @@ export class Board extends Entity {
 
   get createdAt(): BigInt {
     let value = this.get("createdAt");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set createdAt(value: BigInt) {
@@ -134,7 +134,7 @@ export class Board extends Entity {
 
   get lastBumpedAtBlock(): string {
     let value = this.get("lastBumpedAtBlock");
-    return value.toString();
+    return value!.toString();
   }
 
   set lastBumpedAtBlock(value: string) {
@@ -143,7 +143,7 @@ export class Board extends Entity {
 
   get lastBumpedAt(): BigInt {
     let value = this.get("lastBumpedAt");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set lastBumpedAt(value: BigInt) {
@@ -152,25 +152,25 @@ export class Board extends Entity {
 
   get jannies(): Array<string> {
     let value = this.get("jannies");
-    return value.toStringArray();
+    return value!.toStringArray();
   }
 
   set jannies(value: Array<string>) {
     this.set("jannies", Value.fromStringArray(value));
   }
 
-  get threads(): Array<string | null> {
+  get threads(): Array<string> {
     let value = this.get("threads");
-    return value.toStringArray();
+    return value!.toStringArray();
   }
 
-  set threads(value: Array<string | null>) {
+  set threads(value: Array<string>) {
     this.set("threads", Value.fromStringArray(value));
   }
 
   get threadLifetime(): BigInt | null {
     let value = this.get("threadLifetime");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -178,10 +178,10 @@ export class Board extends Entity {
   }
 
   set threadLifetime(value: BigInt | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("threadLifetime");
     } else {
-      this.set("threadLifetime", Value.fromBigInt(value as BigInt));
+      this.set("threadLifetime", Value.fromBigInt(<BigInt>value));
     }
   }
 }
@@ -194,22 +194,23 @@ export class Thread extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save Thread entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save Thread entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("Thread", id.toString(), this);
+    assert(id != null, "Cannot save Thread entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Thread must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Thread", id.toString(), this);
+    }
   }
 
   static load(id: string): Thread | null {
-    return store.get("Thread", id) as Thread | null;
+    return changetype<Thread | null>(store.get("Thread", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -218,7 +219,7 @@ export class Thread extends Entity {
 
   get board(): string | null {
     let value = this.get("board");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -226,16 +227,16 @@ export class Thread extends Entity {
   }
 
   set board(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("board");
     } else {
-      this.set("board", Value.fromString(value as string));
+      this.set("board", Value.fromString(<string>value));
     }
   }
 
   get isPinned(): boolean {
     let value = this.get("isPinned");
-    return value.toBoolean();
+    return value!.toBoolean();
   }
 
   set isPinned(value: boolean) {
@@ -244,7 +245,7 @@ export class Thread extends Entity {
 
   get isLocked(): boolean {
     let value = this.get("isLocked");
-    return value.toBoolean();
+    return value!.toBoolean();
   }
 
   set isLocked(value: boolean) {
@@ -253,7 +254,7 @@ export class Thread extends Entity {
 
   get op(): string | null {
     let value = this.get("op");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -261,43 +262,51 @@ export class Thread extends Entity {
   }
 
   set op(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("op");
     } else {
-      this.set("op", Value.fromString(value as string));
+      this.set("op", Value.fromString(<string>value));
     }
   }
 
   get n(): BigInt {
     let value = this.get("n");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set n(value: BigInt) {
     this.set("n", Value.fromBigInt(value));
   }
 
-  get subject(): string {
+  get subject(): string | null {
     let value = this.get("subject");
-    return value.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set subject(value: string) {
-    this.set("subject", Value.fromString(value));
+  set subject(value: string | null) {
+    if (!value) {
+      this.unset("subject");
+    } else {
+      this.set("subject", Value.fromString(<string>value));
+    }
   }
 
-  get replies(): Array<string | null> {
+  get replies(): Array<string> {
     let value = this.get("replies");
-    return value.toStringArray();
+    return value!.toStringArray();
   }
 
-  set replies(value: Array<string | null>) {
+  set replies(value: Array<string>) {
     this.set("replies", Value.fromStringArray(value));
   }
 
   get replyCount(): BigInt {
     let value = this.get("replyCount");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set replyCount(value: BigInt) {
@@ -306,7 +315,7 @@ export class Thread extends Entity {
 
   get imageCount(): BigInt {
     let value = this.get("imageCount");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set imageCount(value: BigInt) {
@@ -315,7 +324,7 @@ export class Thread extends Entity {
 
   get createdAtBlock(): string {
     let value = this.get("createdAtBlock");
-    return value.toString();
+    return value!.toString();
   }
 
   set createdAtBlock(value: string) {
@@ -324,7 +333,7 @@ export class Thread extends Entity {
 
   get createdAt(): BigInt {
     let value = this.get("createdAt");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set createdAt(value: BigInt) {
@@ -333,7 +342,7 @@ export class Thread extends Entity {
 
   get lastBumpedAtBlock(): string {
     let value = this.get("lastBumpedAtBlock");
-    return value.toString();
+    return value!.toString();
   }
 
   set lastBumpedAtBlock(value: string) {
@@ -342,7 +351,7 @@ export class Thread extends Entity {
 
   get lastBumpedAt(): BigInt {
     let value = this.get("lastBumpedAt");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set lastBumpedAt(value: BigInt) {
@@ -351,7 +360,7 @@ export class Thread extends Entity {
 
   get archivedAt(): BigInt | null {
     let value = this.get("archivedAt");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toBigInt();
@@ -359,16 +368,16 @@ export class Thread extends Entity {
   }
 
   set archivedAt(value: BigInt | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("archivedAt");
     } else {
-      this.set("archivedAt", Value.fromBigInt(value as BigInt));
+      this.set("archivedAt", Value.fromBigInt(<BigInt>value));
     }
   }
 
   get score(): BigInt {
     let value = this.get("score");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set score(value: BigInt) {
@@ -377,7 +386,7 @@ export class Thread extends Entity {
 
   get from(): string {
     let value = this.get("from");
-    return value.toString();
+    return value!.toString();
   }
 
   set from(value: string) {
@@ -386,7 +395,7 @@ export class Thread extends Entity {
 
   get ppm(): BigInt {
     let value = this.get("ppm");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set ppm(value: BigInt) {
@@ -395,7 +404,7 @@ export class Thread extends Entity {
 
   get popularity(): BigInt {
     let value = this.get("popularity");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set popularity(value: BigInt) {
@@ -411,22 +420,23 @@ export class Post extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save Post entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save Post entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("Post", id.toString(), this);
+    assert(id != null, "Cannot save Post entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Post must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Post", id.toString(), this);
+    }
   }
 
   static load(id: string): Post | null {
-    return store.get("Post", id) as Post | null;
+    return changetype<Post | null>(store.get("Post", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -435,7 +445,7 @@ export class Post extends Entity {
 
   get thread(): string | null {
     let value = this.get("thread");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -443,16 +453,16 @@ export class Post extends Entity {
   }
 
   set thread(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("thread");
     } else {
-      this.set("thread", Value.fromString(value as string));
+      this.set("thread", Value.fromString(<string>value));
     }
   }
 
   get board(): string | null {
     let value = this.get("board");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -460,16 +470,16 @@ export class Post extends Entity {
   }
 
   set board(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("board");
     } else {
-      this.set("board", Value.fromString(value as string));
+      this.set("board", Value.fromString(<string>value));
     }
   }
 
   get n(): BigInt {
     let value = this.get("n");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set n(value: BigInt) {
@@ -478,7 +488,7 @@ export class Post extends Entity {
 
   get name(): string | null {
     let value = this.get("name");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -486,16 +496,16 @@ export class Post extends Entity {
   }
 
   set name(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("name");
     } else {
-      this.set("name", Value.fromString(value as string));
+      this.set("name", Value.fromString(<string>value));
     }
   }
 
   get from(): string {
     let value = this.get("from");
-    return value.toString();
+    return value!.toString();
   }
 
   set from(value: string) {
@@ -504,7 +514,7 @@ export class Post extends Entity {
 
   get comment(): string {
     let value = this.get("comment");
-    return value.toString();
+    return value!.toString();
   }
 
   set comment(value: string) {
@@ -513,7 +523,7 @@ export class Post extends Entity {
 
   get image(): string | null {
     let value = this.get("image");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -521,16 +531,16 @@ export class Post extends Entity {
   }
 
   set image(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("image");
     } else {
-      this.set("image", Value.fromString(value as string));
+      this.set("image", Value.fromString(<string>value));
     }
   }
 
   get createdAtBlock(): string {
     let value = this.get("createdAtBlock");
-    return value.toString();
+    return value!.toString();
   }
 
   set createdAtBlock(value: string) {
@@ -539,7 +549,7 @@ export class Post extends Entity {
 
   get createdAt(): BigInt {
     let value = this.get("createdAt");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set createdAt(value: BigInt) {
@@ -548,7 +558,7 @@ export class Post extends Entity {
 
   get bans(): Array<string> {
     let value = this.get("bans");
-    return value.toStringArray();
+    return value!.toStringArray();
   }
 
   set bans(value: Array<string>) {
@@ -557,7 +567,7 @@ export class Post extends Entity {
 
   get score(): BigInt {
     let value = this.get("score");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set score(value: BigInt) {
@@ -566,7 +576,7 @@ export class Post extends Entity {
 
   get sage(): boolean {
     let value = this.get("sage");
-    return value.toBoolean();
+    return value!.toBoolean();
   }
 
   set sage(value: boolean) {
@@ -582,22 +592,23 @@ export class Report extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save Report entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save Report entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("Report", id.toString(), this);
+    assert(id != null, "Cannot save Report entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Report must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Report", id.toString(), this);
+    }
   }
 
   static load(id: string): Report | null {
-    return store.get("Report", id) as Report | null;
+    return changetype<Report | null>(store.get("Report", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -606,7 +617,7 @@ export class Report extends Entity {
 
   get createdAtBlock(): string {
     let value = this.get("createdAtBlock");
-    return value.toString();
+    return value!.toString();
   }
 
   set createdAtBlock(value: string) {
@@ -615,7 +626,7 @@ export class Report extends Entity {
 
   get createdAt(): BigInt {
     let value = this.get("createdAt");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set createdAt(value: BigInt) {
@@ -624,7 +635,7 @@ export class Report extends Entity {
 
   get reason(): string {
     let value = this.get("reason");
-    return value.toString();
+    return value!.toString();
   }
 
   set reason(value: string) {
@@ -633,7 +644,7 @@ export class Report extends Entity {
 
   get from(): string {
     let value = this.get("from");
-    return value.toString();
+    return value!.toString();
   }
 
   set from(value: string) {
@@ -649,22 +660,23 @@ export class PostReport extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save PostReport entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save PostReport entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("PostReport", id.toString(), this);
+    assert(id != null, "Cannot save PostReport entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type PostReport must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("PostReport", id.toString(), this);
+    }
   }
 
   static load(id: string): PostReport | null {
-    return store.get("PostReport", id) as PostReport | null;
+    return changetype<PostReport | null>(store.get("PostReport", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -673,7 +685,7 @@ export class PostReport extends Entity {
 
   get post(): string | null {
     let value = this.get("post");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -681,16 +693,16 @@ export class PostReport extends Entity {
   }
 
   set post(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("post");
     } else {
-      this.set("post", Value.fromString(value as string));
+      this.set("post", Value.fromString(<string>value));
     }
   }
 
   get report(): string {
     let value = this.get("report");
-    return value.toString();
+    return value!.toString();
   }
 
   set report(value: string) {
@@ -706,22 +718,23 @@ export class BoardReport extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save BoardReport entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save BoardReport entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("BoardReport", id.toString(), this);
+    assert(id != null, "Cannot save BoardReport entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type BoardReport must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("BoardReport", id.toString(), this);
+    }
   }
 
   static load(id: string): BoardReport | null {
-    return store.get("BoardReport", id) as BoardReport | null;
+    return changetype<BoardReport | null>(store.get("BoardReport", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -730,7 +743,7 @@ export class BoardReport extends Entity {
 
   get board(): string | null {
     let value = this.get("board");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -738,16 +751,16 @@ export class BoardReport extends Entity {
   }
 
   set board(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("board");
     } else {
-      this.set("board", Value.fromString(value as string));
+      this.set("board", Value.fromString(<string>value));
     }
   }
 
   get report(): string {
     let value = this.get("report");
-    return value.toString();
+    return value!.toString();
   }
 
   set report(value: string) {
@@ -763,22 +776,23 @@ export class Ban extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save Ban entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save Ban entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("Ban", id.toString(), this);
+    assert(id != null, "Cannot save Ban entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Ban must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Ban", id.toString(), this);
+    }
   }
 
   static load(id: string): Ban | null {
-    return store.get("Ban", id) as Ban | null;
+    return changetype<Ban | null>(store.get("Ban", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -787,7 +801,7 @@ export class Ban extends Entity {
 
   get user(): string {
     let value = this.get("user");
-    return value.toString();
+    return value!.toString();
   }
 
   set user(value: string) {
@@ -796,7 +810,7 @@ export class Ban extends Entity {
 
   get issuedAtBlock(): string {
     let value = this.get("issuedAtBlock");
-    return value.toString();
+    return value!.toString();
   }
 
   set issuedAtBlock(value: string) {
@@ -805,7 +819,7 @@ export class Ban extends Entity {
 
   get issuedAt(): BigInt {
     let value = this.get("issuedAt");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set issuedAt(value: BigInt) {
@@ -814,7 +828,7 @@ export class Ban extends Entity {
 
   get expiresAt(): BigInt {
     let value = this.get("expiresAt");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set expiresAt(value: BigInt) {
@@ -823,7 +837,7 @@ export class Ban extends Entity {
 
   get reason(): string {
     let value = this.get("reason");
-    return value.toString();
+    return value!.toString();
   }
 
   set reason(value: string) {
@@ -832,7 +846,7 @@ export class Ban extends Entity {
 
   get from(): string {
     let value = this.get("from");
-    return value.toString();
+    return value!.toString();
   }
 
   set from(value: string) {
@@ -848,22 +862,23 @@ export class UserBan extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save UserBan entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save UserBan entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("UserBan", id.toString(), this);
+    assert(id != null, "Cannot save UserBan entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type UserBan must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("UserBan", id.toString(), this);
+    }
   }
 
   static load(id: string): UserBan | null {
-    return store.get("UserBan", id) as UserBan | null;
+    return changetype<UserBan | null>(store.get("UserBan", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -872,7 +887,7 @@ export class UserBan extends Entity {
 
   get user(): string {
     let value = this.get("user");
-    return value.toString();
+    return value!.toString();
   }
 
   set user(value: string) {
@@ -881,7 +896,7 @@ export class UserBan extends Entity {
 
   get ban(): string {
     let value = this.get("ban");
-    return value.toString();
+    return value!.toString();
   }
 
   set ban(value: string) {
@@ -897,22 +912,23 @@ export class BoardBan extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save BoardBan entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save BoardBan entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("BoardBan", id.toString(), this);
+    assert(id != null, "Cannot save BoardBan entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type BoardBan must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("BoardBan", id.toString(), this);
+    }
   }
 
   static load(id: string): BoardBan | null {
-    return store.get("BoardBan", id) as BoardBan | null;
+    return changetype<BoardBan | null>(store.get("BoardBan", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -921,7 +937,7 @@ export class BoardBan extends Entity {
 
   get user(): string {
     let value = this.get("user");
-    return value.toString();
+    return value!.toString();
   }
 
   set user(value: string) {
@@ -930,7 +946,7 @@ export class BoardBan extends Entity {
 
   get board(): string | null {
     let value = this.get("board");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -938,16 +954,16 @@ export class BoardBan extends Entity {
   }
 
   set board(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("board");
     } else {
-      this.set("board", Value.fromString(value as string));
+      this.set("board", Value.fromString(<string>value));
     }
   }
 
   get ban(): string {
     let value = this.get("ban");
-    return value.toString();
+    return value!.toString();
   }
 
   set ban(value: string) {
@@ -963,22 +979,23 @@ export class PostBan extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save PostBan entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save PostBan entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("PostBan", id.toString(), this);
+    assert(id != null, "Cannot save PostBan entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type PostBan must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("PostBan", id.toString(), this);
+    }
   }
 
   static load(id: string): PostBan | null {
-    return store.get("PostBan", id) as PostBan | null;
+    return changetype<PostBan | null>(store.get("PostBan", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -987,7 +1004,7 @@ export class PostBan extends Entity {
 
   get user(): string {
     let value = this.get("user");
-    return value.toString();
+    return value!.toString();
   }
 
   set user(value: string) {
@@ -996,7 +1013,7 @@ export class PostBan extends Entity {
 
   get post(): string | null {
     let value = this.get("post");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1004,16 +1021,16 @@ export class PostBan extends Entity {
   }
 
   set post(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("post");
     } else {
-      this.set("post", Value.fromString(value as string));
+      this.set("post", Value.fromString(<string>value));
     }
   }
 
   get ban(): string {
     let value = this.get("ban");
-    return value.toString();
+    return value!.toString();
   }
 
   set ban(value: string) {
@@ -1029,22 +1046,23 @@ export class User extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save User entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save User entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("User", id.toString(), this);
+    assert(id != null, "Cannot save User entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type User must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("User", id.toString(), this);
+    }
   }
 
   static load(id: string): User | null {
-    return store.get("User", id) as User | null;
+    return changetype<User | null>(store.get("User", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -1053,7 +1071,7 @@ export class User extends Entity {
 
   get b58id(): string {
     let value = this.get("b58id");
-    return value.toString();
+    return value!.toString();
   }
 
   set b58id(value: string) {
@@ -1062,7 +1080,7 @@ export class User extends Entity {
 
   get address(): string {
     let value = this.get("address");
-    return value.toString();
+    return value!.toString();
   }
 
   set address(value: string) {
@@ -1071,7 +1089,7 @@ export class User extends Entity {
 
   get lastPostedAtBlock(): string | null {
     let value = this.get("lastPostedAtBlock");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1079,16 +1097,16 @@ export class User extends Entity {
   }
 
   set lastPostedAtBlock(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("lastPostedAtBlock");
     } else {
-      this.set("lastPostedAtBlock", Value.fromString(value as string));
+      this.set("lastPostedAtBlock", Value.fromString(<string>value));
     }
   }
 
   get bans(): Array<string> {
     let value = this.get("bans");
-    return value.toStringArray();
+    return value!.toStringArray();
   }
 
   set bans(value: Array<string>) {
@@ -1097,7 +1115,7 @@ export class User extends Entity {
 
   get jannies(): Array<string> {
     let value = this.get("jannies");
-    return value.toStringArray();
+    return value!.toStringArray();
   }
 
   set jannies(value: Array<string>) {
@@ -1106,7 +1124,7 @@ export class User extends Entity {
 
   get score(): BigInt {
     let value = this.get("score");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set score(value: BigInt) {
@@ -1122,22 +1140,23 @@ export class Admin extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save Admin entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save Admin entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("Admin", id.toString(), this);
+    assert(id != null, "Cannot save Admin entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Admin must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Admin", id.toString(), this);
+    }
   }
 
   static load(id: string): Admin | null {
-    return store.get("Admin", id) as Admin | null;
+    return changetype<Admin | null>(store.get("Admin", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -1146,7 +1165,7 @@ export class Admin extends Entity {
 
   get grantedAtBlock(): string {
     let value = this.get("grantedAtBlock");
-    return value.toString();
+    return value!.toString();
   }
 
   set grantedAtBlock(value: string) {
@@ -1155,7 +1174,7 @@ export class Admin extends Entity {
 
   get grantedAt(): BigInt {
     let value = this.get("grantedAt");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set grantedAt(value: BigInt) {
@@ -1171,22 +1190,23 @@ export class BoardJanny extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save BoardJanny entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save BoardJanny entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("BoardJanny", id.toString(), this);
+    assert(id != null, "Cannot save BoardJanny entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type BoardJanny must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("BoardJanny", id.toString(), this);
+    }
   }
 
   static load(id: string): BoardJanny | null {
-    return store.get("BoardJanny", id) as BoardJanny | null;
+    return changetype<BoardJanny | null>(store.get("BoardJanny", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -1195,7 +1215,7 @@ export class BoardJanny extends Entity {
 
   get user(): string {
     let value = this.get("user");
-    return value.toString();
+    return value!.toString();
   }
 
   set user(value: string) {
@@ -1204,7 +1224,7 @@ export class BoardJanny extends Entity {
 
   get board(): string | null {
     let value = this.get("board");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1212,16 +1232,16 @@ export class BoardJanny extends Entity {
   }
 
   set board(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("board");
     } else {
-      this.set("board", Value.fromString(value as string));
+      this.set("board", Value.fromString(<string>value));
     }
   }
 
   get grantedAtBlock(): string {
     let value = this.get("grantedAtBlock");
-    return value.toString();
+    return value!.toString();
   }
 
   set grantedAtBlock(value: string) {
@@ -1230,7 +1250,7 @@ export class BoardJanny extends Entity {
 
   get grantedAt(): BigInt {
     let value = this.get("grantedAt");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set grantedAt(value: BigInt) {
@@ -1246,22 +1266,23 @@ export class Image extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save Image entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save Image entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("Image", id.toString(), this);
+    assert(id != null, "Cannot save Image entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Image must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Image", id.toString(), this);
+    }
   }
 
   static load(id: string): Image | null {
-    return store.get("Image", id) as Image | null;
+    return changetype<Image | null>(store.get("Image", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -1270,7 +1291,7 @@ export class Image extends Entity {
 
   get name(): string {
     let value = this.get("name");
-    return value.toString();
+    return value!.toString();
   }
 
   set name(value: string) {
@@ -1279,7 +1300,7 @@ export class Image extends Entity {
 
   get ipfsHash(): string {
     let value = this.get("ipfsHash");
-    return value.toString();
+    return value!.toString();
   }
 
   set ipfsHash(value: string) {
@@ -1288,7 +1309,7 @@ export class Image extends Entity {
 
   get isNsfw(): boolean {
     let value = this.get("isNsfw");
-    return value.toBoolean();
+    return value!.toBoolean();
   }
 
   set isNsfw(value: boolean) {
@@ -1297,7 +1318,7 @@ export class Image extends Entity {
 
   get isSpoiler(): boolean {
     let value = this.get("isSpoiler");
-    return value.toBoolean();
+    return value!.toBoolean();
   }
 
   set isSpoiler(value: boolean) {
@@ -1306,7 +1327,7 @@ export class Image extends Entity {
 
   get score(): BigInt {
     let value = this.get("score");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set score(value: BigInt) {
@@ -1322,22 +1343,23 @@ export class ChanStatus extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save ChanStatus entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save ChanStatus entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("ChanStatus", id.toString(), this);
+    assert(id != null, "Cannot save ChanStatus entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type ChanStatus must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("ChanStatus", id.toString(), this);
+    }
   }
 
   static load(id: string): ChanStatus | null {
-    return store.get("ChanStatus", id) as ChanStatus | null;
+    return changetype<ChanStatus | null>(store.get("ChanStatus", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -1346,7 +1368,7 @@ export class ChanStatus extends Entity {
 
   get isLocked(): boolean {
     let value = this.get("isLocked");
-    return value.toBoolean();
+    return value!.toBoolean();
   }
 
   set isLocked(value: boolean) {
@@ -1362,22 +1384,23 @@ export class Block extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save Block entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save Block entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("Block", id.toString(), this);
+    assert(id != null, "Cannot save Block entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Block must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Block", id.toString(), this);
+    }
   }
 
   static load(id: string): Block | null {
-    return store.get("Block", id) as Block | null;
+    return changetype<Block | null>(store.get("Block", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -1386,7 +1409,7 @@ export class Block extends Entity {
 
   get timestamp(): BigInt {
     let value = this.get("timestamp");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set timestamp(value: BigInt) {
@@ -1395,7 +1418,7 @@ export class Block extends Entity {
 
   get number(): BigInt {
     let value = this.get("number");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set number(value: BigInt) {
@@ -1411,22 +1434,23 @@ export class Client extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save Client entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save Client entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("Client", id.toString(), this);
+    assert(id != null, "Cannot save Client entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Client must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Client", id.toString(), this);
+    }
   }
 
   static load(id: string): Client | null {
-    return store.get("Client", id) as Client | null;
+    return changetype<Client | null>(store.get("Client", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -1435,7 +1459,7 @@ export class Client extends Entity {
 
   get version(): string {
     let value = this.get("version");
-    return value.toString();
+    return value!.toString();
   }
 
   set version(value: string) {
@@ -1444,7 +1468,7 @@ export class Client extends Entity {
 
   get channel(): string {
     let value = this.get("channel");
-    return value.toString();
+    return value!.toString();
   }
 
   set channel(value: string) {
@@ -1453,7 +1477,7 @@ export class Client extends Entity {
 
   get ipfsHash(): string {
     let value = this.get("ipfsHash");
-    return value.toString();
+    return value!.toString();
   }
 
   set ipfsHash(value: string) {
@@ -1462,7 +1486,7 @@ export class Client extends Entity {
 
   get publishedAtBlock(): string {
     let value = this.get("publishedAtBlock");
-    return value.toString();
+    return value!.toString();
   }
 
   set publishedAtBlock(value: string) {
@@ -1471,7 +1495,7 @@ export class Client extends Entity {
 
   get publishedAt(): BigInt {
     let value = this.get("publishedAt");
-    return value.toBigInt();
+    return value!.toBigInt();
   }
 
   set publishedAt(value: BigInt) {
@@ -1487,22 +1511,23 @@ export class UserTx extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save UserTx entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save UserTx entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("UserTx", id.toString(), this);
+    assert(id != null, "Cannot save UserTx entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type UserTx must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("UserTx", id.toString(), this);
+    }
   }
 
   static load(id: string): UserTx | null {
-    return store.get("UserTx", id) as UserTx | null;
+    return changetype<UserTx | null>(store.get("UserTx", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -1511,7 +1536,7 @@ export class UserTx extends Entity {
 
   get user(): string {
     let value = this.get("user");
-    return value.toString();
+    return value!.toString();
   }
 
   set user(value: string) {
@@ -1520,7 +1545,7 @@ export class UserTx extends Entity {
 
   get success(): boolean {
     let value = this.get("success");
-    return value.toBoolean();
+    return value!.toBoolean();
   }
 
   set success(value: boolean) {
@@ -1529,7 +1554,7 @@ export class UserTx extends Entity {
 
   get error(): string | null {
     let value = this.get("error");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1537,10 +1562,10 @@ export class UserTx extends Entity {
   }
 
   set error(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("error");
     } else {
-      this.set("error", Value.fromString(value as string));
+      this.set("error", Value.fromString(<string>value));
     }
   }
 }
@@ -1553,22 +1578,23 @@ export class ThreadRef extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save ThreadRef entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save ThreadRef entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("ThreadRef", id.toString(), this);
+    assert(id != null, "Cannot save ThreadRef entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type ThreadRef must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("ThreadRef", id.toString(), this);
+    }
   }
 
   static load(id: string): ThreadRef | null {
-    return store.get("ThreadRef", id) as ThreadRef | null;
+    return changetype<ThreadRef | null>(store.get("ThreadRef", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -1577,7 +1603,7 @@ export class ThreadRef extends Entity {
 
   get thread(): string | null {
     let value = this.get("thread");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1585,10 +1611,10 @@ export class ThreadRef extends Entity {
   }
 
   set thread(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("thread");
     } else {
-      this.set("thread", Value.fromString(value as string));
+      this.set("thread", Value.fromString(<string>value));
     }
   }
 }
@@ -1601,22 +1627,23 @@ export class BoardRef extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save BoardRef entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save BoardRef entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("BoardRef", id.toString(), this);
+    assert(id != null, "Cannot save BoardRef entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type BoardRef must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("BoardRef", id.toString(), this);
+    }
   }
 
   static load(id: string): BoardRef | null {
-    return store.get("BoardRef", id) as BoardRef | null;
+    return changetype<BoardRef | null>(store.get("BoardRef", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -1625,7 +1652,7 @@ export class BoardRef extends Entity {
 
   get board(): string | null {
     let value = this.get("board");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1633,10 +1660,10 @@ export class BoardRef extends Entity {
   }
 
   set board(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("board");
     } else {
-      this.set("board", Value.fromString(value as string));
+      this.set("board", Value.fromString(<string>value));
     }
   }
 }
@@ -1649,22 +1676,23 @@ export class PostRef extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save PostRef entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save PostRef entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("PostRef", id.toString(), this);
+    assert(id != null, "Cannot save PostRef entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type PostRef must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("PostRef", id.toString(), this);
+    }
   }
 
   static load(id: string): PostRef | null {
-    return store.get("PostRef", id) as PostRef | null;
+    return changetype<PostRef | null>(store.get("PostRef", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -1673,7 +1701,7 @@ export class PostRef extends Entity {
 
   get post(): string | null {
     let value = this.get("post");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1681,10 +1709,10 @@ export class PostRef extends Entity {
   }
 
   set post(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("post");
     } else {
-      this.set("post", Value.fromString(value as string));
+      this.set("post", Value.fromString(<string>value));
     }
   }
 }
@@ -1697,22 +1725,23 @@ export class UserRef extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save UserRef entity without an ID");
-    assert(
-      id.kind == ValueKind.STRING,
-      "Cannot save UserRef entity with non-string ID. " +
-        'Considering using .toHex() to convert the "id" to a string.'
-    );
-    store.set("UserRef", id.toString(), this);
+    assert(id != null, "Cannot save UserRef entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type UserRef must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("UserRef", id.toString(), this);
+    }
   }
 
   static load(id: string): UserRef | null {
-    return store.get("UserRef", id) as UserRef | null;
+    return changetype<UserRef | null>(store.get("UserRef", id));
   }
 
   get id(): string {
     let value = this.get("id");
-    return value.toString();
+    return value!.toString();
   }
 
   set id(value: string) {
@@ -1721,7 +1750,7 @@ export class UserRef extends Entity {
 
   get user(): string | null {
     let value = this.get("user");
-    if (value === null || value.kind == ValueKind.NULL) {
+    if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
       return value.toString();
@@ -1729,10 +1758,10 @@ export class UserRef extends Entity {
   }
 
   set user(value: string | null) {
-    if (value === null) {
+    if (!value) {
       this.unset("user");
     } else {
-      this.set("user", Value.fromString(value as string));
+      this.set("user", Value.fromString(<string>value));
     }
   }
 }

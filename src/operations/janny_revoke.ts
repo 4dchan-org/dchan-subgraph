@@ -33,7 +33,7 @@ export function jannyRevoke(message: Message, user: User, data: TypedMap<string,
     }
     
     let board = loadBoardFromId(boardId)
-    if(board.createdBy === targetUserId) {
+    if(board !== null && board.createdBy === targetUserId) {
         log.info("Cannot revoke janny status of board creator: {}", [evtId])
 
         return false

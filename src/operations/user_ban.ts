@@ -18,13 +18,14 @@ export function userBan(message: Message, from: User, data: TypedMap<string, JSO
         return false
     }
     
-    let userId = ensureString(data.get("id"))
-    if (userId == null) {
+    let maybeUserId = ensureString(data.get("id"))
+    if (maybeUserId == null) {
         log.warning("Invalid user ban request: {}", [evtId]);
 
         return false
     }
 
+    let userId = maybeUserId as string
     log.info("Banning user: {}", [userId]);
     
     let user = loadUserFromId(userId)
@@ -35,10 +36,7 @@ export function userBan(message: Message, from: User, data: TypedMap<string, JSO
     }
 
     let reason = ensureString(data.get("reason"))
-    let seconds = ensureNumber(data.get("seconds"))
-    if(seconds == null) {
-        seconds = BigInt.fromI32(1_000_000_000)
-    }
+    let seconds = ensureNumber(data.get("seconds")) || BigInt.fromI32(1_000_000_000)
 
     let banExpiresAt: BigInt = message.block.timestamp.plus(seconds as BigInt)
     log.debug("Banning user {} until {}...", [userId, banExpiresAt.toString()])
@@ -49,7 +47,7 @@ export function userBan(message: Message, from: User, data: TypedMap<string, JSO
         let ban = new Ban(banId(message))
         ban.user = userId
         ban.expiresAt = banExpiresAt
-        ban.reason = reason
+        ban.reason = reason ? reason as string : ""
         ban.save()
 
         userBan = new UserBan(ubId)
@@ -58,13 +56,15 @@ export function userBan(message: Message, from: User, data: TypedMap<string, JSO
         userBan.save()
     } else {
         let ban = Ban.load(userBan.ban)
-        if(ban.expiresAt.gt(banExpiresAt)) {
-            log.info("User {} already banned until {}, skipping {}", [userId, evtId])
+        if(ban) {
+            if(ban.expiresAt.gt(banExpiresAt)) {
+                log.info("User {} already banned until {}, skipping {}", [userId, evtId])
 
-            return false
+                return false
+            }
+            ban.expiresAt = banExpiresAt
+            ban.save()
         }
-        ban.expiresAt = banExpiresAt
-        ban.save()
     }
 
     user.score = scorePenalty(user.score)

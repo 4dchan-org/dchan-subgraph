@@ -11,14 +11,15 @@ export function boardRemove(
   user: User,
   data: TypedMap<string, JSONValue>
 ): boolean {
-  let boardId = ensureString(data.get("id"));
+  let maybeBoardId = ensureString(data.get("id"));
   let evtId = eventId(message)
-  if(boardId == null) {
+  if(!maybeBoardId) {
       log.warning("Invalid board remove request: {}", [evtId]);
 
       return false
   }
 
+  let boardId = maybeBoardId as string
   log.debug("Requested board removal: {}", [boardId]);
 
   let board = loadBoardFromId(boardId)

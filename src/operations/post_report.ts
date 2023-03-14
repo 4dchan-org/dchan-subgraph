@@ -11,14 +11,15 @@ import { loadThreadFromId } from "../internal/thread";
 export function postReport(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
 
-    let postId = ensureString(data.get("id"))
+    let maybePostId = ensureString(data.get("id"))
     let reason = ensureString(data.get("reason"))
-    if(postId == null) {
+    if(maybePostId == null) {
         log.warning("Invalid post report request: {}", [evtId]);
 
         return false
     }
 
+    let postId = maybePostId as string
     log.debug("Reported post: {}", [postId]);
     
     let post = loadPostFromId(postId)
@@ -37,7 +38,7 @@ export function postReport(message: Message, user: User, data: TypedMap<string, 
         thread.save()
     }
 
-    createPostReport(message, user, post as Post, reason)
+    createPostReport(message, user, post as Post, reason ? reason as string : "")
 
     return true
 }

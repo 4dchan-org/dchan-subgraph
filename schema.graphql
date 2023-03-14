@@ -42,7 +42,7 @@ type Board @entity {
   lastBumpedAtBlock: Block!
   lastBumpedAt: BigInt!
   jannies: [BoardJanny!]! @derivedFrom(field: "board")
-  threads: [Thread]! @derivedFrom(field: "board")
+  threads: [Thread!]! @derivedFrom(field: "board")
   threadLifetime: BigInt
 }
 
@@ -53,8 +53,8 @@ type Thread @entity {
   isLocked: Boolean!
   op: Post
   n: BigInt!
-  subject: String!
-  replies: [Post]! @derivedFrom(field: "thread")
+  subject: String
+  replies: [Post!]! @derivedFrom(field: "thread")
   replyCount: BigInt!
   imageCount: BigInt!
   createdAtBlock: Block!

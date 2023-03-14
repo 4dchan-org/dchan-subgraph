@@ -13,14 +13,8 @@ export function shortPostId(message: Message): PostId {
 }
 
 export function loadPostFromId(id: PostId) : Post | null {
-    let post : Post | null = null;
-    
     let postRef = PostRef.load(id)
-    if(postRef != null) {
-        post = Post.load(postRef.post)
-    } else {
-        post = Post.load(id)
-    }
+    let postId: string = postRef != null && postRef.post !== null ? postRef.post as string : id
 
-    return post
+    return Post.load(postId)
 }

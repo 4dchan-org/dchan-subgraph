@@ -28,14 +28,14 @@ export function clientPublish(message: Message, user: User, data: TypedMap<strin
     }
 
     let client = new Client(clientIdFromMessage(message))
-    client.version = version
-    client.ipfsHash = ipfsHash
-    client.channel = channel != null ? channel : ""
+    client.version = version as string
+    client.ipfsHash = ipfsHash as string
+    client.channel = channel != null ? channel as string : ""
     client.publishedAtBlock = block.id
     client.publishedAt = block.timestamp
     client.save()
 
-    log.info("Client published {} version {}: {}", [ipfsHash, version, evtId]);
+    log.info("Client published {} version {}: {}", [ipfsHash as string, version as string, evtId]);
 
     return true
 }
