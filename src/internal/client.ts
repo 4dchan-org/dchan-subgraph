@@ -1,5 +1,5 @@
-import { Message } from "../../generated/Relay/Relay";
-import { eventId, shortUniqueId } from "../id";
+import { Message } from "../../generated/Relay/Relay"
+import { eventId, shortUniqueId } from "../id"
 
 export type ClientId = string
 

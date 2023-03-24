@@ -1,9 +1,9 @@
-import { log } from "@graphprotocol/graph-ts";
-import { Message } from "../../generated/Relay/Relay";
-import { ChanStatus, User } from "../../generated/schema";
-import { eventId } from "../id";
-import { chanStatusId, isChanLocked } from "../internal/chan_status";
-import { isAdmin } from "./admin";
+import { log } from "@graphprotocol/graph-ts"
+import { Message } from "../../generated/Relay/Relay"
+import { ChanStatus, User } from "../../generated/schema"
+import { eventId } from "../id"
+import { chanStatusId, isChanLocked } from "../internal/chan_status"
+import { isAdmin } from "./admin"
 
 export function chanUnlock(message: Message, user: User): boolean {
     let evtId = eventId(message)

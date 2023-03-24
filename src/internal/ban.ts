@@ -1,7 +1,7 @@
-import { log } from "@graphprotocol/graph-ts";
-import { Message } from "../../generated/Relay/Relay";
-import { Ban } from "../../generated/schema";
-import { eventId } from "../id";
+import { log } from "@graphprotocol/graph-ts"
+import { Message } from "../../generated/Relay/Relay"
+import { Ban } from "../../generated/schema"
+import { eventId } from "../id"
 
 export type BanId = string
 

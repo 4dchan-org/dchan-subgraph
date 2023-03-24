@@ -1,13 +1,13 @@
-import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
-import { Message } from "../../generated/Relay/Relay";
-import { Ban, User, UserBan } from "../../generated/schema";
-import { ensureNumber, ensureString } from "../ensure";
-import { scorePenalty } from "../score";
-import { eventId } from "../id";
-import { userBanId } from "../internal/user_ban";
-import { banId } from "../internal/ban";
-import { isAdmin } from "../internal/admin";
-import { loadUserFromId } from "../internal/user";
+import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts"
+import { Message } from "../../generated/Relay/Relay"
+import { Ban, User, UserBan } from "../../generated/schema"
+import { ensureNumber, ensureString } from "../ensure"
+import { scorePenalty } from "../score"
+import { eventId } from "../id"
+import { userBanId } from "../internal/user_ban"
+import { banId } from "../internal/ban"
+import { isAdmin } from "../internal/admin"
+import { locateUserFromId } from "../internal/user"
 
 export function userBan(message: Message, from: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -20,17 +20,17 @@ export function userBan(message: Message, from: User, data: TypedMap<string, JSO
     
     let maybeUserId = ensureString(data.get("id"))
     if (maybeUserId == null) {
-        log.warning("Invalid user ban request: {}", [evtId]);
+        log.warning("Invalid user ban request: {}", [evtId])
 
         return false
     }
 
     let userId = maybeUserId as string
-    log.info("Banning user: {}", [userId]);
+    log.info("Banning user: {}", [userId])
     
-    let user = loadUserFromId(userId)
+    let user = locateUserFromId(userId)
     if (user == null) {
-        log.warning("User {} not found", [userId]);
+        log.warning("User {} not found", [userId])
 
         return false
     }

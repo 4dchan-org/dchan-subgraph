@@ -1,7 +1,7 @@
-import { Message } from "../../generated/Relay/Relay";
-import { Post, PostRef } from "../../generated/schema";
-import { eventId, shortId } from "../id";
-import { shortPostId } from "./post";
+import { Message } from "../../generated/Relay/Relay"
+import { Post, PostRef } from "../../generated/schema"
+import { eventId, shortId } from "../id"
+import { shortPostId } from "./post"
 
 export function createPostRefs(message: Message, post: Post) : void {
     let ref: PostRef | null = null

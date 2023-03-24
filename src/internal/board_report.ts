@@ -1,6 +1,6 @@
-import { Message } from "../../generated/Relay/Relay";
-import { Board, BoardReport, User } from "../../generated/schema";
-import { createReport } from "./report";
+import { Message } from "../../generated/Relay/Relay"
+import { Board, BoardReport, User } from "../../generated/schema"
+import { createReport } from "./report"
 
 export type BoardReportId = string
 

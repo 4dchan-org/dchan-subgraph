@@ -1,12 +1,12 @@
-import { BigInt, JSONValue, log, store, TypedMap } from "@graphprotocol/graph-ts";
-import { Message } from "../../generated/Relay/Relay";
-import { User } from "../../generated/schema";
-import { ensureArray, ensureString } from "../ensure";
-import { isBoardJanny } from "../internal/board_janny";
-import { eventId } from "../id";
-import { loadPostFromId } from "../internal/post";
-import { loadThreadFromId } from "../internal/thread";
-import { loadBoardFromId } from "../internal/board";
+import { BigInt, JSONValue, log, store, TypedMap } from "@graphprotocol/graph-ts"
+import { Message } from "../../generated/Relay/Relay"
+import { User } from "../../generated/schema"
+import { ensureArray, ensureString } from "../ensure"
+import { isBoardJanny } from "../internal/board_janny"
+import { eventId } from "../id"
+import { loadPostFromId } from "../internal/post"
+import { loadThreadFromId } from "../internal/thread"
+import { loadBoardFromId } from "../internal/board"
 
 export function postRemove(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -21,7 +21,7 @@ export function postRemove(message: Message, user: User, data: TypedMap<string, 
     }
 
     if(!postIdValues.length) {
-        log.warning("Invalid post remove request: {}", [evtId]);
+        log.warning("Invalid post remove request: {}", [evtId])
 
         return false
     }
@@ -30,13 +30,13 @@ export function postRemove(message: Message, user: User, data: TypedMap<string, 
     for (let i = 0; i < postIdValues.length; i++) {
         let maybePostId = ensureString((postIdValues as JSONValue[])[i])
         if(maybePostId == null) {
-            log.warning("Invalid post remove request: {}", [evtId]);
+            log.warning("Invalid post remove request: {}", [evtId])
             
             return false
         }
 
         let postId = maybePostId as string
-        log.debug("Requested post removal: {}", [postId]);
+        log.debug("Requested post removal: {}", [postId])
 
         let post = loadPostFromId(postId)
         if (post == null) {

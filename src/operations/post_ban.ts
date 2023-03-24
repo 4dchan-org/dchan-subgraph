@@ -1,16 +1,16 @@
-import { JSONValue, log, BigInt, TypedMap } from "@graphprotocol/graph-ts";
-import { Message } from "../../generated/Relay/Relay";
-import { Ban, Board, BoardBan, Post, PostBan, User } from "../../generated/schema";
-import { ensureNumber, ensureString } from "../ensure";
-import { isBoardJanny } from "../internal/board_janny";
-import { eventId } from "../id";
-import { banId } from "../internal/ban";
-import { boardBanId } from "../internal/board_ban";
-import { postBanId } from "../internal/post_ban";
-import { loadPostFromId } from "../internal/post";
-import { loadUserFromId } from "../internal/user";
-import { loadBoardFromId } from "../internal/board";
-import { loadThreadFromId } from "../internal/thread";
+import { JSONValue, log, BigInt, TypedMap } from "@graphprotocol/graph-ts"
+import { Message } from "../../generated/Relay/Relay"
+import { Ban, Board, BoardBan, Post, PostBan, User } from "../../generated/schema"
+import { ensureNumber, ensureString } from "../ensure"
+import { isBoardJanny } from "../internal/board_janny"
+import { eventId } from "../id"
+import { banId } from "../internal/ban"
+import { boardBanId } from "../internal/board_ban"
+import { postBanId } from "../internal/post_ban"
+import { loadPostFromId } from "../internal/post"
+import { locateUserFromId } from "../internal/user"
+import { loadBoardFromId } from "../internal/board"
+import { loadThreadFromId } from "../internal/thread"
 
 export function postBan(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -19,34 +19,34 @@ export function postBan(message: Message, user: User, data: TypedMap<string, JSO
     let maybeReason = ensureString(data.get("reason"))
     let maybeSeconds = ensureNumber(data.get("seconds"))
     if (!maybePostId || !maybeReason || !maybeSeconds) {
-        log.warning("Invalid user ban request: {}", [evtId]);
+        log.warning("Invalid user ban request: {}", [evtId])
 
         return false
     }
     let postId = maybePostId as string
     let reason = maybeReason as string
     let seconds = maybeSeconds as BigInt
-    log.info("Banning post: {}", [postId]);
+    log.info("Banning post: {}", [postId])
     
     let post = loadPostFromId(postId)
     if (!post) {
-        log.warning("Post {} not found", [postId]);
+        log.warning("Post {} not found", [postId])
 
         return false
     }
 
     let postFrom = post.from
-    let postUser = loadUserFromId(postFrom)
+    let postUser = locateUserFromId(postFrom)
     if (!postUser) {
-        log.warning("User {} not found", [postFrom]);
+        log.warning("User {} not found", [postFrom])
 
         return false
     }
 
     let threadId = post.thread
-    let thread = threadId ? loadThreadFromId(threadId) : null;
+    let thread = threadId ? loadThreadFromId(threadId) : null
     if(!thread && threadId) {
-        log.warning("Thread {} not found", [threadId]);
+        log.warning("Thread {} not found", [threadId])
 
         return false
     }

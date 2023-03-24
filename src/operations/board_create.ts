@@ -1,20 +1,20 @@
-import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
-import { Message } from "../../generated/Relay/Relay";
-import { Board, BoardJanny, User } from "../../generated/schema";
-import { ensureBoolean, ensureNumber, ensureString } from "../ensure";
-import { scoreDefault } from "../score";
-import { eventId } from "../id";
-import { boardJannyId } from "../internal/board_janny";
-import { locateBlockFromMessage } from "../internal/block";
+import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts"
+import { Message } from "../../generated/Relay/Relay"
+import { Board, BoardJanny, User } from "../../generated/schema"
+import { ensureBoolean, ensureNumber, ensureString } from "../ensure"
+import { scoreDefault } from "../score"
+import { eventId } from "../id"
+import { boardJannyId } from "../internal/board_janny"
+import { locateBlockFromMessage } from "../internal/block"
 import { BOARD_NAME_MAX_LENGTH, BOARD_TITLE_MAX_LENGTH } from '../constants'
-import { boardId } from "../internal/board";
-import { createBoardRefs } from "../internal/board_ref";
+import { boardId } from "../internal/board"
+import { createBoardRefs } from "../internal/board_ref"
 
 export function boardCreate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
     let block = locateBlockFromMessage(message)
 
-    log.info("Creating board: {}", [evtId]);
+    log.info("Creating board: {}", [evtId])
 
     // { "name": "dchan", "title": "dchan.network" }
     let maybeName = ensureString(data.get("name"))
@@ -22,6 +22,8 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
     let maybeThreadLifetime = ensureNumber(data.get("thread_lifetime"))
 
     if(!maybeName || !maybeTitle) {
+        log.warning("Invalid board create request: {}", [evtId])
+
         return false
     }
 
@@ -29,6 +31,8 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
     let title = maybeTitle as string
 
     if (name.length == 0 || name.length > BOARD_NAME_MAX_LENGTH || title.length == 0 || title.length > BOARD_TITLE_MAX_LENGTH) {
+        log.warning("Invalid board create request: {}", [evtId])
+
         return false
     }
 
@@ -59,7 +63,7 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
     board.save()
     boardJanny.save()
 
-    log.info("Board created: {}", [evtId]);
+    log.info("Board created: {}", [evtId])
 
     return true
 }

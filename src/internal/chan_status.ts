@@ -1,6 +1,6 @@
-import { Message } from "../../generated/Relay/Relay";
-import { ChanStatus } from "../../generated/schema";
-import { shortUniqueId } from "../id";
+import { log } from "@graphprotocol/graph-ts"
+import { Message } from "../../generated/Relay/Relay"
+import { ChanStatus } from "../../generated/schema"
 
 export function chanStatusId(message: Message): string {
   let to = message.transaction.to
@@ -18,6 +18,7 @@ export function locateChanStatusFromMessage(message: Message): ChanStatus {
 
   let chanStatus = ChanStatus.load(chanId)
   if (chanStatus == null) {
+    log.info("Initializing ChanStatus {}", [chanId])
     chanStatus = new ChanStatus(chanId)
     chanStatus.isLocked = false
     chanStatus.save()

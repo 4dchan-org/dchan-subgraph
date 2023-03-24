@@ -1,10 +1,21 @@
-# Node: https://hub.docker.com/_/node/
-FROM node:16
+FROM --platform=linux/x86_64 ubuntu:20.04
 
-ENV PATH="./node_modules/.bin:$PATH"
+ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt update && apt install -y libsecret-1-dev
+ENV ARGS=""
 
-RUN mkdir /subgraph
+RUN apt update \
+  && apt install -y sudo curl postgresql \
+  && curl -fsSL https://deb.nodesource.com/setup_16.x | sudo bash - \
+  && sudo apt install -y nodejs
 
-WORKDIR /subgraph
+RUN curl -OL https://github.com/LimeChain/matchstick/releases/download/0.5.4/binary-linux-20 \
+  && chmod a+x binary-linux-20
+
+RUN mkdir matchstick
+WORKDIR /matchstick
+
+# Commenting out for now as it seems there's no need to copy when using bind mount
+# COPY ./ .
+
+CMD ../binary-linux-20 ${ARGS}

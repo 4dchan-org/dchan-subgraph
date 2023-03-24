@@ -1,18 +1,18 @@
-import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
-import { Message } from "../../generated/Relay/Relay";
-import { Board, Image, Post, Thread, User } from "../../generated/schema";
-import { ensureBoolean, ensureObject, ensureString } from "../ensure";
-import { eventId, shortUniqueId } from "../id";
-import { POST_COMMENT_MAX_LENGTH, POST_FILENAME_MAX_LENGTH, POST_NAME_MAX_LENGTH, POST_SUBJECT_MAX_LENGTH } from "../constants";
-import { scoreDefault } from "../score";
-import { userIsBoardBanned } from "../internal/board_ban";
-import { createPostRefs } from "../internal/post_ref";
-import { createThreadRefs } from "../internal/thread_ref";
-import { locateBlockFromMessage } from "../internal/block";
-import { loadThreadFromId } from "../internal/thread";
-import { loadBoardFromId } from "../internal/board";
-import { isBoardJanny } from "../internal/board_janny";
-import { postId } from "../internal/post";
+import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts"
+import { Message } from "../../generated/Relay/Relay"
+import { Board, Image, Post, Thread, User } from "../../generated/schema"
+import { ensureBoolean, ensureObject, ensureString } from "../ensure"
+import { eventId, shortUniqueId } from "../id"
+import { POST_COMMENT_MAX_LENGTH, POST_FILENAME_MAX_LENGTH, POST_NAME_MAX_LENGTH, POST_SUBJECT_MAX_LENGTH } from "../constants"
+import { scoreDefault } from "../score"
+import { userIsBoardBanned } from "../internal/board_ban"
+import { createPostRefs } from "../internal/post_ref"
+import { createThreadRefs } from "../internal/thread_ref"
+import { locateBlockFromMessage } from "../internal/block"
+import { loadThreadFromId } from "../internal/thread"
+import { loadBoardFromId } from "../internal/board"
+import { isBoardJanny } from "../internal/board_janny"
+import { postId } from "../internal/post"
 
 export function postCreate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -24,14 +24,14 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
 
     // Throttling
     // if(user.lastPostedAt && message.block.timestamp < user.lastPostedAt.plus(BigInt.fromI32(50))) {
-    //     log.info("Throttling user {}: {}", [user.id, evtId]);
+    //     log.info("Throttling user {}: {}", [user.id, evtId])
 
     //     return  false
     // }
 
     let thread: Thread | null = null
     if (threadId) {
-        log.info("Replying to {}", [threadId]);
+        log.info("Replying to {}", [threadId])
 
         thread = loadThreadFromId(threadId)
         if (thread) {
@@ -42,7 +42,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
             return false
         }
     } else if (boardId) {
-        log.info("Creating new thread on {}", [boardId]);
+        log.info("Creating new thread on {}", [boardId])
     } else {
         log.warning("Invalid post create request", [])
 
@@ -56,7 +56,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         return false
     }
 
-    let board = maybeBoard as Board;
+    let board = maybeBoard as Board
     if (userIsBoardBanned(message, user, board)) {
         log.warning("User is banned from this board, skipping {}", [evtId])
 
@@ -82,7 +82,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         return false
     }
 
-    log.info("Creating image: {}", [evtId]);
+    log.info("Creating image: {}", [evtId])
     let image: Image | null = null
     let file = ensureObject(data.get("file"))
     if (file) {
@@ -113,7 +113,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         }
     }
 
-    log.info("Creating post: {}", [evtId]);
+    log.info("Creating post: {}", [evtId])
     let name = ensureString(data.get("name"))
     if (name && name.length > POST_NAME_MAX_LENGTH) {
         log.warning("Name over length limit, skipping {}", [evtId])
@@ -150,13 +150,13 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     createPostRefs(message, post)
 
     if (thread) {
-        log.debug("Replying to thread {}", [thread.id]);
+        log.debug("Replying to thread {}", [thread.id])
         post.thread = thread.id
 
         thread.replyCount = thread.replyCount.plus(BigInt.fromI32(1))
         thread.imageCount = thread.imageCount.plus(BigInt.fromI32(image ? 1 : 0))
     } else if (board) {
-        log.debug("Creating thread {}", [evtId]);
+        log.debug("Creating thread {}", [evtId])
 
         let subject = ensureString(data.get("subject"))
         if (subject && subject.length > POST_SUBJECT_MAX_LENGTH) {
@@ -211,7 +211,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     thread.popularity = BigInt.fromI32(86_400).times(thread.ppm).plus(thread.createdAt)
     // @TODO Fix this
 
-    log.info("Saving: {}", [evtId]);
+    log.info("Saving: {}", [evtId])
 
     if (image) {
         image.save()
@@ -221,7 +221,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
     post.save()
     board.save()
 
-    log.info("Post created: {}", [evtId]);
+    log.info("Post created: {}", [evtId])
 
     return true
 }

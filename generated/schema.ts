@@ -1087,6 +1087,15 @@ export class User extends Entity {
     this.set("address", Value.fromString(value));
   }
 
+  get hexAddress(): string {
+    let value = this.get("hexAddress");
+    return value!.toString();
+  }
+
+  set hexAddress(value: string) {
+    this.set("hexAddress", Value.fromString(value));
+  }
+
   get lastPostedAtBlock(): string | null {
     let value = this.get("lastPostedAtBlock");
     if (!value || value.kind == ValueKind.NULL) {

@@ -1,7 +1,7 @@
-import { Message } from "../../generated/Relay/Relay";
-import { Board, BoardRef } from "../../generated/schema";
-import { eventId } from "../id";
-import { shortBoardId } from "./board";
+import { Message } from "../../generated/Relay/Relay"
+import { Board, BoardRef } from "../../generated/schema"
+import { eventId } from "../id"
+import { shortBoardId } from "./board"
 
 export function createBoardRefs(message: Message, board: Board) : void {
     let ref: BoardRef | null = null

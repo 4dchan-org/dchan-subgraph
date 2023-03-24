@@ -1,6 +1,6 @@
-import { Message } from "../../generated/Relay/Relay";
-import { Post, PostRef } from "../../generated/schema";
-import { eventId, shortUniqueId, txId } from "../id";
+import { Message } from "../../generated/Relay/Relay"
+import { Post, PostRef } from "../../generated/schema"
+import { eventId, shortUniqueId, txId } from "../id"
 
 export type PostId = string
 

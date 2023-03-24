@@ -1,5 +1,5 @@
-import { Message } from "../../generated/Relay/Relay";
-import { Block } from "../../generated/schema";
+import { Message } from "../../generated/Relay/Relay"
+import { Block } from "../../generated/schema"
 
 export type BlockId = string
 

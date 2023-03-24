@@ -1,5 +1,5 @@
-import { BoardJanny, User } from "../../generated/schema";
-import { BoardId } from "./board";
+import { BoardJanny, User } from "../../generated/schema"
+import { BoardId } from "./board"
 import { isAdmin } from "./admin"
 
 export type BoardJannyId = string

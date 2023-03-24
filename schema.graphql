@@ -138,6 +138,7 @@ type User @entity {
   id: ID!
   b58id: String!
   address: String!
+  hexAddress: String!
   lastPostedAtBlock: Block
   bans: [Ban!]! @derivedFrom(field: "user")
   jannies: [BoardJanny!]! @derivedFrom(field: "user")

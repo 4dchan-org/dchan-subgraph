@@ -1,36 +1,36 @@
-import { ByteArray, Bytes, json, JSONValue, log, TypedMap } from '@graphprotocol/graph-ts';
+import { ByteArray, Bytes, json, JSONValue, log, TypedMap } from '@graphprotocol/graph-ts'
 import { ensureObject, ensureString } from './ensure'
 
-import { adminClaim } from './operations/admin_claim';
-import { adminGrant } from './operations/admin_grant';
-import { adminRevoke } from './operations/admin_revoke';
-import { boardCreate } from './operations/board_create';
-import { boardLock } from './operations/board_lock';
-import { boardRemove } from './operations/board_remove';
-import { boardUnlock } from './operations/board_unlock';
-import { boardUpdate } from './operations/board_update';
-import { chanLock } from './operations/chan_lock';
-import { chanUnlock } from './operations/chan_unlock';
-import { jannyGrant } from './operations/janny_grant';
-import { jannyRevoke } from './operations/janny_revoke';
-import { postBan } from './operations/post_ban';
-import { postCreate } from './operations/post_create';
-import { postRemove } from './operations/post_remove';
-import { postReport } from './operations/post_report';
-import { threadLock } from './operations/thread_lock';
-import { threadPin } from './operations/thread_pin';
-import { threadUnpin } from './operations/thread_unpin';
-import { threadUnlock } from './operations/thread_unlock';
-import { userBan } from './operations/user_ban';
-import { userUnban } from './operations/user_unban';
+import { adminClaim } from './operations/admin_claim'
+import { adminGrant } from './operations/admin_grant'
+import { adminRevoke } from './operations/admin_revoke'
+import { boardCreate } from './operations/board_create'
+import { boardLock } from './operations/board_lock'
+import { boardRemove } from './operations/board_remove'
+import { boardUnlock } from './operations/board_unlock'
+import { boardUpdate } from './operations/board_update'
+import { chanLock } from './operations/chan_lock'
+import { chanUnlock } from './operations/chan_unlock'
+import { jannyGrant } from './operations/janny_grant'
+import { jannyRevoke } from './operations/janny_revoke'
+import { postBan } from './operations/post_ban'
+import { postCreate } from './operations/post_create'
+import { postRemove } from './operations/post_remove'
+import { postReport } from './operations/post_report'
+import { threadLock } from './operations/thread_lock'
+import { threadPin } from './operations/thread_pin'
+import { threadUnpin } from './operations/thread_unpin'
+import { threadUnlock } from './operations/thread_unlock'
+import { userBan } from './operations/user_ban'
+import { userUnban } from './operations/user_unban'
 
-import { locateUserFromMessage } from './internal/user';
-import { eventId } from './id';
-import { blockId } from './internal/block';
-import { userIsBanned } from './internal/user_ban';
-import { isChanLocked } from './internal/chan_status';
-import { boardReport } from './operations/board_report';
-import { clientPublish } from './operations/client_publish';
+import { locateUserFromMessage } from './internal/user'
+import { eventId } from './id'
+import { blockId } from './internal/block'
+import { userIsBanned } from './internal/user_ban'
+import { isChanLocked } from './internal/chan_status'
+import { boardReport } from './operations/board_report'
+import { clientPublish } from './operations/client_publish'
 
 import { Message } from '../generated/Relay/Relay'
 import { Block } from '../generated/schema'
@@ -45,7 +45,9 @@ export function handleMessage(message: Message): void {
 
   let jsonMessage = message.params.jsonMessage
 
-  let jsonDict = parseJsonMessage(message, ByteArray.fromUTF8(jsonMessage) as Bytes)
+  log.debug("Parsing jsonMessage: {}", [jsonMessage])
+
+  let jsonDict = parseJsonMessage(message, jsonMessage)
   if (jsonDict != null) {
     success = processMessagePayload(message, jsonDict as TypedMap<string, JSONValue>)
   }
@@ -64,18 +66,18 @@ export function handleMessage(message: Message): void {
   log.debug("Handled message: {}", [evtId])
 }
 
-export function parseJsonMessage(message: Message, bytes: Bytes): TypedMap<string, JSONValue> | null {
+export function parseJsonMessage(message: Message, jsonMessage: string): TypedMap<string, JSONValue> | null {
   let evtId = eventId(message)
-  let tryJsonPayloadData = json.try_fromBytes(bytes);
+  let tryJsonPayloadData = json.try_fromString(jsonMessage)
   if (!tryJsonPayloadData.isOk) {
     log.error("Could not parse message, skipping {}", [evtId])
 
     return null
   }
 
-  log.debug("Json message parsed successfully: {}", [evtId]);
+  log.debug("Json message parsed successfully: {}", [evtId])
 
-  return tryJsonPayloadData.value.toObject();
+  return tryJsonPayloadData.value.toObject()
 }
 
 function processMessagePayload(message: Message, payload: TypedMap<string, JSONValue>): boolean {
@@ -83,11 +85,11 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
   let evtId = eventId(message)
 
   // Always good to have but not needed now
-  // let version = payload.get('v');
-  // let namespace = payload.get('ns');
-  let maybeOperation = ensureString(payload.get('op'));
+  // let version = payload.get('v')
+  // let namespace = payload.get('ns')
+  let maybeOperation = ensureString(payload.get('op'))
   if(!maybeOperation) {
-    log.warning("Invalid format, skipping: {}", [evtId]);
+    log.warning("Invalid format, skipping: {}", [evtId])
 
     return false
   }
@@ -95,7 +97,7 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
   let operation = maybeOperation as string
   log.debug("Received operation: {}", [operation])
 
-  let maybeData = ensureObject(payload.get('data'));
+  let maybeData = ensureObject(payload.get('data'))
   if (!maybeData) {
     log.warning("Invalid data, skipping {}", [evtId])
 
@@ -134,7 +136,7 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
     return false
   }
 
-  // AI
+  // Operation switch
   if (operation == "board:create") {
     return boardCreate(message, user, data)
   } else if (operation == "board:lock") {
@@ -172,7 +174,7 @@ function processMessagePayload(message: Message, payload: TypedMap<string, JSONV
   } else if (operation == "post:report") {
     return postReport(message, user, data)
   } else {
-    log.warning("Invalid operation {}, skipping: {}", [operation, evtId]);
+    log.warning("Invalid operation {}, skipping: {}", [operation, evtId])
   }
 
   return false

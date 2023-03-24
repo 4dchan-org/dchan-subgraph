@@ -1,7 +1,7 @@
-import { Message } from "../../generated/Relay/Relay";
-import { UserBan } from "../../generated/schema";
-import { banExpired } from "./ban";
-import { UserId } from "./user";
+import { Message } from "../../generated/Relay/Relay"
+import { UserBan } from "../../generated/schema"
+import { banExpired } from "./ban"
+import { UserId } from "./user"
 
 export type UserBanId = string
 

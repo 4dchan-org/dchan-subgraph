@@ -1,12 +1,12 @@
-import { JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
-import { Message } from "../../generated/Relay/Relay";
-import { Post, Thread, User } from "../../generated/schema";
-import { ensureString } from "../ensure";
-import { scorePenalty } from "../score";
-import { eventId } from "../id";
-import { createPostReport, postReportId } from "../internal/post_report";
-import { loadPostFromId } from "../internal/post";
-import { loadThreadFromId } from "../internal/thread";
+import { JSONValue, log, TypedMap } from "@graphprotocol/graph-ts"
+import { Message } from "../../generated/Relay/Relay"
+import { Post, Thread, User } from "../../generated/schema"
+import { ensureString } from "../ensure"
+import { scorePenalty } from "../score"
+import { eventId } from "../id"
+import { createPostReport, postReportId } from "../internal/post_report"
+import { loadPostFromId } from "../internal/post"
+import { loadThreadFromId } from "../internal/thread"
 
 export function postReport(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -14,13 +14,13 @@ export function postReport(message: Message, user: User, data: TypedMap<string, 
     let maybePostId = ensureString(data.get("id"))
     let reason = ensureString(data.get("reason"))
     if(maybePostId == null) {
-        log.warning("Invalid post report request: {}", [evtId]);
+        log.warning("Invalid post report request: {}", [evtId])
 
         return false
     }
 
     let postId = maybePostId as string
-    log.debug("Reported post: {}", [postId]);
+    log.debug("Reported post: {}", [postId])
     
     let post = loadPostFromId(postId)
     if (post == null) {

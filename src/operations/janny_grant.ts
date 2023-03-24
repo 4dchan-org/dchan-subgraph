@@ -1,30 +1,32 @@
-import { JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
-import { Message } from "../../generated/Relay/Relay";
-import { BoardJanny, User } from "../../generated/schema";
-import { ensureString } from "../ensure";
-import { isBoardJanny } from "../internal/board_janny";
-import { eventId } from "../id";
-import { boardJannyId } from "../internal/board_janny";
-import { locateBlockFromMessage } from "../internal/block";
-import { loadUserFromId } from "../internal/user";
+import { JSONValue, log, TypedMap } from "@graphprotocol/graph-ts"
+import { Message } from "../../generated/Relay/Relay"
+import { BoardJanny, User } from "../../generated/schema"
+import { ensureString } from "../ensure"
+import { isBoardJanny } from "../internal/board_janny"
+import { eventId } from "../id"
+import { boardJannyId } from "../internal/board_janny"
+import { locateBlockFromMessage } from "../internal/block"
+import { locateUserFromId } from "../internal/user"
 
 export function jannyGrant(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
     let block = locateBlockFromMessage(message)
 
-    log.info("Janny grant attempt by {}: {}", [user.id, evtId]);
+    log.info("Janny grant attempt by {}: {}", [user.id, evtId])
 
-    let boardId = ensureString(data.get("board"))
-    let targetUserId = ensureString(data.get("user"))
-    if(targetUserId === null || boardId === null) {
+    let maybeBoardId = ensureString(data.get("board"))
+    let maybeTargetUserId = ensureString(data.get("user"))
+    if(!maybeTargetUserId || !maybeBoardId) {
         log.info("Invalid janny grant request: {}", [evtId])
 
         return false
     }
 
-    let targetUser = loadUserFromId(targetUserId)
-    if(targetUser === null) {
-        log.info("Invalid janny grant request to inexistent user {}: {}", [targetUserId, evtId])
+    let boardId = maybeBoardId as string
+    let targetUserId = maybeTargetUserId as string
+    let targetUser = locateUserFromId(targetUserId)
+    if(!targetUser) {
+        log.info("Invalid janny grant request to nonexistent user {}: {}", [targetUserId, evtId])
 
         return false
     }
@@ -40,7 +42,7 @@ export function jannyGrant(message: Message, user: User, data: TypedMap<string, 
     janny.grantedAt = block.timestamp
     janny.save()
 
-    log.info("Janny granted to {}: {}", [user.id, evtId]);
+    log.info("Janny granted to {}: {}", [user.id, evtId])
 
     return true
 }

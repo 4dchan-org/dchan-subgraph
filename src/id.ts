@@ -1,4 +1,4 @@
-import { ByteArray, crypto, ethereum } from "@graphprotocol/graph-ts";
+import { ByteArray, crypto, ethereum } from "@graphprotocol/graph-ts"
 
 export function shortUniqueId(longId: string): string {
     return shortId(crypto.keccak256(ByteArray.fromUTF8(longId)).toHexString())

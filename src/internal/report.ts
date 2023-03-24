@@ -1,8 +1,8 @@
-import { Message } from "../../generated/Relay/Relay";
-import { Report } from "../../generated/schema";
-import { eventId } from "../id";
-import { locateBlockFromMessage } from "./block";
-import { userIdFromMessage } from "./user";
+import { Message } from "../../generated/Relay/Relay"
+import { Report } from "../../generated/schema"
+import { eventId } from "../id"
+import { locateBlockFromMessage } from "./block"
+import { userIdFromMessage } from "./user"
 
 export type ReportId = string
 

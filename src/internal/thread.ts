@@ -1,6 +1,6 @@
-import { Message } from "../../generated/Relay/Relay";
-import { Thread, ThreadRef } from "../../generated/schema";
-import { postId, shortPostId } from "./post";
+import { Message } from "../../generated/Relay/Relay"
+import { Thread, ThreadRef } from "../../generated/schema"
+import { postId, shortPostId } from "./post"
 
 export type ThreadId = string
 

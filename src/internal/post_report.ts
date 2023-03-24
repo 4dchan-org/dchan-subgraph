@@ -1,5 +1,5 @@
-import { Message } from "../../generated/Relay/Relay";
-import { Post, PostReport, User } from "../../generated/schema";
+import { Message } from "../../generated/Relay/Relay"
+import { Post, PostReport, User } from "../../generated/schema"
 import { createReport } from './report'
 
 export type PostReportId = string

@@ -1,7 +1,7 @@
-import { Message } from "../../generated/Relay/Relay";
-import { Board, BoardRef, Post, Thread } from "../../generated/schema";
-import { eventId, shortUniqueId, txId } from "../id";
-import { loadThreadFromId } from "./thread";
+import { Message } from "../../generated/Relay/Relay"
+import { Board, BoardRef, Post, Thread } from "../../generated/schema"
+import { eventId, shortUniqueId, txId } from "../id"
+import { loadThreadFromId } from "./thread"
 
 export type BoardId = string
 

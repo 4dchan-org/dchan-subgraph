@@ -1,6 +1,6 @@
-import { log } from "@graphprotocol/graph-ts";
-import { Message } from "../../generated/Relay/Relay";
-import { Ban, Board, BoardBan, User } from "../../generated/schema";
+import { log } from "@graphprotocol/graph-ts"
+import { Message } from "../../generated/Relay/Relay"
+import { Ban, Board, BoardBan, User } from "../../generated/schema"
 
 export type BoardBanId = string
 

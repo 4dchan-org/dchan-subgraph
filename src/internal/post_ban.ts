@@ -1,4 +1,4 @@
-import { Board, Post } from "../../generated/schema";
+import { Board, Post } from "../../generated/schema"
 
 export type PostBanId = string
 

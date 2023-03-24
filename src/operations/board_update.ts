@@ -1,18 +1,18 @@
-import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts";
-import { Message } from "../../generated/Relay/Relay";
-import { User } from "../../generated/schema";
-import { ensureBoolean, ensureNumber, ensureString } from "../ensure";
-import { isBoardJanny } from "../internal/board_janny";
-import { eventId } from "../id";
-import { loadBoardFromId } from "../internal/board";
+import { BigInt, JSONValue, log, TypedMap } from "@graphprotocol/graph-ts"
+import { Message } from "../../generated/Relay/Relay"
+import { User } from "../../generated/schema"
+import { ensureBoolean, ensureNumber, ensureString } from "../ensure"
+import { isBoardJanny } from "../internal/board_janny"
+import { eventId } from "../id"
+import { loadBoardFromId } from "../internal/board"
 
 export function boardUpdate(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
 
-    log.info("Updating board: {}", [evtId]);
+    log.info("Updating board: {}", [evtId])
 
     let maybeBoardId = ensureString(data.get("id"))
-    if (maybeBoardId == null) {
+    if (!maybeBoardId) {
         log.warning("Invalid board", [])
 
         return false
@@ -20,8 +20,8 @@ export function boardUpdate(message: Message, user: User, data: TypedMap<string,
 
     let boardId = maybeBoardId as string
     let board = loadBoardFromId(boardId)
-    if (board == null) {
-        log.warning("Board {} not found", [boardId]);
+    if (!board) {
+        log.warning("Board {} not found", [boardId])
 
         return false
     }
@@ -43,7 +43,7 @@ export function boardUpdate(message: Message, user: User, data: TypedMap<string,
     board.threadLifetime = ensureNumber(data.get("thread_lifetime"))
     board.save()
 
-    log.info("Board updated: {}", [evtId]);
+    log.info("Board updated: {}", [evtId])
 
     return true
 }
