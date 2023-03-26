@@ -106,7 +106,6 @@ type BoardReport @entity {
 
 type Ban @entity {
   id: ID!
-  user: User!
   issuedAtBlock: Block!
   issuedAt: BigInt!
   expiresAt: BigInt!

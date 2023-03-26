@@ -1,5 +1,7 @@
 import { Address } from "@graphprotocol/graph-ts";
 import { boardId } from "../src/internal/board";
+import { postId } from "../src/internal/post";
+import { threadId } from "../src/internal/thread";
 import { handleMessage } from "../src/relay";
 import { createMessageEvent } from "./relay-utils";
 
@@ -16,4 +18,20 @@ export function createBoard(name: string, title: string): string {
   const newMessageEvent = createMessageEvent(from, jsonMessage)
   handleMessage(newMessageEvent)
   return boardId(newMessageEvent)
+}
+
+export function createThread(boardId: string, comment: string): string {
+  const from = Address.fromString("0x0000000000000000000000000000000000000000")
+  const jsonMessage = `{"ns": "dchan","v": 0,"op": "post:create","data": {"board": "${boardId}", "comment": "${comment}"}}`
+  const newMessageEvent = createMessageEvent(from, jsonMessage)
+  handleMessage(newMessageEvent)
+  return threadId(newMessageEvent)
+}
+
+export function createPost(threadId: string, comment: string): string {
+  const from = Address.fromString("0x0000000000000000000000000000000000000000")
+  const jsonMessage = `{"ns": "dchan","v": 0,"op": "post:create","data": {"thread": "${threadId}", "comment": "${comment}"}}`
+  const newMessageEvent = createMessageEvent(from, jsonMessage)
+  handleMessage(newMessageEvent)
+  return postId(newMessageEvent)
 }

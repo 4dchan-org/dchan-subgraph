@@ -8,6 +8,7 @@ import { userBanId } from "../internal/user_ban"
 import { banId } from "../internal/ban"
 import { isAdmin } from "../internal/admin"
 import { locateUserFromId } from "../internal/user"
+import { locateBlockFromMessage } from "../internal/block"
 
 export function userBan(message: Message, from: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -45,9 +46,11 @@ export function userBan(message: Message, from: User, data: TypedMap<string, JSO
     let userBan = UserBan.load(ubId)
     if(userBan == null) {
         let ban = new Ban(banId(message))
-        ban.user = userId
+        ban.from = from.id
         ban.expiresAt = banExpiresAt
         ban.reason = reason ? reason as string : ""
+        ban.issuedAtBlock = locateBlockFromMessage(message).id
+        ban.issuedAt = message.block.timestamp
         ban.save()
 
         userBan = new UserBan(ubId)

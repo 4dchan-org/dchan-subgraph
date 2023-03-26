@@ -1,4 +1,4 @@
-import { ByteArray, crypto, log } from "@graphprotocol/graph-ts"
+import { Address, ByteArray, crypto, log } from "@graphprotocol/graph-ts"
 import { Message } from "../../generated/Relay/Relay"
 import { UserRef, User } from "../../generated/schema"
 import { scoreDefault } from "../score"
@@ -6,8 +6,12 @@ import { createUserRefs } from "../internal/user_ref"
 
 export type UserId = string
 
+export function userId(address: Address): UserId {
+    return address.toHexString()
+}
+
 export function userIdFromMessage(message: Message): UserId {
-    return message.params.from.toHexString()
+    return userId(message.params.from)
 }
 
 export function shortUserIdFromUserId(userId: UserId): UserId {

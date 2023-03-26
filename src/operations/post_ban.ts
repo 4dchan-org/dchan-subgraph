@@ -11,6 +11,7 @@ import { loadPostFromId } from "../internal/post"
 import { locateUserFromId } from "../internal/user"
 import { loadBoardFromId } from "../internal/board"
 import { loadThreadFromId } from "../internal/thread"
+import { locateBlockFromMessage } from "../internal/block"
 
 export function postBan(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
@@ -66,11 +67,15 @@ export function postBan(message: Message, user: User, data: TypedMap<string, JSO
     }
 
     let banExpiresAt: BigInt = message.block.timestamp.plus(seconds as BigInt)
+    let block = locateBlockFromMessage(message)
 
     let ban = new Ban(banId(message))
     ban.expiresAt = banExpiresAt
     ban.reason = reason
     ban.from = user.id
+    ban.user = post.from
+    ban.issuedAtBlock = block.id
+    ban.issuedAt = message.block.timestamp
     ban.save()
 
     let boardBan = new BoardBan(boardBanId(user, board as Board))
