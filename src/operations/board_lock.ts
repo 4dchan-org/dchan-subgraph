@@ -26,7 +26,7 @@ export function boardLock(message: Message, user: User, data: TypedMap<string, J
         return false
     }
 
-    if((board.createdBy != user.id) && !isBoardJanny(user, board.id)) {
+    if((board.createdBy != user.id) && !isBoardJanny(user.id, board.id)) {
         log.warning("User {} is not janny of {}, skipping {}", [user.id, boardId, evtId])
 
         return false

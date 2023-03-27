@@ -45,7 +45,7 @@ export function postRemove(message: Message, user: User, data: TypedMap<string, 
             return false
         }
 
-        if ((post.from != user.id) && post.board && !isBoardJanny(user, post.board as string)) {
+        if ((post.from != user.id) && post.board && !isBoardJanny(user.id, post.board as string)) {
             log.warning("Post {} not owned by {}, skipping {}", [postId, user.id, evtId])
 
             return false
@@ -71,6 +71,7 @@ export function postRemove(message: Message, user: User, data: TypedMap<string, 
 
                     // Remove the thread
                     store.remove("Thread", thread.id)
+                    log.info("Thread removed: {}", [thread.id])
                 } else {
                     if(post.thread) {
                         // Keep counts in check

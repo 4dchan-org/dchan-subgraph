@@ -33,7 +33,7 @@ export function threadPin(message: Message, user: User, data: TypedMap<string, J
         return false
     }
 
-    if((op.from != user.id) && thread.board && !isBoardJanny(user, thread.board as string)) {
+    if((op.from != user.id) && thread.board && !isBoardJanny(user.id, thread.board as string)) {
         log.warning("Thread {} not owned by {}, skipping {}", [threadId, user.id, evtId])
 
         return false

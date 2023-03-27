@@ -31,11 +31,11 @@ export function jannyGrant(message: Message, user: User, data: TypedMap<string, 
         return false
     }
 
-    if(!isBoardJanny(user, boardId)) {
+    if(!isBoardJanny(user.id, boardId)) {
         return false
     }
 
-    let janny = new BoardJanny(boardJannyId(targetUser as User, boardId))
+    let janny = new BoardJanny(boardJannyId(targetUser.id, boardId))
     janny.user = targetUserId
     janny.board = boardId
     janny.grantedAtBlock = block.id

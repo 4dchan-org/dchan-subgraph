@@ -5,11 +5,10 @@ import {
     beforeEach,
     clearStore
 } from "matchstick-as/assembly/index"
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts"
-import { handleMessage } from "../src/relay"
-import { createMessageEvent } from "./relay-utils"
-import { createBoard } from "./helpers"
-import { Board } from "../generated/schema"
+import { Address } from "@graphprotocol/graph-ts"
+import { handleMessage } from "../../src/relay"
+import { createMessageEvent } from "../relay-utils"
+import { createBoard } from "../helpers"
 
 describe("Board update", () => {
     beforeEach(() => {

@@ -13,7 +13,7 @@ export function clientPublish(message: Message, user: User, data: TypedMap<strin
 
     log.info("Client publish attempt by {}: {}", [user.id, evtId])
 
-    if (!isAdmin(user)) {
+    if (!isAdmin(user.id)) {
         log.warning("Unauthorized, skipping {}", [evtId])
 
         return false

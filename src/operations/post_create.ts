@@ -63,13 +63,13 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         return false
     }
 
-    if (thread && thread.isLocked && board && !isBoardJanny(user, board.id) && threadId) {
+    if (thread && thread.isLocked && board && !isBoardJanny(user.id, board.id) && threadId) {
         log.warning("Thread {} locked, skipping {}", [threadId, evtId])
 
         return false
     }
 
-    if (board && board.isLocked && !isBoardJanny(user, board.id)) {
+    if (board && board.isLocked && !isBoardJanny(user.id, board.id)) {
         log.warning("Board {} locked, skipping {}", [board.id, evtId])
 
         return false
@@ -156,7 +156,7 @@ export function postCreate(message: Message, user: User, data: TypedMap<string, 
         thread.replyCount = thread.replyCount.plus(BigInt.fromI32(1))
         thread.imageCount = thread.imageCount.plus(BigInt.fromI32(image ? 1 : 0))
     } else if (board) {
-        log.debug("Creating thread {}", [evtId])
+        log.info("Creating thread: {}", [evtId])
 
         let subject = ensureString(data.get("subject"))
         if (subject && subject.length > POST_SUBJECT_MAX_LENGTH) {

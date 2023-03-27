@@ -6,14 +6,14 @@ import {
     clearStore
 } from "matchstick-as/assembly/index"
 import { Address } from "@graphprotocol/graph-ts"
-import { handleMessage } from "../src/relay"
-import { createMessageEvent } from "./relay-utils"
-import { createPost, createThread, createBoard, claimAdmin } from "./helpers"
-import { Ban, Board, BoardBan, Post, PostBan, User } from "../generated/schema"
-import { banId } from "../src/internal/ban"
-import { boardBanId } from "../src/internal/board_ban"
-import { postBanId } from "../src/internal/post_ban"
-import { locateUserFromId } from "../src/internal/user"
+import { handleMessage } from "../../src/relay"
+import { createMessageEvent } from "../relay-utils"
+import { createPost, createThread, createBoard } from "../helpers"
+import { Ban, BoardBan, Post, PostBan, User } from "../../generated/schema"
+import { banId } from "../../src/internal/ban"
+import { boardBanId } from "../../src/internal/board_ban"
+import { postBanId } from "../../src/internal/post_ban"
+import { locateUserFromId } from "../../src/internal/user"
 
 describe("Post ban", () => {
     beforeEach(() => {
@@ -32,14 +32,14 @@ describe("Post ban", () => {
         const admin = User.load(from.toHexString())!
         
         assert.notInStore("Ban", banId(newMessageEvent))
-        assert.notInStore("BoardBan", boardBanId(admin, Board.load(boardId)!))
-        assert.notInStore("PostBan", postBanId(post, Board.load(boardId)!))
+        assert.notInStore("BoardBan", boardBanId(admin.id, boardId))
+        assert.notInStore("PostBan", postBanId(post.id, boardId))
 
         handleMessage(newMessageEvent)
 
         let ban = Ban.load(banId(newMessageEvent)) as Ban
-        let boardBan = BoardBan.load(boardBanId(admin, Board.load(boardId)!)) as BoardBan
-        let postBan = PostBan.load(postBanId(post, Board.load(boardId)!)) as PostBan
+        let boardBan = BoardBan.load(boardBanId(admin.id, boardId)) as BoardBan
+        let postBan = PostBan.load(postBanId(post.id, boardId)) as PostBan
 
         assert.fieldEquals("Ban", ban.id, "expiresAt", "1001")
         assert.fieldEquals("Ban", ban.id, "reason", "bad post")
@@ -64,13 +64,13 @@ describe("Post ban", () => {
         const admin = locateUserFromId(from.toHexString())!
         
         assert.notInStore("Ban", banId(newMessageEvent))
-        assert.notInStore("BoardBan", boardBanId(admin, Board.load(boardId)!))
-        assert.notInStore("PostBan", postBanId(post, Board.load(boardId)!))
+        assert.notInStore("BoardBan", boardBanId(admin.id, boardId))
+        assert.notInStore("PostBan", postBanId(post.id, boardId))
 
         handleMessage(newMessageEvent)
         
         assert.notInStore("Ban", banId(newMessageEvent))
-        assert.notInStore("BoardBan", boardBanId(admin, Board.load(boardId)!))
-        assert.notInStore("PostBan", postBanId(post, Board.load(boardId)!))
+        assert.notInStore("BoardBan", boardBanId(admin.id, boardId))
+        assert.notInStore("PostBan", postBanId(post.id, boardId))
     })
 })

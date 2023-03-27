@@ -10,7 +10,7 @@ import { userBanId, userIsBanned } from "../internal/user_ban"
 export function userUnban(message: Message, user: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
 
-    if(!isAdmin(user)) {
+    if(!isAdmin(user.id)) {
         log.info("Unauthorized, skipping {}", [evtId])
 
         return false

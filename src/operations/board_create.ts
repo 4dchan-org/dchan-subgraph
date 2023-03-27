@@ -53,7 +53,7 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
 
     createBoardRefs(message, board)
 
-    let boardJanny = new BoardJanny(boardJannyId(user, board.id))
+    let boardJanny = new BoardJanny(boardJannyId(user.id, board.id))
     boardJanny.grantedAtBlock = block.id
     boardJanny.grantedAt = block.timestamp
     boardJanny.board = board.id

@@ -31,7 +31,7 @@ export function jannyRevoke(message: Message, user: User, data: TypedMap<string,
         return false
     }
 
-    if(!isBoardJanny(user, boardId)) {
+    if(!isBoardJanny(user.id, boardId)) {
         return false
     }
     
@@ -42,7 +42,7 @@ export function jannyRevoke(message: Message, user: User, data: TypedMap<string,
         return false
     }
 
-    store.remove("BoardJanny", boardJannyId(targetUser as User, boardId))
+    store.remove("BoardJanny", boardJannyId(targetUser.id, boardId))
 
     log.info("Board {} janny {} revoked by {}: {}", [boardId, targetUserId, user.id, evtId])
 

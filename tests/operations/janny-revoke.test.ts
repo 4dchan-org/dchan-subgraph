@@ -6,11 +6,11 @@ import {
     clearStore
 } from "matchstick-as/assembly/index"
 import { Address } from "@graphprotocol/graph-ts"
-import { handleMessage } from "../src/relay"
-import { createMessageEvent } from "./relay-utils"
-import { createBoard } from "./helpers"
-import { locateUserFromId } from "../src/internal/user"
-import { boardJannyId } from "../src/internal/board_janny"
+import { handleMessage } from "../../src/relay"
+import { createMessageEvent } from "../relay-utils"
+import { createBoard } from "../helpers"
+import { locateUserFromId } from "../../src/internal/user"
+import { boardJannyId } from "../../src/internal/board_janny"
 
 describe("Janny revoke", () => {
     beforeEach(() => {
@@ -34,7 +34,7 @@ describe("Janny revoke", () => {
         let boardId = createBoard("d", "dchan")
 
         const target = locateUserFromId("0x0000000000000000000000000000000000000001")!
-        const jannyId = boardJannyId(target, boardId)
+        const jannyId = boardJannyId(target.id, boardId)
 
         const from = Address.fromString("0x0000000000000000000000000000000000000000")
         const jsonMessage = `{"ns": "dchan","v": 0,"op": "janny:revoke","data": {"board": "${boardId}", "user": "${target.id}"}}`
@@ -51,7 +51,7 @@ describe("Janny revoke", () => {
         let boardId = createBoard("d", "dchan")
 
         const target = locateUserFromId("0x0000000000000000000000000000000000000001")!
-        let jannyId = boardJannyId(target, boardId)
+        let jannyId = boardJannyId(target.id, boardId)
 
         const from = Address.fromString("0x0000000000000000000000000000000000000002")
         const jsonMessage = `{"ns": "dchan","v": 0,"op": "janny:revoke","data": {"board": "${boardId}", "user": "${target.id}"}}`

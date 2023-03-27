@@ -6,9 +6,9 @@ import {
     clearStore
 } from "matchstick-as/assembly/index"
 import { Address } from "@graphprotocol/graph-ts"
-import { handleMessage } from "../src/relay"
-import { createMessageEvent } from "./relay-utils"
-import { createBoard } from "./helpers"
+import { handleMessage } from "../../src/relay"
+import { createMessageEvent } from "../relay-utils"
+import { createBoard } from "../helpers"
 
 describe("Board unlock", () => {
     beforeEach(() => {

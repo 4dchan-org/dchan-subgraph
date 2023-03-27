@@ -12,7 +12,7 @@ export function adminGrant(message: Message, user: User, data: TypedMap<string, 
 
     log.info("Admin grant attempt by {}: {}", [user.id, evtId])
 
-    if(!isAdmin(user)) {
+    if(!isAdmin(user.id)) {
         log.warning("Rejected admin grant requested by unprivileged user {}", [user.id])
 
         return false

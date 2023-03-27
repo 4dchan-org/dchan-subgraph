@@ -29,7 +29,7 @@ export function boardRemove(
     return false
   }
 
-  if (board.createdBy != user.id && !isBoardJanny(user, boardId)) {
+  if (board.createdBy != user.id && !isBoardJanny(user.id, boardId)) {
     log.warning("User {} is not janny of {}, skipping {}", [user.id, boardId, evtId])
 
     return false

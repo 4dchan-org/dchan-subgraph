@@ -13,7 +13,7 @@ import { locateBlockFromMessage } from "../internal/block"
 export function userBan(message: Message, from: User, data: TypedMap<string, JSONValue>): boolean {
     let evtId = eventId(message)
     
-    if(!isAdmin(from)) {
+    if(!isAdmin(from.id)) {
         log.warning("Unauthorized, skipping {}", [evtId])
         
         return false

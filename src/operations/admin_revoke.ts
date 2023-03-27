@@ -10,7 +10,7 @@ export function adminRevoke(message: Message, user: User, data: TypedMap<string,
 
     log.info("Admin revoke attempt by {}: {}", [user.id, evtId])
 
-    if(!isAdmin(user)) {
+    if(!isAdmin(user.id)) {
         log.warning("Rejected admin revoke requested by unprivileged user {}", [user.id])
 
         return false

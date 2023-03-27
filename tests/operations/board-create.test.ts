@@ -6,9 +6,9 @@ import {
     beforeEach
 } from "matchstick-as/assembly/index"
 import { Address } from "@graphprotocol/graph-ts"
-import { handleMessage } from "../src/relay"
-import { createMessageEvent } from "./relay-utils"
-import { boardId } from "../src/internal/board"
+import { handleMessage } from "../../src/relay"
+import { createMessageEvent } from "../relay-utils"
+import { boardId } from "../../src/internal/board"
 
 describe("Board create", () => {
     beforeEach(() => {

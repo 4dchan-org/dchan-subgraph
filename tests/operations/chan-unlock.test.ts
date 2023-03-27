@@ -6,10 +6,10 @@ import {
     clearStore
 } from "matchstick-as/assembly/index"
 import { Address } from "@graphprotocol/graph-ts"
-import { handleMessage } from "../src/relay"
-import { createMessageEvent } from "./relay-utils"
-import { chanStatusId, isChanLocked } from "../src/internal/chan_status"
-import { claimAdmin } from "./helpers"
+import { handleMessage } from "../../src/relay"
+import { createMessageEvent } from "../relay-utils"
+import { chanStatusId } from "../../src/internal/chan_status"
+import { claimAdmin } from "../helpers"
 
 describe("Chan unlock", () => {
     beforeEach(() => {

@@ -53,14 +53,15 @@ export function postBan(message: Message, user: User, data: TypedMap<string, JSO
     }
 
     let boardId = thread ? thread.board : null
-    let board = boardId ? loadBoardFromId(boardId) : null
-    if(!board && boardId) {
+    let maybeBoard = boardId ? loadBoardFromId(boardId) : null
+    if(!maybeBoard && boardId) {
         log.info("Board {} not found", [boardId])
 
         return false
     }
 
-    if(thread && thread.board && !isBoardJanny(user, thread.board as string)) {
+    let board = maybeBoard!
+    if(thread && thread.board && !isBoardJanny(user.id, thread.board as string)) {
         log.warning("Unauthorized, skipping {}", [evtId])
 
         return false
@@ -78,13 +79,13 @@ export function postBan(message: Message, user: User, data: TypedMap<string, JSO
     ban.issuedAt = message.block.timestamp
     ban.save()
 
-    let boardBan = new BoardBan(boardBanId(user, board as Board))
+    let boardBan = new BoardBan(boardBanId(user.id, board.id))
     boardBan.user = postFrom
     boardBan.board = boardId
     boardBan.ban = ban.id
     boardBan.save()
 
-    let postBan = new PostBan(postBanId(post as Post, board as Board))
+    let postBan = new PostBan(postBanId(post.id, board.id))
     postBan.user = postFrom
     postBan.post = postId
     postBan.ban = ban.id
