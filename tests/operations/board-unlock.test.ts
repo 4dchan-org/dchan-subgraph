@@ -16,11 +16,11 @@ describe("Board unlock", () => {
     })
 
     test("unlock board (by creator)", () => {
-        let boardId = createBoard("d", "dchan")
+        let boardId = createBoard("d", "4dchan.org")
         let from = Address.fromString("0x0000000000000000000000000000000000000000")
 
         // lock board
-        let lockJsonMessage = `{"ns": "dchan","v": 0,"op": "board:lock","data": {"id": "${boardId}"}}`
+        let lockJsonMessage = `{"ns": "4dchan.org","v": 0,"op": "board:lock","data": {"id": "${boardId}"}}`
         let lockMessageEvent = createMessageEvent(from, lockJsonMessage)
         handleMessage(lockMessageEvent)
 
@@ -28,7 +28,7 @@ describe("Board unlock", () => {
         assert.fieldEquals("Board", boardId, "isLocked", "true")
 
         // unlock board
-        let unlockJsonMessage = `{"ns": "dchan","v": 0,"op": "board:unlock","data": {"id": "${boardId}"}}`
+        let unlockJsonMessage = `{"ns": "4dchan.org","v": 0,"op": "board:unlock","data": {"id": "${boardId}"}}`
         let unlockMessageEvent = createMessageEvent(from, unlockJsonMessage)
         handleMessage(unlockMessageEvent)
 
@@ -37,12 +37,12 @@ describe("Board unlock", () => {
     })
 
     test("unlock board (by non-janny, non-creator)", () => {
-        let boardId = createBoard("d", "dchan")
+        let boardId = createBoard("d", "4dchan.org")
 
         let from = Address.fromString("0x0000000000000000000000000000000000000000")
 
         // lock board
-        let lockJsonMessage = `{"ns": "dchan","v": 0,"op": "board:lock","data": {"id": "${boardId}"}}`
+        let lockJsonMessage = `{"ns": "4dchan.org","v": 0,"op": "board:lock","data": {"id": "${boardId}"}}`
         let lockMessageEvent = createMessageEvent(from, lockJsonMessage)
         handleMessage(lockMessageEvent)
 
@@ -50,7 +50,7 @@ describe("Board unlock", () => {
         assert.fieldEquals("Board", boardId, "isLocked", "true")
 
         // unlock board
-        let unlockJsonMessage = `{"ns": "dchan","v": 0,"op": "board:unlock","data": {"id": "${boardId}"}}`
+        let unlockJsonMessage = `{"ns": "4dchan.org","v": 0,"op": "board:unlock","data": {"id": "${boardId}"}}`
         let unlockMessageEvent = createMessageEvent(Address.fromString("0x0000000000000000000000000000000000000001"), unlockJsonMessage)
         handleMessage(unlockMessageEvent)
 

@@ -20,7 +20,7 @@ describe("Chan lock", () => {
 
   test("lock chan", () => {
     const from = Address.fromString("0x0000000000000000000000000000000000000000");
-    const jsonMessage = `{"ns": "dchan","v": 0,"op": "chan:lock","data": {}}`;
+    const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "chan:lock","data": {}}`;
     const newMessageEvent = createMessageEvent(from, jsonMessage);
 
     const chanId = chanStatusId(newMessageEvent);
@@ -37,7 +37,7 @@ describe("Chan lock", () => {
 
   test("fail to lock chan if already locked", () => {
     const from = Address.fromString("0x0000000000000000000000000000000000000000");
-    const jsonMessage = `{"ns": "dchan","v": 0,"op": "chan:lock","data": {}}`;
+    const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "chan:lock","data": {}}`;
     const newMessageEvent = createMessageEvent(from, jsonMessage);
 
     const chanId = chanStatusId(newMessageEvent);
@@ -54,7 +54,7 @@ describe("Chan lock", () => {
 
   test("fail to lock chan if not admin", () => {
     const from = Address.fromString("0x0000000000000000000000000000000000000001");
-    const jsonMessage = `{"ns": "dchan","v": 0,"op": "chan:lock","data": {}}`;
+    const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "chan:lock","data": {}}`;
     const newMessageEvent = createMessageEvent(from, jsonMessage);
 
     const chanId = chanStatusId(newMessageEvent);

@@ -21,12 +21,12 @@ describe("Post ban", () => {
     })
 
     test("ban user (by janny)", () => {
-        let boardId = createBoard("d", "dchan")
+        let boardId = createBoard("d", "4dchan.org")
         let threadId = createThread(boardId, "ayy")
         let post = Post.load(createPost(threadId, "lmao"))!
 
         let from = Address.fromString("0x0000000000000000000000000000000000000000")
-        let jsonMessage = `{"ns": "dchan","v": 0,"op": "post:ban","data": {"id": "${post.id}", "reason": "bad post", "seconds": 1000}}`
+        let jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "post:ban","data": {"id": "${post.id}", "reason": "bad post", "seconds": 1000}}`
         let newMessageEvent = createMessageEvent(from, jsonMessage)
         
         const admin = User.load(from.toHexString())!
@@ -53,12 +53,12 @@ describe("Post ban", () => {
     })
 
     test("ban user (by user)", () => {
-        let boardId = createBoard("d", "dchan")
+        let boardId = createBoard("d", "4dchan.org")
         let threadId = createThread(boardId, "ayy")
         let post = Post.load(createPost(threadId, "lmao"))!
 
         let from = Address.fromString("0x0000000000000000000000000000000000000001")
-        let jsonMessage = `{"ns": "dchan","v": 0,"op": "post:ban","data": {"id": "${post.id}", "reason": "bad post", "seconds": 1000}}`
+        let jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "post:ban","data": {"id": "${post.id}", "reason": "bad post", "seconds": 1000}}`
         let newMessageEvent = createMessageEvent(from, jsonMessage)
         
         const admin = locateUserFromId(from.toHexString())!

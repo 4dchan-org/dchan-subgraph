@@ -9,14 +9,14 @@ import { createMessageEvent } from "./relay-utils";
 
 export function claimAdmin(): void {
   const from = Address.fromString("0x0000000000000000000000000000000000000000")
-  const jsonMessage = `{"ns": "dchan","v": 0,"op": "admin:claim","data": {}}`
+  const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "admin:claim","data": {}}`
   const newMessageEvent = createMessageEvent(from, jsonMessage)
   handleMessage(newMessageEvent)
 }
 
 export function createBoard(name: string, title: string): string {
   const from = Address.fromString("0x0000000000000000000000000000000000000000")
-  const jsonMessage = `{"ns": "dchan","v": 0,"op": "board:create","data": {"name": "${name}", "title": "${title}"}}`
+  const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "board:create","data": {"name": "${name}", "title": "${title}"}}`
   const newMessageEvent = createMessageEvent(from, jsonMessage)
   handleMessage(newMessageEvent)
   return boardId(newMessageEvent)
@@ -24,7 +24,7 @@ export function createBoard(name: string, title: string): string {
 
 export function createThread(boardId: string, comment: string): string {
   const from = Address.fromString("0x0000000000000000000000000000000000000000")
-  const jsonMessage = `{"ns": "dchan","v": 0,"op": "post:create","data": {"board": "${boardId}", "comment": "${comment}"}}`
+  const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "post:create","data": {"board": "${boardId}", "comment": "${comment}"}}`
   const newMessageEvent = createMessageEvent(from, jsonMessage)
   handleMessage(newMessageEvent)
   return threadId(newMessageEvent)
@@ -32,7 +32,7 @@ export function createThread(boardId: string, comment: string): string {
 
 export function createPost(threadId: string, comment: string): string {
   const from = Address.fromString("0x0000000000000000000000000000000000000000")
-  const jsonMessage = `{"ns": "dchan","v": 0,"op": "post:create","data": {"thread": "${threadId}", "comment": "${comment}"}}`
+  const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "post:create","data": {"thread": "${threadId}", "comment": "${comment}"}}`
   const newMessageEvent = createMessageEvent(from, jsonMessage)
   handleMessage(newMessageEvent)
   return postId(newMessageEvent)
@@ -40,7 +40,7 @@ export function createPost(threadId: string, comment: string): string {
 
 export function jannyGrant(boardId: string, to: Address): string {
   const from = Address.fromString("0x0000000000000000000000000000000000000000")
-  const jsonMessage = `{"ns": "dchan","v": 0,"op": "janny:grant","data": {"board": "${boardId}", "user": "${userId(to)}"}}`
+  const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "janny:grant","data": {"board": "${boardId}", "user": "${userId(to)}"}}`
   const newMessageEvent = createMessageEvent(from, jsonMessage)
   handleMessage(newMessageEvent)
   return boardJannyId(userId(from), boardId)

@@ -17,14 +17,14 @@ describe("Chan unlock", () => {
         claimAdmin();
 
         const from = Address.fromString("0x0000000000000000000000000000000000000000");
-        const jsonMessage = `{"ns": "dchan","v": 0,"op": "chan:lock","data": {}}`;
+        const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "chan:lock","data": {}}`;
         const newMessageEvent = createMessageEvent(from, jsonMessage);
         handleMessage(newMessageEvent)
     })
 
     test("unlock chan (by admin)", () => {
         const from = Address.fromString("0x0000000000000000000000000000000000000000")
-        const jsonMessage = `{"ns": "dchan","v": 0,"op": "chan:unlock","data": {}}`
+        const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "chan:unlock","data": {}}`
         const newMessageEvent = createMessageEvent(from, jsonMessage)
 
         assert.fieldEquals("ChanStatus", chanStatusId(newMessageEvent), "isLocked", "true")
@@ -37,7 +37,7 @@ describe("Chan unlock", () => {
     test("unlock chan (not locked)", () => {
         {
             const from = Address.fromString("0x0000000000000000000000000000000000000000")
-            const jsonMessage = `{"ns": "dchan","v": 0,"op": "chan:unlock","data": {}}`
+            const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "chan:unlock","data": {}}`
             const newMessageEvent = createMessageEvent(from, jsonMessage)
 
             assert.fieldEquals("ChanStatus", chanStatusId(newMessageEvent), "isLocked", "true")
@@ -48,7 +48,7 @@ describe("Chan unlock", () => {
         }
         {
             const from = Address.fromString("0x0000000000000000000000000000000000000000")
-            const jsonMessage = `{"ns": "dchan","v": 0,"op": "chan:unlock","data": {}}`
+            const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "chan:unlock","data": {}}`
             const newMessageEvent = createMessageEvent(from, jsonMessage)
 
             assert.fieldEquals("ChanStatus", chanStatusId(newMessageEvent), "isLocked", "false")
@@ -61,7 +61,7 @@ describe("Chan unlock", () => {
 
     test("unlock chan (not admin)", () => {
         const from = Address.fromString("0x0000000000000000000000000000000000000001")
-        const jsonMessage = `{"ns": "dchan","v": 0,"op": "chan:unlock","data": {}}`
+        const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "chan:unlock","data": {}}`
         const newMessageEvent = createMessageEvent(from, jsonMessage)
 
         assert.fieldEquals("ChanStatus", chanStatusId(newMessageEvent), "isLocked", "true")

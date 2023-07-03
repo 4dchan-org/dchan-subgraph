@@ -20,7 +20,7 @@ describe("Board create", () => {
         assert.entityCount("BoardJanny", 0)
 
         const from = Address.fromString("0x0000000000000000000000000000000000000000")
-        const jsonMessage = `{"ns": "dchan","v": 0,"op": "board:create","data": {"name": "d","title": "dchan"}}`
+        const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "board:create","data": {"name": "d","title": "4dchan.org"}}`
         const newMessageEvent = createMessageEvent(from, jsonMessage)
         handleMessage(newMessageEvent)
 
@@ -33,7 +33,7 @@ describe("Board create", () => {
         assert.entityCount("BoardJanny", 0)
 
         const from = Address.fromString("0x0000000000000000000000000000000000000000")
-        const jsonMessage = `{"ns": "dchan","v": 0,"op": "board:create","data": {"name": "12345678whoopsiwenttoolong","title": "dchan"}}`
+        const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "board:create","data": {"name": "12345678whoopsiwenttoolong","title": "4dchan.org"}}`
         const newMessageEvent = createMessageEvent(from, jsonMessage)
         handleMessage(newMessageEvent)
 
@@ -46,7 +46,7 @@ describe("Board create", () => {
         assert.entityCount("BoardJanny", 0)
 
         const from = Address.fromString("0x0000000000000000000000000000000000000000")
-        const jsonMessage = `{"ns": "dchan","v": 0,"op": "board:create","data": {"name": "d","title": "${"dchan".repeat(100)}"}}`
+        const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "board:create","data": {"name": "d","title": "${"4dchan.org".repeat(100)}"}}`
         const newMessageEvent = createMessageEvent(from, jsonMessage)
         handleMessage(newMessageEvent)
 
@@ -59,7 +59,7 @@ describe("Board create", () => {
         assert.entityCount("BoardJanny", 0)
 
         const from = Address.fromString("0x0000000000000000000000000000000000000000")
-        const jsonMessage = `{"ns": "dchan","v": 0,"op": "board:create","data": {"name": "d","title": "dchan","nsfw": true}}`
+        const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "board:create","data": {"name": "d","title": "4dchan.org","nsfw": true}}`
         const newMessageEvent = createMessageEvent(from, jsonMessage)
         handleMessage(newMessageEvent)
 
@@ -79,7 +79,7 @@ describe("Board create", () => {
         assert.entityCount("BoardJanny", 0)
 
         const from = Address.fromString("0x0000000000000000000000000000000000000000")
-        const jsonMessage = `{"ns": "dchan","v": 0,"op": "board:create","data": {"name": "d","title": "dchan","thread_lifetime": 86400}}`
+        const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "board:create","data": {"name": "d","title": "4dchan.org","thread_lifetime": 86400}}`
         const newMessageEvent = createMessageEvent(from, jsonMessage)
         handleMessage(newMessageEvent)
 

@@ -16,10 +16,10 @@ describe("Board lock", () => {
     })
 
     test("lock board (by creator)", () => {
-        let boardId = createBoard("d", "dchan")
+        let boardId = createBoard("d", "4dchan.org")
 
         const from = Address.fromString("0x0000000000000000000000000000000000000000")
-        const jsonMessage = `{"ns": "dchan","v": 0,"op": "board:lock","data": {"id": "${boardId}"}}`
+        const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "board:lock","data": {"id": "${boardId}"}}`
         const newMessageEvent = createMessageEvent(from, jsonMessage)
 
         assert.fieldEquals("Board", boardId, "isLocked", "false")
@@ -30,10 +30,10 @@ describe("Board lock", () => {
     })
 
     // test("lock board (by janny)", () => {
-        let boardId = createBoard("d", "dchan")
+        let boardId = createBoard("d", "4dchan.org")
 
     //     const from = janny
-    //     const jsonMessage = `{"ns": "dchan","v": 0,"op": "board:lock","data": {"id": "${boardId}"}}`
+    //     const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "board:lock","data": {"id": "${boardId}"}}`
     //     const newMessageEvent = createMessageEvent(from, jsonMessage)
 
     //     assert.fieldEquals("Board", boardId, "isLocked", "false")
@@ -44,10 +44,10 @@ describe("Board lock", () => {
     // })
 
     test("lock board (by non-janny, non-creator)", () => {
-        let boardId = createBoard("d", "dchan")
+        let boardId = createBoard("d", "4dchan.org")
 
         const from = Address.fromString("0x0000000000000000000000000000000000000001")
-        const jsonMessage = `{"ns": "dchan","v": 0,"op": "board:lock","data": {"id": "${boardId}"}}`
+        const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "board:lock","data": {"id": "${boardId}"}}`
         const newMessageEvent = createMessageEvent(from, jsonMessage)
 
         assert.fieldEquals("Board", boardId, "isLocked", "false")
@@ -58,10 +58,10 @@ describe("Board lock", () => {
     })
 
     test("lock board (invalid board id)", () => {
-        let boardId = createBoard("d", "dchan")
+        let boardId = createBoard("d", "4dchan.org")
 
         const from = Address.fromString("0x0000000000000000000000000000000000000000")
-        const jsonMessage = `{"ns": "dchan","v": 0,"op": "board:lock","data": {"id": "123456"}}`
+        const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "board:lock","data": {"id": "123456"}}`
         const newMessageEvent = createMessageEvent(from, jsonMessage)
 
         assert.fieldEquals("Board", boardId, "isLocked", "false")
@@ -72,10 +72,10 @@ describe("Board lock", () => {
     })
 
     test("lock board (already locked)", () => {
-        let boardId = createBoard("d", "dchan")
+        let boardId = createBoard("d", "4dchan.org")
 
         const from = Address.fromString("0x0000000000000000000000000000000000000000")
-        const jsonMessage = `{"ns": "dchan","v": 0,"op": "board:lock","data": {"id": "${boardId}"}}`
+        const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "board:lock","data": {"id": "${boardId}"}}`
         const newMessageEvent = createMessageEvent(from, jsonMessage)
 
         assert.fieldEquals("Board", boardId, "isLocked", "false")

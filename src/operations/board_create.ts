@@ -16,7 +16,7 @@ export function boardCreate(message: Message, user: User, data: TypedMap<string,
 
     log.info("Creating board: {}", [evtId])
 
-    // { "name": "dchan", "title": "dchan.network" }
+    // { "name": "4dchan.org", "title": "4dchan.org" }
     let maybeName = ensureString(data.get("name"))
     let maybeTitle = ensureString(data.get("title"))
     let maybeThreadLifetime = ensureNumber(data.get("thread_lifetime"))

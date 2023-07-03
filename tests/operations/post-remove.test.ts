@@ -17,12 +17,12 @@ describe("Post remove", () => {
     })
 
     test("remove post by owner", () => {
-        let boardId = createBoard("d", "dchan")
+        let boardId = createBoard("d", "4dchan.org")
         let threadId = createThread(boardId, "ayy")
         let postId = createPost(threadId, "lmao")
 
         let from = Address.fromString("0x0000000000000000000000000000000000000000")
-        let jsonMessage = `{"ns": "dchan","v": 0,"op": "post:remove","data": {"ids": ["${postId}"]}}`
+        let jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "post:remove","data": {"ids": ["${postId}"]}}`
         let newMessageEvent = createMessageEvent(from, jsonMessage)
         
         assert.fieldEquals("Post", postId, "id", postId)
@@ -39,7 +39,7 @@ describe("Post remove", () => {
 
     // test("remove post by janny", () => {
         
-    //     let boardId = createBoard("d", "dchan")
+    //     let boardId = createBoard("d", "4dchan.org")
     //     let threadId = createThread(boardId, "ayy")
     //     let postId = createPost(threadId, "lmao")
         
@@ -48,7 +48,7 @@ describe("Post remove", () => {
     //     jannyGrant(boardId, Address.fromString("0x0000000000000000000000000000000000000001"))
 
     //     let from = Address.fromString("0x0000000000000000000000000000000000000001")
-    //     let jsonMessage = `{"ns": "dchan","v": 0,"op": "post:remove","data": {"ids": ["${postId}"]}}`
+    //     let jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "post:remove","data": {"ids": ["${postId}"]}}`
     //     let newMessageEvent = createMessageEvent(from, jsonMessage)
         
     //     assert.fieldEquals("Post", postId, "id", postId)
@@ -64,12 +64,12 @@ describe("Post remove", () => {
     // })
 
     // test("remove post by user", () => {
-    //     let boardId = createBoard("d", "dchan")
+    //     let boardId = createBoard("d", "4dchan.org")
     //     let threadId = createThread(boardId, "ayy")
     //     let postId = createPost(threadId, "lmao")
 
     //     let from = Address.fromString("0x0000000000000000000000000000000000000001")
-    //     let jsonMessage = `{"ns": "dchan","v": 0,"op": "post:remove","data": {"ids": ["${postId}"]}}`
+    //     let jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "post:remove","data": {"ids": ["${postId}"]}}`
     //     let newMessageEvent = createMessageEvent(from, jsonMessage)
         
     //     assert.fieldEquals("Post", postId, "id", postId)

@@ -24,14 +24,14 @@ describe("User unban", () => {
         let target = Address.fromString("0x0000000000000000000000000000000000000001")
         let user = locateUserFromId(userId(target))!
 
-        let jsonMessage = `{"ns": "dchan","v": 0,"op": "user:ban","data": {"id": "${userId(target)}", "reason": "spam", "seconds": 1000}}`
+        let jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "user:ban","data": {"id": "${userId(target)}", "reason": "spam", "seconds": 1000}}`
         let newMessageEvent = createMessageEvent(from, jsonMessage)
         handleMessage(newMessageEvent)
         
         assert.fieldEquals("Ban", banId(newMessageEvent), "id", banId(newMessageEvent))
         assert.fieldEquals("UserBan", userBanId(user.id), "id", userBanId(user.id))
 
-        jsonMessage = `{"ns": "dchan","v": 0,"op": "user:unban","data": {"id": "${userId(target)}"}}`
+        jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "user:unban","data": {"id": "${userId(target)}"}}`
         newMessageEvent = createMessageEvent(from, jsonMessage)
         handleMessage(newMessageEvent)
 

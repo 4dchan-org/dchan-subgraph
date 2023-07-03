@@ -27,7 +27,7 @@ describe("Admin claim", () => {
     assert.entityCount("Admin", 0)
 
     const from = Address.fromString("0x0000000000000000000000000000000000000000")
-    const jsonMessage = `{"ns": "dchan","v": 0,"op": "admin:claim","data": {}}`
+    const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "admin:claim","data": {}}`
     const newMessageEvent = createMessageEvent(from, jsonMessage)
     handleMessage(newMessageEvent)
 
@@ -38,14 +38,14 @@ describe("Admin claim", () => {
     assert.entityCount("Admin", 0)
 
     const from = Address.fromString("0x0000000000000000000000000000000000000000")
-    const jsonMessage = `{"ns": "dchan","v": 0,"op": "admin:claim","data": {}}`
+    const jsonMessage = `{"ns": "4dchan.org","v": 0,"op": "admin:claim","data": {}}`
     const newMessageEvent = createMessageEvent(from, jsonMessage)
     handleMessage(newMessageEvent)
 
     assert.entityCount("Admin", 2)
 
     const from1 = Address.fromString("0x0000000000000000000000000000000000000001")
-    const jsonMessage1 = `{"ns": "dchan","v": 0,"op": "admin:claim","data": {}}`
+    const jsonMessage1 = `{"ns": "4dchan.org","v": 0,"op": "admin:claim","data": {}}`
     const newMessageEvent1 = createMessageEvent(from1, jsonMessage1)
     handleMessage(newMessageEvent1)
 
