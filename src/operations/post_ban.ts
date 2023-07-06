@@ -74,7 +74,6 @@ export function postBan(message: Message, user: User, data: TypedMap<string, JSO
     ban.expiresAt = banExpiresAt
     ban.reason = reason
     ban.from = user.id
-    ban.user = post.from
     ban.issuedAtBlock = block.id
     ban.issuedAt = message.block.timestamp
     ban.save()

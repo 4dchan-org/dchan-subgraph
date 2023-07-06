@@ -1,5 +1,5 @@
 specVersion: 0.0.5
-description: dchan-network
+description: 4dchan-org-subgraph
 repository: https://github.com/4dchan/4dchan-subgraph
 schema:
   file: ./schema.graphql
@@ -8,9 +8,9 @@ dataSources:
     name: Relay
     network: mumbai
     source:
-      address: "0x6f38B1C604371b20AC96Ec9307664A4500621D61"
+      address: "0x83a228a882153b3ae3514db82de10b9a86288ea2"
       abi: Relay
-      startBlock: 32904705
+      startBlock: 37626568
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

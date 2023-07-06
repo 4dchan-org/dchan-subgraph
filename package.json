@@ -1,21 +1,17 @@
 {
-  "name": "4dchan-subgraph",
-  "version": "0.2.0",
+  "name": "4dchan-org-subgraph",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ 4dchan-subgraph",
-    "create-local": "graph create --node http://localhost:8020/ 4dchan-subgraph",
-    "remove-local": "graph remove --node http://localhost:8020/ 4dchan-subgraph",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 4dchan-subgraph",
-    "test": "graph test relay -v 0.5.2"
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ 4dchan-org-subgraph",
+    "create-local": "graph create --node http://localhost:8020/ 4dchan-org-subgraph",
+    "remove-local": "graph remove --node http://localhost:8020/ 4dchan-org-subgraph",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 4dchan-org-subgraph",
+    "test": "graph test"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.42.4",
-    "@graphprotocol/graph-ts": "0.29.1",
-    "source-map-support": "^0.5.21"
+    "@graphprotocol/graph-cli": "0.51.2",
+    "@graphprotocol/graph-ts": "0.30.0"
   },
-  "devDependencies": {
-    "matchstick-as": "0.5.0"
-  }
+  "devDependencies": { "matchstick-as": "0.5.0" }
 }

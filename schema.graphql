@@ -21,7 +21,8 @@ type _Schema_
       {
         entity: "Board",
         fields: [
-          { name: "title" }
+          { name: "title" },
+          { name: "name" }
         ]
       }
     ]
@@ -84,7 +85,7 @@ type Post @entity {
   sage: Boolean!
 }
 
-type Report @entity {
+type Report @entity(immutable: true) {
   id: ID!
   createdAtBlock: Block!
   createdAt: BigInt!
@@ -92,19 +93,19 @@ type Report @entity {
   from: User!
 }
 
-type PostReport @entity {
+type PostReport @entity(immutable: true) {
   id: ID!
   post: Post
   report: Report!
 }
 
-type BoardReport @entity {
+type BoardReport @entity(immutable: true) {
   id: ID!
   board: Board
   report: Report!
 }
 
-type Ban @entity {
+type Ban @entity(immutable: true) {
   id: ID!
   issuedAtBlock: Block!
   issuedAt: BigInt!
@@ -113,20 +114,20 @@ type Ban @entity {
   from: User!
 }
 
-type UserBan @entity {
+type UserBan @entity(immutable: true) {
   id: ID!
   user: User!
   ban: Ban!
 }
 
-type BoardBan @entity {
+type BoardBan @entity(immutable: true) {
   id: ID!
   user: User!
   board: Board
   ban: Ban!
 }
 
-type PostBan @entity {
+type PostBan @entity(immutable: true) {
   id: ID!
   user: User!
   post: Post
@@ -139,18 +140,18 @@ type User @entity {
   address: String!
   hexAddress: String!
   lastPostedAtBlock: Block
-  bans: [Ban!]! @derivedFrom(field: "user")
+  bans: [UserBan!]! @derivedFrom(field: "user")
   jannies: [BoardJanny!]! @derivedFrom(field: "user")
   score: BigInt!
 }
 
-type Admin @entity {
+type Admin @entity(immutable: true) {
   id: ID!
   grantedAtBlock: Block!
   grantedAt: BigInt!
 }
 
-type BoardJanny @entity {
+type BoardJanny @entity(immutable: true) {
   id: ID!
   user: User!
   board: Board
@@ -158,7 +159,7 @@ type BoardJanny @entity {
   grantedAt: BigInt!
 }
 
-type Image @entity {
+type Image @entity(immutable: true) {
   id: ID!
   name: String!
   ipfsHash: String!
@@ -167,18 +168,18 @@ type Image @entity {
   score: BigInt!
 }
 
-type ChanStatus @entity {
+type ChanStatus @entity(immutable: true) {
   id: ID!
   isLocked: Boolean!
 }
 
-type Block @entity {
+type Block @entity(immutable: true) {
   id: ID!
   timestamp: BigInt!
   number: BigInt!
 }
 
-type Client @entity {
+type Client @entity(immutable: true) {
   id: ID!
   version: String!
   channel: String!
@@ -187,29 +188,29 @@ type Client @entity {
   publishedAt: BigInt!
 }
 
-type UserTx @entity {
+type UserTx @entity(immutable: true) {
   id: ID!
   user: User!
   success: Boolean!
   error: String
 }
 
-type ThreadRef @entity {
+type ThreadRef @entity(immutable: true) {
   id: ID!
   thread: Thread
 }
 
-type BoardRef @entity {
+type BoardRef @entity(immutable: true) {
   id: ID!
   board: Board
 }
 
-type PostRef @entity {
+type PostRef @entity(immutable: true) {
   id: ID!
   post: Post
 }
 
-type UserRef @entity {
+type UserRef @entity(immutable: true) {
   id: ID!
   user: User
 }

@@ -20,7 +20,11 @@
   },
   {
     "inputs": [
-      { "internalType": "string", "name": "jsonMessage", "type": "string" }
+      {
+        "internalType": "string",
+        "name": "jsonMessage",
+        "type": "string"
+      }
     ],
     "name": "message",
     "outputs": [],

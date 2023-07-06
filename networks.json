@@ -1,8 +1,8 @@
 {
-    "mumbai": {
-      "Relay": {
-        "address": "0x6f38B1C604371b20AC96Ec9307664A4500621D61",
-        "startBlock": 32904705
-      }
+  "mumbai": {
+    "Relay": {
+      "address": "0x83a228a882153b3ae3514db82de10b9a86288ea2",
+      "startBlock": 37626568
     }
+  }
 }
